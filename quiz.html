@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Newsguess · il quiz delle prime pagine d'Italia</title>
+<meta name="description" content="Newsguess: indovina di che giornale italiano è la prima pagina. Sfida giornaliera, classifiche di gruppo." />
+<meta name="theme-color" content="#15110c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Newsguess" />
+<link rel="manifest" href="/api/manifest.json" />
+<link rel="icon" href="/api/icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="/api/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f5f1e8;
+    --paper-2: #ebe5d6;
+    --ink: #15110c;
+    --ink-2: #3a342a;
+    --muted: #6b6359;
+    --rule: #1a1610;
+    --accent: #b01010;
+    --green: #246b3a;
+    --red: #b01010;
+    --shadow: rgba(20,16,10,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14110d;
+      --paper-2: #1d1914;
+      --ink: #f0e9d8;
+      --ink-2: #cfc6b2;
+      --muted: #8a8273;
+      --rule: #d8cfb8;
+      --accent: #e74848;
+      --green: #5fb079;
+      --red: #e74848;
+      --shadow: rgba(0,0,0,.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Libre Baskerville', Georgia, serif; }
+  body { min-height: 100vh; padding: 24px 16px 64px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  /* Masthead */
+  .masthead { border-top: 3px solid var(--rule); border-bottom: 3px solid var(--rule); padding: 14px 0 14px; position: relative; text-align: center; }
+  .masthead::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: var(--rule); }
+  .masthead .brand-rule { text-transform: uppercase; letter-spacing: 4px; font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+  .masthead h1 { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; font-size: clamp(44px, 9vw, 84px); margin: 0; letter-spacing: -1px; line-height: 1; }
+  .masthead .tagline { font-family: 'Libre Baskerville', serif; font-style: italic; font-size: clamp(13px, 2.6vw, 17px); color: var(--ink-2); margin-top: 6px; }
+  .masthead .meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-top: 14px; padding: 0 4px; flex-wrap: wrap; gap: 8px; }
+  .masthead .accent { color: var(--accent); font-weight: 700; }
+  .install-link { color: var(--accent); font-weight: 700; transition: opacity .2s; }
+  .install-link:hover { opacity: .7; }
+
+  /* iOS install hint */
+  .ios-hint { background: var(--ink); color: var(--paper); padding: 14px 16px; margin: 16px 0; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--accent); }
+  .ios-hint-text { flex: 1; font-size: 14px; line-height: 1.4; }
+  .ios-hint-text strong { display: block; font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 4px; }
+  .ios-hint-text em { font-style: italic; color: #fff; }
+  .ios-share { display: inline-block; padding: 0 6px; background: var(--accent); border-radius: 3px; font-weight: 700; }
+  .ios-hint-close { background: none; border: none; color: var(--paper); font-size: 26px; cursor: pointer; opacity: .7; padding: 0 4px; }
+  .ios-hint-close:hover { opacity: 1; }
+
+  /* Tabs */
+  .tabs { display: flex; border-bottom: 1px solid var(--rule); margin: 28px 0 24px; }
+  .tab { flex: 1; padding: 14px 8px; text-align: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; transition: all .15s; background: transparent; border-top: none; border-left: none; border-right: none; font-family: 'Playfair Display', serif; }
+  .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab:hover:not(.active) { color: var(--ink-2); }
+
+  /* Generic typography */
+  h2 { font-family: 'Playfair Display', serif; font-weight: 700; margin: 0 0 12px; }
+  h3 { font-family: 'Playfair Display', serif; font-weight: 700; margin: 0 0 8px; font-size: 22px; }
+  p { line-height: 1.6; }
+  .small-caps { text-transform: uppercase; letter-spacing: 2px; font-size: 11px; color: var(--muted); font-weight: 700; }
+
+  /* Mode picker */
+  .modes { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 24px; }
+  @media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
+  .mode-card { border: 1px solid var(--rule); padding: 22px; cursor: pointer; background: var(--paper); transition: background .15s; }
+  .mode-card:hover { background: var(--paper-2); }
+  .mode-card h3 { font-size: 24px; margin-bottom: 6px; }
+  .mode-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+
+  /* Past editions grid */
+  .past-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 640px) { .past-grid { grid-template-columns: repeat(3, 1fr); } }
+  .past-card { border: 1px solid var(--rule); padding: 16px; cursor: pointer; background: var(--paper); position: relative; }
+  .past-card:hover { background: var(--paper-2); }
+  .past-card.completed { background: var(--paper-2); }
+  .past-card .date { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 20px; }
+  .past-card .name { font-style: italic; color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+  .past-card .score { position: absolute; top: 8px; right: 10px; font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+
+  /* Score bar */
+  .scorebar { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
+  .dots { display: flex; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; }
+  .dot.right { background: var(--green); border-color: var(--green); }
+  .dot.wrong { background: var(--red); border-color: var(--red); }
+  .dot.current { border-color: var(--accent); }
+
+  /* Question card */
+  .qcard { border: 1px solid var(--rule); padding: 28px 24px; background: var(--paper); }
+  .extracted { padding: 18px 0 22px; border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
+  .extracted .sopra { text-transform: uppercase; letter-spacing: 3px; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .extracted .titolo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(28px, 5vw, 44px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -.5px; }
+  .extracted .sotto { font-style: italic; font-size: 18px; color: var(--ink-2); line-height: 1.4; }
+
+  /* Choices */
+  .choices { display: grid; gap: 10px; margin-bottom: 16px; }
+  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s; }
+  .choice:hover:not(:disabled) { background: var(--paper-2); }
+  .choice:disabled { cursor: default; }
+  .choice.right { background: var(--green); color: #fff; border-color: var(--green); }
+  .choice.wrong { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* Buttons */
+  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; }
+  .btn:hover { background: var(--ink-2); }
+  .btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+  .btn.outline:hover { background: var(--paper-2); }
+  .btn.accent { background: var(--accent); color: #fff; }
+  .btn.accent:hover { opacity: .9; }
+
+  .clue { margin-top: 12px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--paper-2); font-style: italic; color: var(--ink-2); }
+
+  /* Loading */
+  .loading { text-align: center; padding: 60px 20px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--rule); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Error */
+  .errbox { border: 2px solid var(--red); padding: 18px; background: var(--paper-2); margin: 20px 0; }
+  .errbox h4 { margin: 0 0 8px; color: var(--red); font-family: 'Playfair Display', serif; }
+
+  /* Final screen */
+  .final { text-align: center; padding: 40px 20px; }
+  .final .big-score { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(72px, 18vw, 140px); line-height: 1; margin: 10px 0; }
+  .final .verdict { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(22px, 4vw, 32px); margin-bottom: 28px; color: var(--accent); }
+  .final table { width: 100%; border-collapse: collapse; margin: 24px 0; text-align: left; }
+  .final th, .final td { padding: 10px 8px; border-bottom: 1px solid var(--rule); font-size: 14px; }
+  .final th { text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--muted); font-weight: 700; }
+  .final td.ok { color: var(--green); font-weight: 700; }
+  .final td.no { color: var(--red); font-weight: 700; }
+
+  /* Leaderboard */
+  .lb-form { border: 1px solid var(--rule); padding: 24px; background: var(--paper); margin-bottom: 22px; }
+  .lb-form input { display: block; width: 100%; padding: 10px 12px; margin-top: 6px; margin-bottom: 14px; background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink); font-family: 'Libre Baskerville', serif; font-size: 15px; }
+  .lb-form label { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; }
+  .lb-section { margin-bottom: 28px; }
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th, .lb-table td { padding: 10px 8px; border-bottom: 1px solid var(--rule); text-align: left; font-size: 14px; }
+  .lb-table th { text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--muted); font-weight: 700; }
+  .lb-table tr.me { background: rgba(40,80,200,.12); }
+  .lb-table .medal { font-size: 18px; }
+  .lb-user-info { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--rule); background: var(--paper-2); margin-bottom: 22px; }
+  .lb-user-info .who { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .lb-user-info .who span { color: var(--accent); }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hidden { display: none !important; }
+
+  /* Group pills (multi-group selector) */
+  .group-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .group-pill { padding: 8px 14px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; font-family: 'Libre Baskerville', serif; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; }
+  .group-pill:hover { background: var(--paper-2); }
+  .group-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .group-pill .code-mini { font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 1.5px; opacity: .75; }
+  .group-pill .pill-x { opacity: .5; cursor: pointer; padding: 0 4px; font-weight: 700; }
+  .group-pill .pill-x:hover { opacity: 1; color: var(--accent); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal { background: var(--paper); border: 1px solid var(--rule); padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px var(--shadow); }
+  .modal h2 { margin-top: 0; }
+  .modal .save-group-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .modal .save-group-row:last-child { border-bottom: none; }
+  .modal .save-group-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+  .modal .save-group-row label { flex: 1; cursor: pointer; font-family: 'Libre Baskerville', serif; }
+  .modal .save-group-row .gname { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .modal .save-group-row .gcode { font-family: 'Playfair Display', serif; letter-spacing: 1.5px; color: var(--accent); font-size: 13px; }
+  .modal .save-group-row .gnote { font-size: 12px; color: var(--muted); font-style: italic; }
+
+  /* Leaderboard tabs (Crea/Unisciti) */
+  .lb-tabs { display: flex; gap: 0; margin: 18px 0 18px; border-bottom: 1px solid var(--rule); }
+  .lb-tab { flex: 1; padding: 10px 8px; background: transparent; border: none; cursor: pointer; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; }
+  .lb-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+  .code-box { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(40px, 9vw, 64px); letter-spacing: 8px; text-align: center; padding: 22px; border: 2px dashed var(--rule); background: var(--paper-2); margin: 18px 0; color: var(--accent); }
+  .code-inline { font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 2px; color: var(--accent); }
+
+  .daily-status { display: inline-block; margin-top: 6px; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent); font-style: italic; font-size: 13px; }
+  .mode-card.completed { opacity: .65; cursor: default; }
+  .mode-card.completed:hover { background: var(--paper); }
+
+  /* Decorative background flourishes */
+  body { position: relative; overflow-x: hidden; }
+  .bg-decorations { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bg-deco { position: absolute; opacity: .14; color: var(--ink); }
+  @media (prefers-color-scheme: dark) { .bg-deco { opacity: .1; } }
+  .bg-deco-1 { top: 70px; left: -30px; width: 230px; transform: rotate(-11deg); }
+  .bg-deco-2 { bottom: 80px; right: -50px; width: 270px; transform: rotate(9deg); }
+  .bg-deco-3 { top: 38%; right: 4%; width: 130px; transform: rotate(18deg); opacity: .10; }
+  .bg-deco-4 { bottom: 32%; left: 3%; width: 140px; transform: rotate(-22deg); opacity: .10; }
+  .wrap { position: relative; z-index: 1; }
+
+  /* Subtle paper grain on the page */
+  body { background-image: radial-gradient(circle at 20% 10%, transparent 0, transparent 200px, rgba(0,0,0,0.015) 400px), radial-gradient(circle at 80% 90%, transparent 0, transparent 250px, rgba(0,0,0,0.02) 500px); background-attachment: fixed; }
+
+  /* Editorial pull quote */
+  .pull-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; color: var(--muted); text-align: center; margin: 36px 0 8px; padding: 14px 20px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); position: relative; }
+  .pull-quote::before { content: "\201C"; font-size: 60px; line-height: 0.5; color: var(--accent); margin-right: 6px; vertical-align: -22px; opacity: .5; }
+
+  /* Archive browser (consultazione) */
+  .archive-browser { margin-top: 28px; border-top: 1px solid var(--rule); padding-top: 20px; }
+  .archive-browser summary { cursor: pointer; padding: 12px 8px; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; letter-spacing: 2px; color: var(--ink); list-style: none; user-select: none; }
+  .archive-browser summary::-webkit-details-marker { display: none; }
+  .archive-browser summary::before { content: "▸ "; color: var(--accent); display: inline-block; transition: transform .2s; }
+  .archive-browser details[open] summary::before { content: "▾ "; }
+  .ab-tabs { display: flex !important; gap: 0; margin: 14px 0; border-bottom: 1px solid var(--rule); width: 100%; }
+  .ab-tab { flex: 1 1 50%; padding: 12px 8px; background: transparent; border: none; cursor: pointer; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; color: var(--muted); border-bottom: 3px solid transparent; -webkit-appearance: none; appearance: none; min-height: 44px; }
+  .ab-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+  .ab-pane { padding: 6px 0 14px; }
+  .ab-item { border-bottom: 1px solid var(--rule); padding: 14px 8px; cursor: pointer; transition: background .15s; min-height: 44px; }
+  .ab-item:hover { background: var(--paper-2); }
+  .ab-item h4 { margin: 0 0 4px; font-family: 'Playfair Display', serif; font-size: 17px; }
+  .ab-item .ab-meta { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+  .ab-detail { margin-top: 10px; padding: 14px; background: var(--paper-2); border-left: 3px solid var(--accent); }
+  .ab-detail h5 { margin: 0 0 6px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 14px; color: var(--accent); }
+  .ab-detail .ab-titolo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 18px; margin-bottom: 4px; line-height: 1.2; }
+  .ab-detail .ab-sopra { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; }
+  .ab-detail .ab-sotto { font-style: italic; color: var(--ink-2); font-size: 14px; }
+  .ab-detail-block { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); display: flex; gap: 14px; align-items: flex-start; }
+  .ab-detail-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .ab-detail-block .ab-thumb { flex-shrink: 0; width: 90px; height: 130px; object-fit: cover; border: 1px solid var(--rule); background: var(--paper-2); cursor: pointer; }
+  .ab-detail-block .ab-text { flex: 1; min-width: 0; }
+  .ab-back { color: var(--accent); cursor: pointer; font-size: 13px; margin-bottom: 10px; display: inline-block; padding: 6px 0; }
+  .ab-back:hover { text-decoration: underline; }
+
+  /* Lightbox immagine archivio */
+  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lightbox .close { position: absolute; top: 16px; right: 20px; color: #fff; font-size: 32px; cursor: pointer; background: none; border: none; }
+
+  @media (max-width: 480px) {
+    .ab-detail-block .ab-thumb { width: 70px; height: 100px; }
+    .ab-tab { font-size: 15px; padding: 14px 6px; }
+  }
+
+  /* Notifiche */
+  .notif-section { margin-top: 28px; padding: 18px; border: 1px solid var(--rule); background: var(--paper-2); }
+  .notif-section .small-caps { margin: 0; }
+</style>
+</head>
+<body>
+<div class="bg-decorations" aria-hidden="true">
+  <svg class="bg-deco bg-deco-1" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="10" y="30" width="180" height="150" rx="3"/>
+    <line x1="10" y1="62" x2="190" y2="62"/>
+    <text x="100" y="54" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-weight="900" font-size="20" stroke="none" fill="currentColor">il giornale</text>
+    <line x1="100" y1="62" x2="100" y2="180"/>
+    <line x1="20" y1="80" x2="90" y2="80"/><line x1="20" y1="92" x2="90" y2="92"/><line x1="20" y1="104" x2="85" y2="104"/><line x1="20" y1="116" x2="90" y2="116"/><line x1="20" y1="128" x2="78" y2="128"/><line x1="20" y1="140" x2="90" y2="140"/><line x1="20" y1="152" x2="70" y2="152"/><line x1="20" y1="164" x2="88" y2="164"/>
+    <line x1="110" y1="80" x2="180" y2="80"/><line x1="110" y1="92" x2="180" y2="92"/><line x1="110" y1="104" x2="180" y2="104"/><line x1="110" y1="116" x2="172" y2="116"/><line x1="110" y1="128" x2="180" y2="128"/><line x1="110" y1="140" x2="170" y2="140"/><line x1="110" y1="152" x2="180" y2="152"/><line x1="110" y1="164" x2="160" y2="164"/>
+  </svg>
+  <svg class="bg-deco bg-deco-2" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M30 40 L130 40 L160 70 L160 175 L30 175 Z"/>
+    <path d="M130 40 L130 70 L160 70"/>
+    <line x1="45" y1="92" x2="145" y2="92"/><line x1="45" y1="106" x2="145" y2="106"/><line x1="45" y1="120" x2="130" y2="120"/><line x1="45" y1="134" x2="145" y2="134"/><line x1="45" y1="148" x2="115" y2="148"/><line x1="45" y1="162" x2="140" y2="162"/>
+  </svg>
+  <svg class="bg-deco bg-deco-3" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2">
+    <path d="M20 80 L20 30 Q20 20 30 20 L65 20 L80 35 L80 80 Z"/>
+    <path d="M65 20 L65 35 L80 35"/>
+    <line x1="32" y1="48" x2="68" y2="48"/><line x1="32" y1="58" x2="68" y2="58"/><line x1="32" y1="68" x2="58" y2="68"/>
+  </svg>
+  <svg class="bg-deco bg-deco-4" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2">
+    <circle cx="38" cy="38" r="18"/>
+    <circle cx="68" cy="38" r="18"/>
+    <line x1="56" y1="38" x2="50" y2="38"/>
+    <line x1="20" y1="38" x2="10" y2="46"/>
+    <line x1="86" y1="38" x2="96" y2="46"/>
+  </svg>
+</div>
+<div class="wrap">
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="brand-rule">EST. 2019 · QUIZ DEI QUOTIDIANI</div>
+    <h1>Newsguess</h1>
+    <div class="tagline">Il quiz delle prime pagine d'Italia</div>
+    <div class="meta">
+      <span id="todayDate">—</span>
+      <span class="accent">Edizione del lettore</span>
+      <span id="installBtn" class="install-link" style="display:none;cursor:pointer" onclick="triggerInstall()">📲 Installa app</span>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button class="tab active" data-tab="quiz">Quiz</button>
+    <button class="tab" data-tab="leaderboard">Classifica</button>
+  </nav>
+
+  <!-- iOS install hint (mostrato solo a Safari iOS non installato) -->
+  <div id="iosInstallHint" class="ios-hint hidden">
+    <div class="ios-hint-text">
+      <strong>📲 Installa Newsguess sul tuo iPhone</strong>
+      <span>Tap su <span class="ios-share">⬆︎</span> in basso → <em>"Aggiungi alla schermata Home"</em></span>
+    </div>
+    <button class="ios-hint-close" onclick="document.getElementById('iosInstallHint').classList.add('hidden'); localStorage.setItem('ios-hint-dismissed','1')">×</button>
+  </div>
+
+  <!-- ======= QUIZ TAB ======= -->
+  <section id="tab-quiz">
+
+    <!-- Mode picker -->
+    <div id="modePicker">
+      <p class="small-caps">Scegli la modalità</p>
+      <div class="modes">
+        <div class="mode-card" data-mode="daily" id="dailyCard">
+          <h3>Livello del giorno</h3>
+          <p>5 domande con le prime pagine di oggi.<br><span class="daily-status" id="dailyStatus"></span></p>
+        </div>
+        <div class="mode-card" data-mode="training">
+          <h3>Allenamento libero</h3>
+          <p>5 domande casuali dall'archivio.</p>
+        </div>
+      </div>
+      <p class="small-caps" style="margin-top:24px">Le 5 prime pagine di oggi che dovrai indovinare sono scelte casualmente fra le 10 testate.</p>
+
+      <div id="archiveSection" class="hidden" style="margin-top:28px">
+        <p class="small-caps">Edizioni precedenti dall'archivio</p>
+        <p style="color:var(--ink-2);font-size:13px;margin-top:6px">L'archivio cresce ogni giorno con le edizioni effettivamente giocate. Sono disponibili solo le date complete (5+ giornali archiviati).</p>
+        <div class="past-grid" id="pastGrid"></div>
+      </div>
+
+      <div class="archive-browser">
+        <details>
+          <summary class="small-caps">Consulta archivio</summary>
+          <div class="ab-tabs">
+            <button class="ab-tab active" data-abtab="dates">Per data</button>
+            <button class="ab-tab" data-abtab="papers">Per giornale</button>
+          </div>
+          <div id="ab-pane-dates" class="ab-pane">
+            <p style="color:var(--muted);font-size:13px;margin:8px 0">Le edizioni passate archiviate (escluso il giorno corrente).</p>
+            <div id="abDatesList"></div>
+          </div>
+          <div id="ab-pane-papers" class="ab-pane hidden">
+            <p style="color:var(--muted);font-size:13px;margin:8px 0">Esplora l'archivio per testata.</p>
+            <div id="abPapersList"></div>
+          </div>
+        </details>
+      </div>
+
+      <div class="notif-section">
+        <p class="small-caps">Promemoria</p>
+        <p style="color:var(--ink-2);font-size:13px;margin:6px 0 10px">Ricevi una notifica ogni mattina alle 8:00 per non perderti la sfida del giorno.</p>
+        <button class="btn outline" id="notifBtn">📬 Attiva promemoria</button>
+        <p id="notifStatus" style="color:var(--muted);font-size:13px;margin-top:8px;font-style:italic"></p>
+      </div>
+
+      <div class="notif-section" style="margin-top:14px">
+        <p class="small-caps">Backup archivio</p>
+        <p style="color:var(--ink-2);font-size:13px;margin:6px 0 10px">Scarica una copia di tutti i titoli e immagini archiviati. Conservala per non perdere lo storico.</p>
+        <a href="/api/backup.zip" class="btn outline" download>📥 Scarica backup</a>
+      </div>
+
+      <div class="pull-quote">L'informazione è il più democratico dei diritti.</div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <p class="small-caps" id="loadingText">Caricamento…</p>
+    </div>
+
+    <!-- Error -->
+    <div id="errorBox" class="errbox hidden">
+      <h4>Errore di caricamento</h4>
+      <p id="errorMsg"></p>
+      <p id="errorHint" style="font-size:13px;color:var(--muted)">Suggerimento: prova fra qualche minuto.</p>
+      <button class="btn outline" onclick="resetToMenu()">Torna al menù</button>
+    </div>
+
+    <!-- Quiz running -->
+    <div id="quizRunning" class="hidden">
+      <div class="scorebar">
+        <span class="small-caps" id="qProgress">Domanda 1 di 5</span>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div class="qcard">
+        <div class="extracted">
+          <div class="sopra" id="exSopra"></div>
+          <div class="titolo" id="exTitolo"></div>
+          <div class="sotto" id="exSotto"></div>
+        </div>
+        <p class="small-caps" style="margin-bottom:10px">Da quale giornale proviene?</p>
+        <div class="choices" id="choices"></div>
+        <div class="row">
+          <button class="btn" id="nextBtn" style="display:none">Prossima domanda →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final screen -->
+    <div id="finalScreen" class="hidden">
+      <div class="final">
+        <p class="small-caps">Risultato</p>
+        <div class="big-score"><span id="finalScore">0</span><span style="opacity:.3">/5</span></div>
+        <div class="verdict" id="verdict">—</div>
+        <table id="recapTable"></table>
+        <div class="row" style="justify-content:center;margin-top:20px">
+          <button class="btn accent" id="saveScoreBtn">Salva punteggio</button>
+          <button class="btn" id="trainAgainBtn" style="display:none">Altro allenamento</button>
+          <button class="btn outline" onclick="resetToMenu()">Menù principale</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= LEADERBOARD TAB ======= -->
+  <section id="tab-leaderboard" class="hidden">
+    <div id="lbLogin" class="lb-form">
+      <h2>Sfida con gli amici</h2>
+      <p style="color:var(--ink-2);margin-top:0">Crea un gruppo e condividi il codice con i tuoi amici, oppure unisciti a un gruppo esistente.</p>
+
+      <div class="lb-tabs">
+        <button class="lb-tab active" data-lbtab="join">Unisciti</button>
+        <button class="lb-tab" data-lbtab="create">Crea gruppo</button>
+      </div>
+
+      <!-- JOIN -->
+      <div class="lb-pane" id="lbPane-join">
+        <label for="lbJoinName">Il tuo nome</label>
+        <input id="lbJoinName" type="text" maxlength="24" placeholder="Es. Giulia" />
+        <label for="lbJoinCode">Codice del gruppo</label>
+        <input id="lbJoinCode" type="text" maxlength="8" placeholder="Es. AB12CD" style="text-transform:uppercase;letter-spacing:3px" />
+        <button class="btn accent" id="lbJoinBtn">Entra nel gruppo</button>
+        <p id="lbJoinErr" style="color:var(--red);margin-top:10px;display:none"></p>
+      </div>
+
+      <!-- CREATE -->
+      <div class="lb-pane hidden" id="lbPane-create">
+        <label for="lbCreateName">Il tuo nome</label>
+        <input id="lbCreateName" type="text" maxlength="24" placeholder="Es. Giulia" />
+        <label for="lbCreateGroup">Nome del gruppo</label>
+        <input id="lbCreateGroup" type="text" maxlength="32" placeholder="Es. Amici di Carlo" />
+        <button class="btn accent" id="lbCreateBtn">Crea il gruppo</button>
+        <p id="lbCreateErr" style="color:var(--red);margin-top:10px;display:none"></p>
+      </div>
+    </div>
+
+    <!-- Group just created -->
+    <div id="lbCreated" class="lb-form hidden">
+      <h2>Gruppo creato! 🎉</h2>
+      <p>Condividi questo codice con i tuoi amici per farli partecipare alla classifica.</p>
+      <div class="code-box" id="newGroupCode">—</div>
+      <button class="btn outline" id="lbCopyCodeBtn">Copia codice</button>
+      <button class="btn accent" id="lbCreatedContinueBtn" style="margin-left:8px">Vai alla classifica</button>
+    </div>
+
+    <div id="lbContent" class="hidden">
+      <div class="lb-user-info">
+        <div class="who">Ciao <span id="lbWho">—</span></div>
+        <button class="btn outline" id="lbLogoutBtn">Esci</button>
+      </div>
+      <div class="lb-section">
+        <p class="small-caps">I tuoi gruppi</p>
+        <div class="group-pills" id="groupPills"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn outline" id="lbAddJoinBtn">+ Unisciti a un altro gruppo</button>
+          <button class="btn outline" id="lbAddCreateBtn">+ Crea un nuovo gruppo</button>
+        </div>
+      </div>
+      <div class="lb-section">
+        <h2>Classifica del giorno · <span id="lbActiveGroup" class="code-inline">—</span></h2>
+        <p class="small-caps" id="lbDayDate">—</p>
+        <table class="lb-table" id="lbDayTable"><tbody></tbody></table>
+        <p id="lbDayEmpty" style="color:var(--muted);font-style:italic">Nessun punteggio oggi. Sii il primo!</p>
+      </div>
+      <div class="lb-section">
+        <h2>Classifica mensile</h2>
+        <p class="small-caps" id="lbMonthLabel">—</p>
+        <table class="lb-table" id="lbMonthTable"><tbody></tbody></table>
+        <p id="lbMonthEmpty" style="color:var(--muted);font-style:italic">Nessun punteggio questo mese.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Save score modal -->
+  <div id="saveModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Salva punteggio</h2>
+      <p style="margin-top:0">Scegli in quali gruppi salvare il tuo punteggio (<strong id="saveModalScore">0/5</strong>):</p>
+      <div id="saveModalGroups"></div>
+      <p id="saveModalErr" style="color:var(--red);font-size:13px;display:none;margin:6px 0"></p>
+      <div class="row" style="justify-content:flex-end;margin-top:14px">
+        <button class="btn outline" id="saveModalCancel">Annulla</button>
+        <button class="btn accent" id="saveModalConfirm">Salva</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDK via CDN (compat for simplicity) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* =========================================================
+   CONFIGURAZIONE
+   =========================================================
+   Le chiamate a Claude Vision sono delegate al backend FastAPI
+   (endpoint /api/extract-headlines) che usa la Emergent LLM Key
+   già configurata in /app/backend/.env. Nessuna chiave esposta
+   nel browser.
+
+   Firebase: classifica condivisa via Firestore. Crea un progetto
+   su https://console.firebase.google.com, attiva Firestore in
+   "test mode" e copia qui sotto i valori del Web App Config.
+
+   GROUPS: dizionario {password: nome_gruppo}. Stessa password
+   = stesso gruppo = stessa classifica condivisa.
+========================================================= */
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyCMqbGeZjwwExSE3s6RqXSU9czD0gTvn_Y",
+  authDomain:        "giornali-4cdfe.firebaseapp.com",
+  projectId:         "giornali-4cdfe",
+  storageBucket:     "giornali-4cdfe.firebasestorage.app",
+  messagingSenderId: "911753113078",
+  appId:             "1:911753113078:web:098f358c69273158ba6bd7"
+};
+
+/* I gruppi vengono creati dinamicamente dagli utenti.
+   Ogni gruppo ha un codice random condivisibile. Vedi sezione "Login" più giù. */
+
+/* ===== I 10 GIORNALI ===== */
+const NEWSPAPERS = [
+  { id: "corriere",   name: "Corriere della Sera",   slug: "corriere-della-sera",   clue: "Quotidiano milanese fondato nel 1876, considerato giornale di riferimento del centro-Italia." },
+  { id: "repubblica", name: "La Repubblica",         slug: "la-repubblica",         clue: "Fondato da Eugenio Scalfari nel 1976, formato tabloid, area progressista." },
+  { id: "stampa",     name: "La Stampa",             slug: "la-stampa",             clue: "Quotidiano torinese di proprietà GEDI, storicamente legato a FIAT." },
+  { id: "fatto",      name: "Il Fatto Quotidiano",   slug: "il-fatto-quotidiano",   clue: "Nato nel 2009, taglio inchiestistico, fondato da Padellaro e Travaglio." },
+  { id: "messaggero", name: "Il Messaggero",         slug: "il-messaggero",         clue: "Storico quotidiano romano, fondato nel 1878." },
+  { id: "giornale",   name: "Il Giornale",           slug: "il-giornale",           clue: "Fondato da Indro Montanelli nel 1974, oggi area centrodestra." },
+  { id: "libero",     name: "Libero",                slug: "libero",                clue: "Quotidiano nato nel 2000, titoli forti e provocatori, area conservatrice." },
+  { id: "manifesto",  name: "Il Manifesto",          slug: "il-manifesto",          clue: "Cooperativa di giornalisti dal 1969, sottotitolo \"quotidiano comunista\"." },
+  { id: "sole",       name: "Il Sole 24 Ore",        slug: "il-sole-24-ore",        clue: "Carta color salmone, di proprietà di Confindustria, focus economico-finanziario." },
+  { id: "avvenire",   name: "Avvenire",              slug: "avvenire",              clue: "Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
+];
+
+/* Nota: giornalone.it non ha un archivio storico realmente accessibile,
+   perciò il quiz lavora solo sulle prime pagine di OGGI. */
+
+/* ===== Stato app ===== */
+const state = {
+  mode: null,
+  dateISO: null,
+  questions: [],
+  current: 0,
+  score: 0,
+  // user: { name: 'Giulia', groups: [{code, name}, ...], activeGroupCode: 'AB12CD' }
+  user: null,
+};
+
+const dailyDoneKey = (iso) => `daily-done-${iso}`;
+const dailyDoneToday = () => localStorage.getItem(dailyDoneKey(todayISO()));
+
+/* Persistenza utente: localStorage (resta tra le sessioni). Chiave: quizUser */
+const USER_KEY = 'quizUser';
+function loadUser() {
+  let raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+  if (!raw) return null;
+  try {
+    const u = JSON.parse(raw);
+    // Migrazione formato vecchio: { name, group, groupCode } -> { name, groups: [...], activeGroupCode }
+    if (u.groupCode && !u.groups) {
+      return { name: u.name, groups: [{ code: u.groupCode, name: u.group || u.groupCode }], activeGroupCode: u.groupCode };
+    }
+    if (u.groups && Array.isArray(u.groups)) {
+      if (!u.activeGroupCode && u.groups[0]) u.activeGroupCode = u.groups[0].code;
+      return u;
+    }
+    return null;
+  } catch { return null; }
+}
+function saveUser() {
+  if (state.user) localStorage.setItem(USER_KEY, JSON.stringify(state.user));
+  else { localStorage.removeItem(USER_KEY); sessionStorage.removeItem(USER_KEY); }
+}
+
+/* ===== Helpers ===== */
+const $ = (id) => document.getElementById(id);
+/* La "giornata" del quiz va dalle 06:00 alle 05:59 della mattina seguente.
+   Prima delle 6 mostriamo ancora la sfida del giorno precedente (i giornali escono fra le 5 e le 6). */
+const todayISO = () => {
+  const d = new Date();
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  // Calcoliamo la data localmente (no toISOString che è UTC) per evitare slittamenti
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+const monthKey = (iso) => iso.slice(0,7); // YYYY-MM
+const fmtDateIT = (iso) => {
+  const [y,m,d] = iso.split('-');
+  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
+};
+const shuffle = (arr) => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+};
+const sampleN = (arr, n) => shuffle(arr).slice(0, n);
+
+$('todayDate').textContent = fmtDateIT(todayISO());
+
+/* ===== PWA: registrazione service worker ===== */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/api/sw.js', { scope: '/api/' }).catch(err => console.warn('SW reg failed:', err));
+  });
+}
+let _deferredInstall = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstall = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = '';
+});
+function triggerInstall() {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  _deferredInstall.userChoice.finally(() => {
+    _deferredInstall = null;
+    const btn = document.getElementById('installBtn');
+    if (btn) btn.style.display = 'none';
+  });
+}
+window.triggerInstall = triggerInstall;
+
+/* Banner iOS install (mostrato solo a Safari iOS non installato) */
+(function() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const dismissed = localStorage.getItem('ios-hint-dismissed') === '1';
+  if (isIOS && isSafari && !isStandalone && !dismissed) {
+    document.getElementById('iosInstallHint').classList.remove('hidden');
+  }
+})();
+
+/* ===== TAB SWITCHING ===== */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const t = btn.dataset.tab;
+    $('tab-quiz').classList.toggle('hidden', t !== 'quiz');
+    $('tab-leaderboard').classList.toggle('hidden', t !== 'leaderboard');
+    if (t === 'leaderboard') refreshLeaderboards();
+  });
+});
+
+/* ===== ARCHIVIO: edizioni precedenti dal DB ===== */
+async function loadArchive() {
+  try {
+    const r = await fetch('/api/archive-dates');
+    if (!r.ok) return;
+    const data = await r.json();
+    const dates = (data.dates || []).filter(d => d.papers >= 5).slice(0, 12);
+    const sec = $('archiveSection');
+    const grid = $('pastGrid');
+    grid.innerHTML = '';
+    if (!dates.length) { sec.classList.add('hidden'); return; }
+    sec.classList.remove('hidden');
+    dates.forEach(d => {
+      const saved = localStorage.getItem('past-score-' + d.date);
+      const card = document.createElement('div');
+      card.className = 'past-card' + (saved ? ' completed' : '');
+      card.innerHTML = `
+        <div class="date">${fmtDateIT(d.date)}</div>
+        <div class="name">${d.papers} giornali</div>
+        ${saved ? `<div class="score">${saved}/5</div>` : ''}
+      `;
+      card.addEventListener('click', () => startQuiz('past', d.date));
+      grid.appendChild(card);
+    });
+  } catch (e) { console.warn('archive load failed', e); }
+}
+loadArchive();
+
+/* ===== ARCHIVE BROWSER (consultazione informativa) ===== */
+document.querySelectorAll('.ab-tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ab-tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const tab = t.dataset.abtab;
+    $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
+    $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
+  });
+});
+
+async function loadArchiveBrowserDates() {
+  try {
+    const r = await fetch('/api/archive-dates');
+    const data = await r.json();
+    const dates = data.dates || [];
+    const cont = $('abDatesList');
+    if (!dates.length) { cont.innerHTML = '<p style="color:var(--muted);font-style:italic">Archivio ancora vuoto.</p>'; return; }
+    cont.innerHTML = '';
+    dates.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'ab-item';
+      item.innerHTML = `<h4>${fmtDateIT(d.date)}</h4><div class="ab-meta">${d.papers} giornali archiviati</div>`;
+      item.addEventListener('click', () => showDateDetail(d.date));
+      cont.appendChild(item);
+    });
+  } catch (e) { console.warn(e); }
+}
+
+async function showDateDetail(date) {
+  const cont = $('abDatesList');
+  cont.innerHTML = `<div class="ab-back" onclick="loadArchiveBrowserDates()">← Tutte le date</div><h3>${fmtDateIT(date)}</h3><p style="color:var(--muted)">Caricamento…</p>`;
+  try {
+    const r = await fetch(`/api/archive-papers?date=${date}`);
+    const data = await r.json();
+    let html = `<div class="ab-back" onclick="loadArchiveBrowserDates()">← Tutte le date</div><h3 style="font-family:'Playfair Display',serif">${fmtDateIT(date)}</h3>`;
+    if (!data.items?.length) {
+      html += '<p style="color:var(--muted);font-style:italic">Nessun titolo per questa data.</p>';
+    } else {
+      data.items.forEach(it => {
+        const np = NEWSPAPERS.find(n => n.slug === it.slug);
+        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(it.slug)}&date=${date}`;
+        html += `<div class="ab-detail-block">
+          <img class="ab-thumb" src="${imgUrl}" alt="${escapeHtml(np?.name || it.slug)}" onerror="this.style.display='none'" onclick="openLightbox('${imgUrl}')" />
+          <div class="ab-text">
+            <h5>${escapeHtml(np?.name || it.slug)}</h5>
+            ${it.sopratitolo ? `<div class="ab-sopra">${escapeHtml(it.sopratitolo)}</div>` : ''}
+            <div class="ab-titolo">${escapeHtml(it.titolo_principale || '')}</div>
+            ${it.sottotitolo ? `<div class="ab-sotto">${escapeHtml(it.sottotitolo)}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    }
+    cont.innerHTML = html;
+  } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
+}
+
+function loadArchiveBrowserPapers() {
+  const cont = $('abPapersList');
+  cont.innerHTML = '';
+  NEWSPAPERS.forEach(np => {
+    const item = document.createElement('div');
+    item.className = 'ab-item';
+    item.innerHTML = `<h4>${np.name}</h4><div class="ab-meta">testata</div>`;
+    item.addEventListener('click', () => showPaperDetail(np));
+    cont.appendChild(item);
+  });
+}
+
+async function showPaperDetail(np) {
+  const cont = $('abPapersList');
+  cont.innerHTML = `<div class="ab-back" onclick="loadArchiveBrowserPapers()">← Tutti i giornali</div><h3>${np.name}</h3><p style="color:var(--muted)">Caricamento…</p>`;
+  try {
+    const r = await fetch(`/api/archive-paper-dates?slug=${np.slug}`);
+    const data = await r.json();
+    let html = `<div class="ab-back" onclick="loadArchiveBrowserPapers()">← Tutti i giornali</div><h3 style="font-family:'Playfair Display',serif">${np.name}</h3>`;
+    if (!data.items?.length) {
+      html += '<p style="color:var(--muted);font-style:italic">Nessuna edizione archiviata.</p>';
+    } else {
+      data.items.forEach(it => {
+        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
+        html += `<div class="ab-detail-block">
+          <img class="ab-thumb" src="${imgUrl}" alt="${escapeHtml(np.name)} ${it.date}" onerror="this.style.display='none'" onclick="openLightbox('${imgUrl}')" />
+          <div class="ab-text">
+            <h5>${fmtDateIT(it.date)}</h5>
+            ${it.sopratitolo ? `<div class="ab-sopra">${escapeHtml(it.sopratitolo)}</div>` : ''}
+            <div class="ab-titolo">${escapeHtml(it.titolo_principale || '')}</div>
+            ${it.sottotitolo ? `<div class="ab-sotto">${escapeHtml(it.sottotitolo)}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    }
+    cont.innerHTML = html;
+  } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
+}
+
+/* Lightbox per vedere la prima pagina a schermo intero */
+function openLightbox(url) {
+  let lb = document.getElementById('lightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'lightbox';
+    lb.className = 'lightbox';
+    lb.innerHTML = `<button class="close" aria-label="Chiudi">×</button><img alt="Prima pagina" />`;
+    lb.addEventListener('click', closeLightbox);
+    document.body.appendChild(lb);
+  }
+  lb.querySelector('img').src = url;
+  lb.style.display = 'flex';
+}
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  if (lb) lb.style.display = 'none';
+}
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
+
+window.loadArchiveBrowserDates = loadArchiveBrowserDates;
+window.loadArchiveBrowserPapers = loadArchiveBrowserPapers;
+loadArchiveBrowserDates();
+loadArchiveBrowserPapers();
+
+/* ===== NOTIFICHE 8:00 ===== */
+function urlBase64ToUint8Array(b64) {
+  const padding = '='.repeat((4 - b64.length % 4) % 4);
+  const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+function refreshNotifStatus() {
+  const status = $('notifStatus');
+  const btn = $('notifBtn');
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    status.textContent = 'Notifiche non supportate da questo browser.';
+    btn.style.display = 'none';
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    status.textContent = 'Notifiche bloccate dal browser. Abilitale dalle impostazioni del sito.';
+    btn.style.display = 'none';
+    return;
+  }
+  if (localStorage.getItem('notif-enabled') === '1') {
+    status.textContent = '✓ Promemoria attivi: riceverai una notifica ogni mattina alle 8:00.';
+    btn.textContent = '🔕 Disattiva promemoria';
+  } else {
+    status.textContent = '';
+    btn.textContent = '📬 Attiva promemoria';
+  }
+}
+refreshNotifStatus();
+
+async function enableNotifications() {
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      $('notifStatus').textContent = 'Permesso negato. Le notifiche restano disattivate.';
+      return;
+    }
+    const reg = await navigator.serviceWorker.ready;
+    const vapidResp = await fetch('/api/push-vapid-key');
+    const { publicKey } = await vapidResp.json();
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+    const r = await fetch('/api/push-subscribe', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        subscription: sub.toJSON(),
+        tzOffsetMinutes: new Date().getTimezoneOffset(),
+        hour: 8,
+      }),
+    });
+    if (!r.ok) throw new Error('Salvataggio fallito');
+    localStorage.setItem('notif-enabled', '1');
+    localStorage.setItem('notif-endpoint', sub.endpoint);
+    refreshNotifStatus();
+  } catch (e) {
+    $('notifStatus').textContent = 'Errore: ' + e.message;
+  }
+}
+async function disableNotifications() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await fetch('/api/push-unsubscribe', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ endpoint: sub.endpoint }),
+      });
+      await sub.unsubscribe();
+    }
+    localStorage.removeItem('notif-enabled');
+    localStorage.removeItem('notif-endpoint');
+    refreshNotifStatus();
+  } catch (e) {
+    $('notifStatus').textContent = 'Errore: ' + e.message;
+  }
+}
+$('notifBtn').addEventListener('click', () => {
+  if (localStorage.getItem('notif-enabled') === '1') disableNotifications();
+  else enableNotifications();
+});
+
+function refreshDailyStatus() {
+  const card = $('dailyCard');
+  const status = $('dailyStatus');
+  const done = dailyDoneToday();
+  if (done) {
+    card.classList.add('completed');
+    status.textContent = 'Sfida giornaliera già disputata';
+  } else {
+    card.classList.remove('completed');
+    status.textContent = '';
+  }
+}
+refreshDailyStatus();
+
+/* ===== MODE PICKER ===== */
+document.querySelectorAll('.mode-card').forEach(c => {
+  c.addEventListener('click', () => {
+    const mode = c.dataset.mode;
+    if (mode === 'daily' && dailyDoneToday()) {
+      const done = JSON.parse(dailyDoneToday());
+      alert(`Hai già giocato la sfida del giorno (${done.score}/5).\nPer la classifica vale solo il primo tentativo. Torna domani per una nuova sfida!`);
+      return;
+    }
+    startQuiz(mode);
+  });
+});
+
+/* ===== QUIZ FLOW ===== */
+async function startQuiz(mode, dateISO) {
+  state.mode = mode;
+  state.questions = [];
+  state.current = 0;
+  state.score = 0;
+
+  if (mode === 'daily')    state.dateISO = todayISO();
+  if (mode === 'training') state.dateISO = todayISO();
+  if (mode === 'past')     state.dateISO = dateISO;
+
+  $('modePicker').classList.add('hidden');
+  $('errorBox').classList.add('hidden');
+  $('quizRunning').classList.add('hidden');
+  $('finalScreen').classList.add('hidden');
+  $('loading').classList.remove('hidden');
+
+  try {
+    // Per modalità 'past' uso solo i giornali archiviati per quella data
+    let pickedFrom = NEWSPAPERS;
+    if (mode === 'past') {
+      const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
+      if (!r.ok) throw new Error('Archivio non disponibile per questa data');
+      const data = await r.json();
+      const slugs = new Set(data.slugs || []);
+      pickedFrom = NEWSPAPERS.filter(n => slugs.has(n.slug));
+      if (pickedFrom.length < 4) throw new Error('Edizione incompleta in archivio');
+    }
+    const picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
+
+    const LOADING_MESSAGES = [
+      "«Sapere è potere.» — Francis Bacon",
+      "«La libertà di stampa è il sale della libertà.» — Voltaire",
+      "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
+      "«La saggezza comincia nella meraviglia.» — Socrate",
+      "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
+    ];
+    for (let i = 0; i < picked.length; i++) {
+      const np = picked[i];
+      $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
+      const q = await buildQuestion(np, state.dateISO);
+      state.questions.push(q);
+    }
+    $('loading').classList.add('hidden');
+    $('quizRunning').classList.remove('hidden');
+    renderQuestion();
+  } catch (e) {
+    console.error(e);
+    $('loading').classList.add('hidden');
+    $('errorBox').classList.remove('hidden');
+    $('errorMsg').textContent = e.message || 'Errore sconosciuto.';
+  }
+}
+
+/* Build a single question — pulls from cache if present */
+async function buildQuestion(np, dateISO) {
+  const cacheKey = `q3-${dateISO}-${np.id}`;
+  const cached = localStorage.getItem(cacheKey);
+  let extracted;
+  if (cached) {
+    try { extracted = JSON.parse(cached); } catch { extracted = null; }
+  }
+  if (!extracted) {
+    extracted = await fetchHeadlines(np.slug, dateISO);
+    try { localStorage.setItem(cacheKey, JSON.stringify(extracted)); } catch {}
+  }
+  // 4 choices: correct + 3 random wrongs
+  const wrongs = sampleN(NEWSPAPERS.filter(n => n.id !== np.id), 3);
+  const choices = shuffle([np, ...wrongs]).map(n => ({ id: n.id, name: n.name }));
+  return {
+    paper: np,
+    sopra: extracted.sopratitolo || null,
+    titolo: extracted.titolo_principale || '',
+    sotto: extracted.sottotitolo || null,
+    choices,
+    given: null,
+  };
+}
+
+/* Fetch headlines (sovratitolo/titolo/sottotitolo) via backend proxy.
+   Backend handles: scaricare immagine da giornalone.it + chiamata Claude Vision via Emergent LLM Key.
+   Retry automatico in caso di 404/502 transitorio (es. backend in restart). */
+async function fetchHeadlines(slug, dateISO) {
+  const isToday = dateISO === todayISO();
+  const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
+  const url = `/api/extract-headlines?${params}`;
+  const delays = [0, 2000, 4000, 8000, 15000]; // 5 tentativi, backoff fino a 15s
+  let lastErr;
+  for (let attempt = 0; attempt < delays.length; attempt++) {
+    if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
+    try {
+      const r = await fetch(url, { cache: 'no-store' });
+      // 404 specifico dal backend (es. edizione non in archivio) = errore reale
+      if (r.status === 404) {
+        const body = await r.text();
+        if (body.includes('archivio') || body.includes('"detail"')) {
+          throw new Error(body.slice(0, 160));
+        }
+        // 404 dall'ingress (backend giù) = transient
+        lastErr = new Error('Server temporaneamente offline');
+        continue;
+      }
+      // 502/503/504 = backend in restart, retry
+      if (r.status === 502 || r.status === 503 || r.status === 504) {
+        lastErr = new Error(`Server in ripristino (${r.status})`);
+        continue;
+      }
+      // 429 = rate limit, mostra subito
+      if (r.status === 429) throw new Error('Troppe richieste. Aspetta un minuto e riprova.');
+      if (!r.ok) {
+        const t = await r.text();
+        throw new Error(`Errore ${r.status}: ${t.slice(0,160)}`);
+      }
+      return await r.json();
+    } catch (e) {
+      // Se è un Error sopra (4xx/5xx) lo abbiamo gestito; altrimenti errore di rete
+      if (!lastErr || e.message !== lastErr.message) lastErr = e;
+    }
+  }
+  throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
+}
+
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result.split(',')[1]);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
+}
+
+/* ===== RENDER QUESTION ===== */
+function renderQuestion() {
+  const q = state.questions[state.current];
+  $('qProgress').textContent = `Domanda ${state.current + 1} di ${state.questions.length}`;
+
+  // dots
+  const dots = $('dots');
+  dots.innerHTML = '';
+  state.questions.forEach((qq, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
+    if (i === state.current && qq.given == null) d.classList.add('current');
+    dots.appendChild(d);
+  });
+
+  // extracted
+  $('exSopra').textContent = q.sopra || '';
+  $('exSopra').style.display = q.sopra ? '' : 'none';
+  $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
+  $('exSotto').textContent = q.sotto || '';
+  $('exSotto').style.display = q.sotto ? '' : 'none';
+
+  // choices
+  const cont = $('choices');
+  cont.innerHTML = '';
+  q.choices.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'choice';
+    b.textContent = c.name;
+    b.addEventListener('click', () => answer(c.id, b));
+    cont.appendChild(b);
+  });
+
+  // dots
+  $('nextBtn').style.display = 'none';
+}
+
+function answer(givenId, btnEl) {
+  const q = state.questions[state.current];
+  if (q.given) return;
+  q.given = givenId;
+  const correct = q.paper.id;
+  if (givenId === correct) state.score++;
+  // disable + colour
+  document.querySelectorAll('.choice').forEach(b => {
+    b.disabled = true;
+    const cid = q.choices.find(c => c.name === b.textContent)?.id;
+    if (cid === correct) b.classList.add('right');
+    else if (cid === givenId) b.classList.add('wrong');
+  });
+  // refresh dots
+  renderDotsOnly();
+  $('nextBtn').style.display = '';
+}
+function renderDotsOnly() {
+  const dots = $('dots');
+  dots.innerHTML = '';
+  state.questions.forEach((qq, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
+    if (i === state.current && qq.given == null) d.classList.add('current');
+    dots.appendChild(d);
+  });
+}
+
+$('nextBtn').addEventListener('click', () => {
+  if (state.current < state.questions.length - 1) {
+    state.current++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+});
+
+/* ===== FINAL SCREEN ===== */
+function verdictFor(score) {
+  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
+}
+function finishQuiz() {
+  $('quizRunning').classList.add('hidden');
+  $('finalScreen').classList.remove('hidden');
+  $('finalScore').textContent = state.score;
+  $('verdict').textContent = verdictFor(state.score);
+
+  // recap
+  let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
+  state.questions.forEach((q, i) => {
+    const ok = q.given === q.paper.id;
+    const givenName = q.choices.find(c => c.id === q.given)?.name || '—';
+    html += `<tr><td>${i+1}</td><td><em>${q.paper.name}</em></td><td>${givenName}</td><td class="${ok?'ok':'no'}">${ok?'✓':'✗'}</td></tr>`;
+  });
+  html += '</tbody>';
+  $('recapTable').innerHTML = html;
+
+  // train again button
+  $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
+
+  // past completed → save in localStorage e ricarica l'archivio
+  if (state.mode === 'past') {
+    localStorage.setItem('past-score-' + state.dateISO, state.score);
+    loadArchive();
+  }
+  // daily completed → mark as done so it can't be replayed today
+  if (state.mode === 'daily') {
+    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
+    refreshDailyStatus();
+    // Daily appena giocata: l'archivio si è arricchito, ricarico la lista (sarà disponibile da domani)
+    loadArchive();
+  }
+}
+$('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
+
+/* Save score to leaderboard — apre un modal per scegliere i gruppi target */
+$('saveScoreBtn').addEventListener('click', () => {
+  if (!state.user || !state.user.groups?.length) {
+    if (confirm('Per salvare il punteggio devi prima entrare in un gruppo (Crea o Unisciti).\nVuoi andare alla scheda Classifica ora?')) {
+      document.querySelector('.tab[data-tab="leaderboard"]').click();
+    }
+    return;
+  }
+  openSaveModal();
+});
+
+function openSaveModal() {
+  const cont = $('saveModalGroups');
+  cont.innerHTML = '';
+  $('saveModalScore').textContent = `${state.score}/${state.questions.length}`;
+  $('saveModalErr').style.display = 'none';
+  state.user.groups.forEach((g, i) => {
+    const isDailyAlreadySaved = state.mode === 'daily' && !!localStorage.getItem(`daily-saved-${todayISO()}-${g.code}-${state.user.name}`);
+    const id = `chk-${g.code}`;
+    const row = document.createElement('div');
+    row.className = 'save-group-row';
+    row.innerHTML = `
+      <input type="checkbox" id="${id}" data-code="${g.code}" ${isDailyAlreadySaved ? 'disabled' : 'checked'} />
+      <label for="${id}">
+        <div><span class="gname">${escapeHtml(g.name)}</span> <span class="gcode">· ${g.code}</span></div>
+        ${isDailyAlreadySaved ? '<div class="gnote">Sfida giornaliera già salvata in questo gruppo</div>' : ''}
+      </label>
+    `;
+    cont.appendChild(row);
+  });
+  $('saveModal').classList.remove('hidden');
+}
+function closeSaveModal() { $('saveModal').classList.add('hidden'); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+$('saveModalCancel').addEventListener('click', closeSaveModal);
+$('saveModalConfirm').addEventListener('click', async () => {
+  const checks = [...document.querySelectorAll('#saveModalGroups input[type="checkbox"]:checked')];
+  if (!checks.length) {
+    $('saveModalErr').textContent = 'Seleziona almeno un gruppo.';
+    $('saveModalErr').style.display = '';
+    return;
+  }
+  $('saveModalConfirm').disabled = true;
+  $('saveModalConfirm').textContent = 'Salvo…';
+  let okCount = 0, errors = [];
+  for (const ch of checks) {
+    const code = ch.dataset.code;
+    const grp = state.user.groups.find(g => g.code === code);
+    try {
+      // Per daily, segna salvataggio per evitare doppioni
+      if (state.mode === 'daily') {
+        const flagKey = `daily-saved-${todayISO()}-${code}-${state.user.name}`;
+        if (localStorage.getItem(flagKey)) continue;
+        localStorage.setItem(flagKey, '1');
+      }
+      await saveLeaderboardEntry({
+        name: state.user.name,
+        group: grp.name,
+        groupCode: code,
+        score: state.score,
+        total: state.questions.length,
+        pct: state.score / state.questions.length,
+        mode: state.mode,
+        dateISO: todayISO(),
+      });
+      okCount++;
+    } catch (e) { errors.push(`${grp.name}: ${e.message}`); }
+  }
+  $('saveModalConfirm').disabled = false;
+  $('saveModalConfirm').textContent = 'Salva';
+  if (errors.length) {
+    $('saveModalErr').textContent = errors.join(' · ');
+    $('saveModalErr').style.display = '';
+    return;
+  }
+  closeSaveModal();
+  $('saveScoreBtn').textContent = `✓ Salvato in ${okCount} ${okCount === 1 ? 'gruppo' : 'gruppi'}`;
+  $('saveScoreBtn').disabled = true;
+});
+
+function resetToMenu() {
+  $('loading').classList.add('hidden');
+  $('errorBox').classList.add('hidden');
+  $('quizRunning').classList.add('hidden');
+  $('finalScreen').classList.add('hidden');
+  $('modePicker').classList.remove('hidden');
+  $('saveScoreBtn').textContent = 'Salva punteggio';
+  $('saveScoreBtn').disabled = false;
+}
+
+/* =========================================================
+   FIREBASE LEADERBOARD
+========================================================= */
+let fbDb = null;
+let fbReady = false;
+function initFirebase() {
+  if (fbReady) return;
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('INSERISCI_QUI')) return;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    fbDb = firebase.firestore();
+    fbReady = true;
+  } catch (e) { console.error('Firebase init error', e); }
+}
+initFirebase();
+
+async function saveLeaderboardEntry(entry) {
+  initFirebase();
+  if (!fbReady) throw new Error('Firebase non configurato. Inserisci i valori nel file HTML.');
+  await fbDb.collection('scores').add({
+    ...entry,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    monthKey: monthKey(entry.dateISO),
+  });
+}
+
+/* ===== Codice gruppo: 6 caratteri alfanumerici ===== */
+function genGroupCode() {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I,O,0,1 per leggibilità
+  let s = '';
+  for (let i = 0; i < 6; i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
+  return s;
+}
+async function createGroup(name, groupName) {
+  initFirebase();
+  if (!fbReady) throw new Error('Firebase non configurato.');
+  // Genera codice univoco (provo max 5 volte)
+  let code;
+  for (let i = 0; i < 5; i++) {
+    code = genGroupCode();
+    const exists = await fbDb.collection('groups').doc(code).get();
+    if (!exists.exists) break;
+    code = null;
+  }
+  if (!code) throw new Error('Impossibile generare codice univoco. Riprova.');
+  await fbDb.collection('groups').doc(code).set({
+    name: groupName,
+    createdBy: name,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  return code;
+}
+async function joinGroup(code) {
+  initFirebase();
+  if (!fbReady) throw new Error('Firebase non configurato.');
+  const snap = await fbDb.collection('groups').doc(code).get();
+  if (!snap.exists) throw new Error('Codice gruppo non trovato.');
+  return { code, name: snap.data().name };
+}
+
+/* ===== Login / sessione (persistente in localStorage) ===== */
+state.user = loadUser();
+
+function showLBLoggedIn() {
+  $('lbLogin').classList.add('hidden');
+  $('lbCreated').classList.add('hidden');
+  $('lbContent').classList.remove('hidden');
+  $('lbWho').textContent = state.user.name;
+  renderGroupPills();
+  refreshLeaderboards();
+}
+function showLBLogin() {
+  $('lbContent').classList.add('hidden');
+  $('lbCreated').classList.add('hidden');
+  $('lbLogin').classList.remove('hidden');
+  // Pre-compila il nome se già impostato
+  if (state.user?.name) {
+    $('lbJoinName').value = state.user.name;
+    $('lbCreateName').value = state.user.name;
+  }
+}
+
+function renderGroupPills() {
+  const cont = $('groupPills');
+  cont.innerHTML = '';
+  if (!state.user.groups.length) {
+    cont.innerHTML = '<p style="color:var(--muted);font-style:italic;margin:0">Nessun gruppo. Creane uno o uniscitene a uno.</p>';
+    $('lbActiveGroup').textContent = '—';
+    return;
+  }
+  state.user.groups.forEach(g => {
+    const pill = document.createElement('div');
+    pill.className = 'group-pill' + (g.code === state.user.activeGroupCode ? ' active' : '');
+    pill.innerHTML = `<span class="pill-name">${escapeHtml(g.name)}</span><span class="code-mini">${g.code}</span><span class="pill-x" title="Esci da questo gruppo">×</span>`;
+    pill.querySelector('.pill-name').addEventListener('click', () => {
+      state.user.activeGroupCode = g.code;
+      saveUser();
+      renderGroupPills();
+      refreshLeaderboards();
+    });
+    pill.querySelector('.code-mini').addEventListener('click', () => {
+      state.user.activeGroupCode = g.code;
+      saveUser(); renderGroupPills(); refreshLeaderboards();
+    });
+    pill.querySelector('.pill-x').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!confirm(`Vuoi davvero uscire dal gruppo "${g.name}" (${g.code})?`)) return;
+      state.user.groups = state.user.groups.filter(x => x.code !== g.code);
+      if (state.user.activeGroupCode === g.code) {
+        state.user.activeGroupCode = state.user.groups[0]?.code || null;
+      }
+      saveUser();
+      if (!state.user.groups.length) showLBLogin();
+      else { renderGroupPills(); refreshLeaderboards(); }
+    });
+    cont.appendChild(pill);
+  });
+  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
+  $('lbActiveGroup').textContent = active ? `${active.name} (${active.code})` : '—';
+}
+
+/* Switch tab Crea/Unisciti */
+document.querySelectorAll('.lb-tab').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const t = b.dataset.lbtab;
+    $('lbPane-join').classList.toggle('hidden', t !== 'join');
+    $('lbPane-create').classList.toggle('hidden', t !== 'create');
+    $('lbJoinErr').style.display = 'none';
+    $('lbCreateErr').style.display = 'none';
+  });
+});
+
+/* Crea gruppo */
+$('lbCreateBtn').addEventListener('click', async () => {
+  const name = $('lbCreateName').value.trim().slice(0,24);
+  const groupName = $('lbCreateGroup').value.trim().slice(0,32);
+  const err = $('lbCreateErr');
+  err.style.display = 'none';
+  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
+  if (!groupName) { err.textContent = 'Inserisci il nome del gruppo.'; err.style.display = ''; return; }
+  $('lbCreateBtn').disabled = true;
+  $('lbCreateBtn').textContent = 'Creo…';
+  try {
+    const code = await createGroup(name, groupName);
+    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
+    state.user.name = name;
+    if (!state.user.groups.find(g => g.code === code)) state.user.groups.push({ code, name: groupName });
+    state.user.activeGroupCode = code;
+    saveUser();
+    $('newGroupCode').textContent = code;
+    $('lbLogin').classList.add('hidden');
+    $('lbCreated').classList.remove('hidden');
+  } catch (e) {
+    err.textContent = e.message;
+    err.style.display = '';
+  } finally {
+    $('lbCreateBtn').disabled = false;
+    $('lbCreateBtn').textContent = 'Crea il gruppo';
+  }
+});
+$('lbCreatedContinueBtn').addEventListener('click', () => {
+  showLBLoggedIn();
+});
+$('lbCopyCodeBtn').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('newGroupCode').textContent);
+    $('lbCopyCodeBtn').textContent = '✓ Copiato';
+    setTimeout(() => { $('lbCopyCodeBtn').textContent = 'Copia codice'; }, 2000);
+  } catch {
+    alert('Codice: ' + $('newGroupCode').textContent);
+  }
+});
+
+/* Unisciti */
+$('lbJoinBtn').addEventListener('click', async () => {
+  const name = $('lbJoinName').value.trim().slice(0,24);
+  const code = $('lbJoinCode').value.trim().toUpperCase().slice(0,8);
+  const err = $('lbJoinErr');
+  err.style.display = 'none';
+  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
+  if (!code) { err.textContent = 'Inserisci il codice gruppo.'; err.style.display = ''; return; }
+  $('lbJoinBtn').disabled = true;
+  $('lbJoinBtn').textContent = 'Verifico…';
+  try {
+    const g = await joinGroup(code);
+    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
+    state.user.name = name;
+    if (!state.user.groups.find(x => x.code === g.code)) state.user.groups.push({ code: g.code, name: g.name });
+    state.user.activeGroupCode = g.code;
+    saveUser();
+    showLBLoggedIn();
+  } catch (e) {
+    err.textContent = e.message;
+    err.style.display = '';
+  } finally {
+    $('lbJoinBtn').disabled = false;
+    $('lbJoinBtn').textContent = 'Entra nel gruppo';
+  }
+});
+
+/* "Aggiungi un altro gruppo" — riapre il login pannello pertinente */
+$('lbAddJoinBtn').addEventListener('click', () => {
+  showLBLogin();
+  document.querySelector('.lb-tab[data-lbtab="join"]').click();
+});
+$('lbAddCreateBtn').addEventListener('click', () => {
+  showLBLogin();
+  document.querySelector('.lb-tab[data-lbtab="create"]').click();
+});
+
+$('lbLogoutBtn').addEventListener('click', () => {
+  if (!confirm('Vuoi davvero uscire? Tutti i tuoi gruppi salvati su questo dispositivo verranno dimenticati.')) return;
+  state.user = null;
+  saveUser();
+  $('lbContent').classList.add('hidden');
+  $('lbCreated').classList.add('hidden');
+  $('lbLogin').classList.remove('hidden');
+  $('lbJoinName').value = ''; $('lbJoinCode').value = '';
+  $('lbCreateName').value = ''; $('lbCreateGroup').value = '';
+});
+
+if (state.user && state.user.groups?.length) showLBLoggedIn();
+else if (state.user?.name) showLBLogin();
+
+/* ===== Leaderboards ===== */
+let _lbDayUnsub = null, _lbMonthUnsub = null;
+async function refreshLeaderboards() {
+  if (!state.user || !state.user.activeGroupCode) return;
+  initFirebase();
+  if (!fbReady) {
+    $('lbDayEmpty').textContent = 'Firebase non configurato — vedi commenti nel file HTML.';
+    $('lbDayEmpty').style.display = '';
+    $('lbMonthEmpty').textContent = 'Firebase non configurato — vedi commenti nel file HTML.';
+    $('lbMonthEmpty').style.display = '';
+    return;
+  }
+  // unsubscribe precedenti listener
+  if (_lbDayUnsub)   { _lbDayUnsub();   _lbDayUnsub = null; }
+  if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
+
+  const today = todayISO();
+  const mk = monthKey(today);
+  $('lbDayDate').textContent = fmtDateIT(today);
+  $('lbMonthLabel').textContent = mk;
+
+  const code = state.user.activeGroupCode;
+  _lbDayUnsub = fbDb.collection('scores')
+    .where('groupCode', '==', code)
+    .where('dateISO', '==', today)
+    .onSnapshot(snap => renderDayTable(snap.docs.map(d => d.data())));
+
+  _lbMonthUnsub = fbDb.collection('scores')
+    .where('groupCode', '==', code)
+    .where('monthKey', '==', mk)
+    .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+}
+
+function renderDayTable(rows) {
+  // best % per name
+  const byName = {};
+  rows.forEach(r => {
+    if (!byName[r.name] || r.pct > byName[r.name].pct) byName[r.name] = r;
+  });
+  const list = Object.values(byName).sort((a,b) => b.pct - a.pct || b.score - a.score);
+  const tbody = $('lbDayTable').querySelector('tbody');
+  tbody.innerHTML = '';
+  if (!list.length) { $('lbDayEmpty').style.display = ''; return; }
+  $('lbDayEmpty').style.display = 'none';
+  const medals = ['🥇','🥈','🥉'];
+  list.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (r.name === state.user.name) tr.classList.add('me');
+    tr.innerHTML = `<td><span class="medal">${medals[i]||(i+1)}</span></td><td>${r.name}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function renderMonthTable(rows) {
+  // sum points per name
+  const byName = {};
+  rows.forEach(r => {
+    if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
+    byName[r.name].points += r.score;
+    byName[r.name].games += 1;
+  });
+  const list = Object.values(byName).sort((a,b) => b.points - a.points || b.games - a.games);
+  const tbody = $('lbMonthTable').querySelector('tbody');
+  tbody.innerHTML = '';
+  if (!list.length) { $('lbMonthEmpty').style.display = ''; return; }
+  $('lbMonthEmpty').style.display = 'none';
+  list.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (r.name === state.user.name) tr.classList.add('me');
+    tr.innerHTML = `<td>${i+1}</td><td>${r.name}</td><td>${r.points} pt</td><td>${r.games} partite</td>`;
+    tbody.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>

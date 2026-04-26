@@ -1,0 +1,27 @@
+# Render.com Blueprint - Newsguess
+# Importa questo file con "New +" -> "Blueprint" su https://render.com
+services:
+  - type: web
+    name: newsguess
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/wakeup
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
+      - key: DB_NAME
+        value: newsguess
+      - key: MONGO_URL
+        sync: false
+      - key: EMERGENT_LLM_KEY
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_CONTACT_EMAIL
+        sync: false

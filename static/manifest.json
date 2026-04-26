@@ -1,0 +1,17 @@
+{
+  "name": "Newsguess",
+  "short_name": "Newsguess",
+  "description": "Il quiz delle prime pagine d'Italia",
+  "start_url": "/api/quiz",
+  "scope": "/api/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f1e8",
+  "theme_color": "#15110c",
+  "lang": "it",
+  "icons": [
+    { "src": "/api/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/api/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/api/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
