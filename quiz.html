@@ -79,6 +79,17 @@
   p { line-height: 1.6; }
   .small-caps { text-transform: uppercase; letter-spacing: 2px; font-size: 11px; color: var(--muted); font-weight: 700; }
 
+  /* Stats grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+  @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+  .stat-card { border: 1px solid var(--rule); padding: 18px 14px; text-align: center; background: var(--paper); }
+  .stat-value { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 36px; color: var(--ink); line-height: 1; }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-top: 6px; font-weight: 700; }
+
+  /* Edit name pencil */
+  .edit-name-btn { background: none; border: none; cursor: pointer; padding: 4px 8px; color: var(--muted); font-size: 14px; }
+  .edit-name-btn:hover { color: var(--accent); }
+
   /* Mode picker */
   .modes { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 24px; }
   @media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
@@ -304,6 +315,7 @@
   <nav class="tabs">
     <button class="tab active" data-tab="quiz">Quiz</button>
     <button class="tab" data-tab="leaderboard">Classifica</button>
+    <button class="tab" data-tab="stats">Statistiche</button>
   </nav>
 
   <!-- iOS install hint (mostrato solo a Safari iOS non installato) -->
@@ -328,7 +340,7 @@
         </div>
         <div class="mode-card" data-mode="training">
           <h3>Allenamento libero</h3>
-          <p>5 domande casuali dall'archivio.</p>
+          <p>5 domande casuali da un'edizione passata in archivio. Non conta in classifica.</p>
         </div>
       </div>
       <p class="small-caps" style="margin-top:24px">Le 5 prime pagine di oggi che dovrai indovinare sono scelte casualmente fra le 10 testate.</p>
@@ -466,7 +478,7 @@
 
     <div id="lbContent" class="hidden">
       <div class="lb-user-info">
-        <div class="who">Ciao <span id="lbWho">—</span></div>
+        <div class="who">Ciao <span id="lbWho">—</span> <button class="edit-name-btn" id="lbEditNameBtn" title="Cambia nome">✏️</button></div>
         <button class="btn outline" id="lbLogoutBtn">Esci</button>
       </div>
       <div class="lb-section">
@@ -492,7 +504,63 @@
     </div>
   </section>
 
-  <!-- Save score modal -->
+  <!-- ======= STATS TAB ======= -->
+  <section id="tab-stats" class="hidden">
+    <div id="statsEmpty" class="hidden" style="text-align:center;padding:40px 20px;color:var(--muted)">
+      <p style="font-size:18px;font-style:italic">Non hai ancora giocato a Newsguess.</p>
+      <p>Gioca la tua prima partita per iniziare a tracciare le statistiche.</p>
+    </div>
+    <div id="statsContent" class="hidden">
+      <div class="lb-section">
+        <h2>Le tue statistiche</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="stTotalGames">0</div>
+            <div class="stat-label">Partite giocate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stAvgScore">0</div>
+            <div class="stat-label">Media punteggio</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stStreak">0</div>
+            <div class="stat-label">Streak giornaliera</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stBestScore">0</div>
+            <div class="stat-label">Punteggio massimo</div>
+          </div>
+        </div>
+      </div>
+      <div class="lb-section">
+        <h2>Precisione per giornale</h2>
+        <p class="small-caps" id="stPaperNote">Aggiornato dopo ogni partita</p>
+        <table class="lb-table" id="stPaperTable"><tbody></tbody></table>
+      </div>
+      <div class="lb-section">
+        <h2>Ultime partite</h2>
+        <table class="lb-table" id="stRecentTable"><tbody></tbody></table>
+      </div>
+      <div class="lb-section" style="text-align:center">
+        <button class="btn outline" id="stResetBtn">Azzera statistiche</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Change name modal -->
+  <div id="nameModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2>Cambia nome</h2>
+      <p style="margin-top:0">Il tuo nuovo nome apparirà nelle classifiche da ora in poi (i punteggi precedenti restano col vecchio nome).</p>
+      <label for="nameModalInput" style="display:block;margin-top:10px;font-weight:700">Nuovo nome</label>
+      <input id="nameModalInput" type="text" maxlength="24" placeholder="Es. Giulia" style="width:100%;padding:10px;font-family:inherit;font-size:16px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);margin-top:6px" />
+      <p id="nameModalErr" style="color:var(--red);font-size:13px;display:none;margin:6px 0"></p>
+      <div class="row" style="justify-content:flex-end;margin-top:14px">
+        <button class="btn outline" id="nameModalCancel">Annulla</button>
+        <button class="btn accent" id="nameModalConfirm">Salva</button>
+      </div>
+    </div>
+  </div>
   <div id="saveModal" class="modal-overlay hidden">
     <div class="modal">
       <h2>Salva punteggio</h2>
@@ -669,7 +737,9 @@ document.querySelectorAll('.tab').forEach(btn => {
     const t = btn.dataset.tab;
     $('tab-quiz').classList.toggle('hidden', t !== 'quiz');
     $('tab-leaderboard').classList.toggle('hidden', t !== 'leaderboard');
+    $('tab-stats').classList.toggle('hidden', t !== 'stats');
     if (t === 'leaderboard') refreshLeaderboards();
+    if (t === 'stats') renderStats();
   });
 });
 
@@ -946,7 +1016,6 @@ async function startQuiz(mode, dateISO) {
   state.score = 0;
 
   if (mode === 'daily')    state.dateISO = todayISO();
-  if (mode === 'training') state.dateISO = todayISO();
   if (mode === 'past')     state.dateISO = dateISO;
 
   $('modePicker').classList.add('hidden');
@@ -956,9 +1025,23 @@ async function startQuiz(mode, dateISO) {
   $('loading').classList.remove('hidden');
 
   try {
-    // Per modalità 'past' uso solo i giornali archiviati per quella data
+    // Per modalità 'training': scegli una data random dall'archivio (NON oggi)
+    if (mode === 'training') {
+      const r = await fetch('/api/archive-dates');
+      if (!r.ok) throw new Error('Archivio non disponibile.');
+      const data = await r.json();
+      const today = todayISO();
+      const eligibleDates = (data.dates || []).filter(d => d.papers >= 4 && d.date !== today);
+      if (!eligibleDates.length) {
+        throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno per costruire l\'archivio.');
+      }
+      const pickDate = eligibleDates[Math.floor(Math.random() * eligibleDates.length)].date;
+      state.dateISO = pickDate;
+    }
+
+    // Per modalità 'past' o 'training' uso solo i giornali archiviati per quella data
     let pickedFrom = NEWSPAPERS;
-    if (mode === 'past') {
+    if (mode === 'past' || mode === 'training') {
       const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
       if (!r.ok) throw new Error('Archivio non disponibile per questa data');
       const data = await r.json();
@@ -1167,6 +1250,23 @@ function finishQuiz() {
 
   // train again button
   $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
+  // L'allenamento non va in classifica → nascondo "Salva punteggio"
+  $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
+
+  // Traccia statistica personale
+  trackGameInStats({
+    mode: state.mode,
+    dateISO: state.dateISO,
+    score: state.score,
+    total: state.questions.length,
+    questions: state.questions.map(q => ({
+      paperId: q.paper.id,
+      paperSlug: q.paper.slug,
+      paperName: q.paper.name,
+      ok: q.given === q.paper.id,
+    })),
+    ts: Date.now(),
+  });
 
   // past completed → save in localStorage e ricarica l'archivio
   if (state.mode === 'past') {
@@ -1182,6 +1282,139 @@ function finishQuiz() {
   }
 }
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
+
+/* =========================================================
+   STATISTICHE PERSONALI
+   - Storia partite in localStorage chiave 'stats-history'
+   - Streak giornaliera calcolata sui daily completati
+========================================================= */
+const STATS_KEY = 'stats-history';
+
+function loadStatsHistory() {
+  try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveStatsHistory(arr) {
+  try { localStorage.setItem(STATS_KEY, JSON.stringify(arr.slice(-500))); } catch {}
+}
+function trackGameInStats(entry) {
+  const arr = loadStatsHistory();
+  arr.push(entry);
+  saveStatsHistory(arr);
+}
+
+function computeStreak(history) {
+  // streak = giorni consecutivi (terminanti oggi o ieri) con un daily completato
+  const dailyDates = new Set(history.filter(h => h.mode === 'daily').map(h => h.dateISO));
+  if (!dailyDates.size) return 0;
+  let streak = 0;
+  const d = new Date();
+  // Se oggi non ho giocato ma ieri sì, lo streak parte da ieri
+  let iso = d.toISOString().slice(0,10);
+  if (!dailyDates.has(iso)) {
+    d.setDate(d.getDate() - 1);
+    iso = d.toISOString().slice(0,10);
+    if (!dailyDates.has(iso)) return 0;
+  }
+  while (dailyDates.has(iso)) {
+    streak++;
+    d.setDate(d.getDate() - 1);
+    iso = d.toISOString().slice(0,10);
+  }
+  return streak;
+}
+
+function renderStats() {
+  const history = loadStatsHistory();
+  if (!history.length) {
+    $('statsEmpty').classList.remove('hidden');
+    $('statsContent').classList.add('hidden');
+    return;
+  }
+  $('statsEmpty').classList.add('hidden');
+  $('statsContent').classList.remove('hidden');
+
+  // Totali
+  const total = history.length;
+  const sumScore = history.reduce((s, h) => s + h.score, 0);
+  const sumTotal = history.reduce((s, h) => s + h.total, 0);
+  const avg = sumTotal ? (sumScore / sumTotal * 5) : 0;
+  const best = history.reduce((m, h) => Math.max(m, h.score), 0);
+  const streak = computeStreak(history);
+
+  $('stTotalGames').textContent = total;
+  $('stAvgScore').textContent = avg.toFixed(1);
+  $('stStreak').textContent = streak;
+  $('stBestScore').textContent = best;
+
+  // Precisione per giornale
+  const perPaper = {};
+  history.forEach(h => {
+    (h.questions || []).forEach(q => {
+      if (!perPaper[q.paperId]) perPaper[q.paperId] = { name: q.paperName, slug: q.paperSlug, ok: 0, tot: 0 };
+      perPaper[q.paperId].tot += 1;
+      if (q.ok) perPaper[q.paperId].ok += 1;
+    });
+  });
+  const rows = Object.values(perPaper).sort((a,b) => (b.ok/b.tot) - (a.ok/a.tot));
+  let html = '<thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody>';
+  rows.forEach(r => {
+    const pct = r.tot ? Math.round(r.ok / r.tot * 100) : 0;
+    html += `<tr><td><em>${escapeHtml(r.name)}</em></td><td><strong>${pct}%</strong></td><td>${r.ok}/${r.tot}</td></tr>`;
+  });
+  html += '</tbody>';
+  $('stPaperTable').innerHTML = html;
+
+  // Ultime 10 partite
+  const recent = history.slice().reverse().slice(0, 10);
+  let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
+  recent.forEach(h => {
+    const dt = new Date(h.ts);
+    const when = dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + ' ' + dt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const modeName = h.mode === 'daily' ? 'Giorno' : (h.mode === 'training' ? 'Allenamento' : 'Archivio');
+    html2 += `<tr><td>${when}</td><td>${modeName}</td><td><strong>${h.score}/${h.total}</strong></td></tr>`;
+  });
+  html2 += '</tbody>';
+  $('stRecentTable').innerHTML = html2;
+}
+
+$('stResetBtn').addEventListener('click', () => {
+  if (confirm('Sei sicuro di voler azzerare tutte le statistiche? Questa azione non può essere annullata.')) {
+    localStorage.removeItem(STATS_KEY);
+    renderStats();
+  }
+});
+
+/* =========================================================
+   CAMBIA NOME (modal)
+========================================================= */
+function openNameModal() {
+  $('nameModalInput').value = state.user?.name || '';
+  $('nameModalErr').style.display = 'none';
+  $('nameModal').classList.remove('hidden');
+  setTimeout(() => $('nameModalInput').focus(), 50);
+}
+function closeNameModal() { $('nameModal').classList.add('hidden'); }
+$('lbEditNameBtn').addEventListener('click', openNameModal);
+$('nameModalCancel').addEventListener('click', closeNameModal);
+$('nameModalConfirm').addEventListener('click', () => {
+  const newName = $('nameModalInput').value.trim();
+  if (!newName) {
+    $('nameModalErr').textContent = 'Inserisci un nome.';
+    $('nameModalErr').style.display = '';
+    return;
+  }
+  if (newName.length > 24) {
+    $('nameModalErr').textContent = 'Il nome è troppo lungo (max 24 caratteri).';
+    $('nameModalErr').style.display = '';
+    return;
+  }
+  if (!state.user) state.user = { name: newName, groups: [], activeGroupCode: null };
+  else state.user.name = newName;
+  saveUser();
+  $('lbWho').textContent = newName;
+  closeNameModal();
+});
 
 /* Save score to leaderboard — apre un modal per scegliere i gruppi target */
 $('saveScoreBtn').addEventListener('click', () => {
@@ -1272,6 +1505,7 @@ function resetToMenu() {
   $('modePicker').classList.remove('hidden');
   $('saveScoreBtn').textContent = 'Salva punteggio';
   $('saveScoreBtn').disabled = false;
+  $('saveScoreBtn').style.display = '';
 }
 
 /* =========================================================
