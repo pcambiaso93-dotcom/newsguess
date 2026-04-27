@@ -283,14 +283,16 @@
   @keyframes ngConfettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }
 
   /* Applicazioni */
-  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; }
+  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; animation: ngFadeInUp .4s ease both; }
+  .mode-card:nth-child(1) { animation-delay: 40ms; }
+  .mode-card:nth-child(2) { animation-delay: 140ms; }
   .mode-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
-  .mode-card:active:not(.completed) { transform: translateY(0) scale(0.99); }
+  .mode-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
 
   /* Pulsanti generici con piccola pressione */
   .btn { transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
   .btn:hover:not(:disabled) { transform: translateY(-1px); }
-  .btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+  .btn:active:not(:disabled) { transform: scale(0.94); transition: transform .08s ease; }
 
   /* Card domanda: entrata */
   .qcard { animation: ngFadeInUp .35s ease both; }
@@ -298,7 +300,7 @@
   /* Choice: apparizione scaglionata (stagger via --i) */
   .choice { animation: ngFadeInUp .32s ease both; animation-delay: calc(var(--i, 0) * 70ms); transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
   .choice:hover:not(:disabled) { transform: translateX(4px); }
-  .choice:active:not(:disabled) { transform: scale(0.98); }
+  .choice:active:not(:disabled) { transform: scale(0.96); background: var(--paper-2); transition: transform .08s ease, background .08s; }
   .choice.right { animation: ngRightFlash .6s ease; }
   .choice.wrong { animation: ngShake .5s ease, ngWrongFlash .6s ease; }
 
@@ -318,9 +320,13 @@
   .tab { position: relative; }
   .tab.active { animation: ngPopIn .35s ease; }
 
-  /* Archive card hover lift */
-  .past-card { transition: transform .18s ease, box-shadow .18s; }
+  /* Archive card hover lift + entrata staggerata */
+  .past-card { transition: transform .18s ease, box-shadow .18s; animation: ngFadeInUp .4s ease both; animation-delay: calc(var(--i, 0) * 60ms + 200ms); }
   .past-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow); }
+  .past-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
+
+  /* Sezioni archivio + promemoria + backup: entrata soft */
+  .archive-browser, .notif-section { animation: ngFadeInUp .5s ease both; animation-delay: 350ms; }
 
   /* Stat cards: entrata scaglionata */
   .stat-card { animation: ngFadeInUp .4s ease both; }
@@ -833,10 +839,11 @@ async function loadArchive() {
     grid.innerHTML = '';
     if (!dates.length) { sec.classList.add('hidden'); return; }
     sec.classList.remove('hidden');
-    dates.forEach(d => {
+    dates.forEach((d, i) => {
       const saved = localStorage.getItem('past-score-' + d.date);
       const card = document.createElement('div');
       card.className = 'past-card' + (saved ? ' completed' : '');
+      card.style.setProperty('--i', i);
       card.innerHTML = `
         <div class="date">${fmtDateIT(d.date)}</div>
         <div class="name">${d.papers} giornali</div>
