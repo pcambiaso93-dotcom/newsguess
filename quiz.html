@@ -267,6 +267,84 @@
   /* Notifiche */
   .notif-section { margin-top: 28px; padding: 18px; border: 1px solid var(--rule); background: var(--paper-2); }
   .notif-section .small-caps { margin: 0; }
+
+  /* =========================================================
+     ANIMAZIONI — stile moderno ma coerente con il mood quotidiano
+  ========================================================= */
+  @keyframes ngFadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes ngPopIn { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
+  @keyframes ngBounceIn { 0% { transform: translateY(20px) scale(0.92); opacity: 0; } 60% { transform: translateY(-4px) scale(1.03); opacity: 1; } 100% { transform: translateY(0) scale(1); } }
+  @keyframes ngShake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-8px); } 30% { transform: translateX(8px); } 45% { transform: translateX(-6px); } 60% { transform: translateX(6px); } 75% { transform: translateX(-3px); } 90% { transform: translateX(3px); } }
+  @keyframes ngRightFlash { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0.5); } 50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(36,107,58,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0); } }
+  @keyframes ngWrongFlash { 0% { box-shadow: 0 0 0 0 rgba(176,16,16,0.55); } 60% { box-shadow: 0 0 0 14px rgba(176,16,16,0); } 100% { box-shadow: 0 0 0 0 rgba(176,16,16,0); } }
+  @keyframes ngPulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+  @keyframes ngSlideFadeIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+  @keyframes ngCountUp { from { transform: scale(0.5) rotate(-6deg); opacity: 0; } 60% { transform: scale(1.15) rotate(2deg); opacity: 1; } to { transform: scale(1) rotate(0); } }
+  @keyframes ngConfettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }
+
+  /* Applicazioni */
+  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; }
+  .mode-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
+  .mode-card:active:not(.completed) { transform: translateY(0) scale(0.99); }
+
+  /* Pulsanti generici con piccola pressione */
+  .btn { transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+
+  /* Card domanda: entrata */
+  .qcard { animation: ngFadeInUp .35s ease both; }
+
+  /* Choice: apparizione scaglionata (stagger via --i) */
+  .choice { animation: ngFadeInUp .32s ease both; animation-delay: calc(var(--i, 0) * 70ms); transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
+  .choice:hover:not(:disabled) { transform: translateX(4px); }
+  .choice:active:not(:disabled) { transform: scale(0.98); }
+  .choice.right { animation: ngRightFlash .6s ease; }
+  .choice.wrong { animation: ngShake .5s ease, ngWrongFlash .6s ease; }
+
+  /* Progress dots: quello "current" pulsa */
+  .dot.current { animation: ngPulseDot 1.1s ease-in-out infinite; }
+
+  /* Next button */
+  #nextBtn { animation: ngBounceIn .38s ease both; }
+
+  /* Final screen animazioni */
+  .final .big-score { animation: ngCountUp .7s cubic-bezier(.34,1.56,.64,1) both; }
+  .final .verdict { animation: ngFadeInUp .5s ease both; animation-delay: .35s; }
+  .final table { animation: ngFadeInUp .4s ease both; animation-delay: .55s; }
+  .final .row { animation: ngFadeInUp .4s ease both; animation-delay: .75s; }
+
+  /* Tabs: underline glide */
+  .tab { position: relative; }
+  .tab.active { animation: ngPopIn .35s ease; }
+
+  /* Archive card hover lift */
+  .past-card { transition: transform .18s ease, box-shadow .18s; }
+  .past-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow); }
+
+  /* Stat cards: entrata scaglionata */
+  .stat-card { animation: ngFadeInUp .4s ease both; }
+  .stat-card:nth-child(1) { animation-delay: 0ms; }
+  .stat-card:nth-child(2) { animation-delay: 80ms; }
+  .stat-card:nth-child(3) { animation-delay: 160ms; }
+  .stat-card:nth-child(4) { animation-delay: 240ms; }
+
+  /* Group pills: entrata leggera */
+  .group-pill { animation: ngSlideFadeIn .35s ease both; transition: transform .12s ease, background .15s; }
+  .group-pill:hover:not(.active) { transform: translateY(-1px); }
+
+  /* Toast (conferma azioni) */
+  .ng-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 12px 20px; border-left: 4px solid var(--accent); font-size: 14px; font-family: 'Libre Baskerville', serif; box-shadow: 0 8px 24px var(--shadow); opacity: 0; z-index: 9999; transition: opacity .25s ease, transform .25s ease; pointer-events: none; max-width: 90%; text-align: center; }
+  .ng-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Confetti (perfect score) */
+  .ng-confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
+  .ng-confetti-piece { position: absolute; top: -14px; width: 10px; height: 14px; opacity: 0; animation: ngConfettiFall linear forwards; }
+
+  /* Rispetta le preferenze utente */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
 </style>
 </head>
 <body>
@@ -1178,9 +1256,10 @@ function renderQuestion() {
   // choices
   const cont = $('choices');
   cont.innerHTML = '';
-  q.choices.forEach(c => {
+  q.choices.forEach((c, i) => {
     const b = document.createElement('button');
     b.className = 'choice';
+    b.style.setProperty('--i', i);
     b.textContent = c.name;
     b.addEventListener('click', () => answer(c.id, b));
     cont.appendChild(b);
@@ -1235,7 +1314,13 @@ function verdictFor(score) {
 function finishQuiz() {
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
-  $('finalScore').textContent = state.score;
+  // Reset animazioni re-applicando le classi
+  $('finalScreen').querySelectorAll('.big-score,.verdict,table,.row').forEach(el => {
+    el.style.animation = 'none';
+    void el.offsetWidth; // force reflow
+    el.style.animation = '';
+  });
+  animateScoreCountUp($('finalScore'), state.score, 800);
   $('verdict').textContent = verdictFor(state.score);
 
   // recap
@@ -1280,6 +1365,56 @@ function finishQuiz() {
     // Daily appena giocata: l'archivio si è arricchito, ricarico la lista (sarà disponibile da domani)
     loadArchive();
   }
+
+  // Confetti per punteggio pieno 🎉
+  if (state.score === state.questions.length) {
+    setTimeout(() => launchConfetti(), 450);
+  }
+}
+
+/* ===== Utility di animazione ===== */
+function animateScoreCountUp(el, target, duration) {
+  if (!el) return;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+
+function launchConfetti() {
+  const layer = document.createElement('div');
+  layer.className = 'ng-confetti-layer';
+  document.body.appendChild(layer);
+  const colors = ['#b01010', '#246b3a', '#d4a017', '#2b6cb0', '#8e44ad', '#e67e22'];
+  const N = 80;
+  for (let i = 0; i < N; i++) {
+    const p = document.createElement('div');
+    p.className = 'ng-confetti-piece';
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+    p.style.animationDelay = (Math.random() * 0.35) + 's';
+    p.style.width = (6 + Math.random() * 8) + 'px';
+    p.style.height = (10 + Math.random() * 10) + 'px';
+    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+    p.style.opacity = '1';
+    layer.appendChild(p);
+  }
+  setTimeout(() => layer.remove(), 4000);
+}
+
+function showToast(msg) {
+  let t = document.querySelector('.ng-toast');
+  if (!t) { t = document.createElement('div'); t.className = 'ng-toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2400);
 }
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 
