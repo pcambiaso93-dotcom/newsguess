@@ -1,803 +1,1047 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Newsguess · il quiz delle prime pagine d'Italia</title>
-<meta name="description" content="Newsguess: indovina di che giornale italiano è la prima pagina. Sfida giornaliera, classifiche di gruppo." />
-<meta name="theme-color" content="#15110c" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Newsguess" />
-<link rel="manifest" href="/api/manifest.json" />
-<link rel="icon" href="/api/icon-192.png" type="image/png" />
-<link rel="apple-touch-icon" href="/api/apple-touch-icon.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Newsguess</title>
+
+<!-- Tipografia -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<link rel="stylesheet" href="https://unpkg.com/lucide-static/font/lucide.css">
+
 <style>
-  :root {
-    --paper: #f5f1e8;
-    --paper-2: #ebe5d6;
-    --ink: #15110c;
-    --ink-2: #3a342a;
-    --muted: #6b6359;
-    --rule: #1a1610;
-    --accent: #b01010;
-    --green: #246b3a;
-    --red: #b01010;
-    --shadow: rgba(20,16,10,.08);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #14110d;
-      --paper-2: #1d1914;
-      --ink: #f0e9d8;
-      --ink-2: #cfc6b2;
-      --muted: #8a8273;
-      --rule: #d8cfb8;
-      --accent: #e74848;
-      --green: #5fb079;
-      --red: #e74848;
-      --shadow: rgba(0,0,0,.4);
-    }
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Libre Baskerville', Georgia, serif; }
-  body { min-height: 100vh; padding: 24px 16px 64px; }
-  .wrap { max-width: 880px; margin: 0 auto; }
+/* -------------------------------------------------------
+   RESET + BASE
+------------------------------------------------------- */
+:root {
+  --bg: #f7f7f8;
+  --fg: #111;
+  --fg-muted: #666;
+  --card: #ffffff;
+  --border: #e5e5e5;
+  --accent: #1e4fa3; /* Newsguess blue */
+  --accent-light: #2f6be0;
+  --radius: 14px;
+  --shadow: 0 4px 18px rgba(0,0,0,0.08);
+  --transition: 0.25s ease;
+}
 
-  /* Masthead */
-  .masthead { border-top: 3px solid var(--rule); border-bottom: 3px solid var(--rule); padding: 14px 0 14px; position: relative; text-align: center; }
-  .masthead::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: var(--rule); }
-  .masthead .brand-rule { text-transform: uppercase; letter-spacing: 4px; font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
-  .masthead h1 { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; font-size: clamp(44px, 9vw, 84px); margin: 0; letter-spacing: -1px; line-height: 1; }
-  .masthead .tagline { font-family: 'Libre Baskerville', serif; font-style: italic; font-size: clamp(13px, 2.6vw, 17px); color: var(--ink-2); margin-top: 6px; }
-  .masthead .meta { display: flex; justify-content: space-between; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-top: 14px; padding: 0 4px; flex-wrap: wrap; gap: 8px; }
-  .masthead .accent { color: var(--accent); font-weight: 700; }
-  .install-link { color: var(--accent); font-weight: 700; transition: opacity .2s; }
-  .install-link:hover { opacity: .7; }
+[data-theme="dark"] {
+  --bg: #1b1c1e;
+  --fg: #eee;
+  --fg-muted: #aaa;
+  --card: #2a2b2d;
+  --border: #3a3b3d;
+  --shadow: 0 4px 18px rgba(0,0,0,0.4);
+}
 
-  /* iOS install hint */
-  .ios-hint { background: var(--ink); color: var(--paper); padding: 14px 16px; margin: 16px 0; display: flex; align-items: center; gap: 12px; border-left: 4px solid var(--accent); }
-  .ios-hint-text { flex: 1; font-size: 14px; line-height: 1.4; }
-  .ios-hint-text strong { display: block; font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 4px; }
-  .ios-hint-text em { font-style: italic; color: #fff; }
-  .ios-share { display: inline-block; padding: 0 6px; background: var(--accent); border-radius: 3px; font-weight: 700; }
-  .ios-hint-close { background: none; border: none; color: var(--paper); font-size: 26px; cursor: pointer; opacity: .7; padding: 0 4px; }
-  .ios-hint-close:hover { opacity: 1; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Inter, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+}
 
-  /* Tabs */
-  .tabs { display: flex; border-bottom: 1px solid var(--rule); margin: 28px 0 24px; }
-  .tab { flex: 1; padding: 14px 8px; text-align: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; transition: all .15s; background: transparent; border-top: none; border-left: none; border-right: none; font-family: 'Playfair Display', serif; }
-  .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-  .tab:hover:not(.active) { color: var(--ink-2); }
+.hidden { display: none !important; }
 
-  /* Generic typography */
-  h2 { font-family: 'Playfair Display', serif; font-weight: 700; margin: 0 0 12px; }
-  h3 { font-family: 'Playfair Display', serif; font-weight: 700; margin: 0 0 8px; font-size: 22px; }
-  p { line-height: 1.6; }
-  .small-caps { text-transform: uppercase; letter-spacing: 2px; font-size: 11px; color: var(--muted); font-weight: 700; }
+/* -------------------------------------------------------
+   HEADER
+------------------------------------------------------- */
+#appHeader {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
 
-  /* Stats grid */
-  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
-  @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
-  .stat-card { border: 1px solid var(--rule); padding: 18px 14px; text-align: center; background: var(--paper); }
-  .stat-value { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 36px; color: var(--ink); line-height: 1; }
-  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-top: 6px; font-weight: 700; }
+#menuBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
-  /* Edit name pencil */
-  .edit-name-btn { background: none; border: none; cursor: pointer; padding: 4px 8px; color: var(--muted); font-size: 14px; }
-  .edit-name-btn:hover { color: var(--accent); }
+#headerTitle {
+  flex: 1;
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 600;
+}
 
-  /* Mode picker */
-  .modes { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 24px; }
-  @media (min-width: 640px) { .modes { grid-template-columns: 1fr 1fr; } }
-  .mode-card { border: 1px solid var(--rule); padding: 22px; cursor: pointer; background: var(--paper); transition: background .15s; }
-  .mode-card:hover { background: var(--paper-2); }
-  .mode-card h3 { font-size: 24px; margin-bottom: 6px; }
-  .mode-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+#themeBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
-  /* Past editions grid */
-  .past-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  @media (min-width: 640px) { .past-grid { grid-template-columns: repeat(3, 1fr); } }
-  .past-card { border: 1px solid var(--rule); padding: 16px; cursor: pointer; background: var(--paper); position: relative; }
-  .past-card:hover { background: var(--paper-2); }
-  .past-card.completed { background: var(--paper-2); }
-  .past-card .date { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 20px; }
-  .past-card .name { font-style: italic; color: var(--ink-2); font-size: 13px; margin-top: 4px; }
-  .past-card .score { position: absolute; top: 8px; right: 10px; font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; }
+/* -------------------------------------------------------
+   SIDEBAR S2-A (sheet full-height)
+------------------------------------------------------- */
+#sidebarBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  z-index: 80;
+}
 
-  /* Score bar */
-  .scorebar { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
-  .dots { display: flex; gap: 8px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; }
-  .dot.right { background: var(--green); border-color: var(--green); }
-  .dot.wrong { background: var(--red); border-color: var(--red); }
-  .dot.current { border-color: var(--accent); }
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: min(85%, 360px);
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateX(-100%);
+  transition: var(--transition);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
 
-  /* Question card */
-  .qcard { border: 1px solid var(--rule); padding: 28px 24px; background: var(--paper); }
-  .extracted { padding: 18px 0 22px; border-bottom: 1px solid var(--rule); margin-bottom: 22px; }
-  .extracted .sopra { text-transform: uppercase; letter-spacing: 3px; font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
-  .extracted .titolo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(28px, 5vw, 44px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -.5px; }
-  .extracted .sotto { font-style: italic; font-size: 18px; color: var(--ink-2); line-height: 1.4; }
+#sidebar.open {
+  transform: translateX(0);
+}
 
-  /* Choices */
-  .choices { display: grid; gap: 10px; margin-bottom: 16px; }
-  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s; }
-  .choice:hover:not(:disabled) { background: var(--paper-2); }
-  .choice:disabled { cursor: default; }
-  .choice.right { background: var(--green); color: #fff; border-color: var(--green); }
-  .choice.wrong { background: var(--red); color: #fff; border-color: var(--red); }
+#sidebarBackdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  /* Buttons */
-  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; }
-  .btn:hover { background: var(--ink-2); }
-  .btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
-  .btn.outline:hover { background: var(--paper-2); }
-  .btn.accent { background: var(--accent); color: #fff; }
-  .btn.accent:hover { opacity: .9; }
+.sidebar-title {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 0 22px 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
 
-  .clue { margin-top: 12px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--paper-2); font-style: italic; color: var(--ink-2); }
+.sidebar-item {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 17px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
 
-  /* Loading */
-  .loading { text-align: center; padding: 60px 20px; }
-  .spinner { width: 40px; height: 40px; border: 3px solid var(--rule); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+.sidebar-item:hover {
+  background: rgba(0,0,0,0.05);
+}
 
-  /* Error */
-  .errbox { border: 2px solid var(--red); padding: 18px; background: var(--paper-2); margin: 20px 0; }
-  .errbox h4 { margin: 0 0 8px; color: var(--red); font-family: 'Playfair Display', serif; }
+.sidebar-item i {
+  font-size: 20px;
+  width: 22px;
+  text-align: center;
+}
 
-  /* Final screen */
-  .final { text-align: center; padding: 40px 20px; }
-  .final .big-score { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(72px, 18vw, 140px); line-height: 1; margin: 10px 0; }
-  .final .verdict { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(22px, 4vw, 32px); margin-bottom: 28px; color: var(--accent); }
-  .final table { width: 100%; border-collapse: collapse; margin: 24px 0; text-align: left; }
-  .final th, .final td { padding: 10px 8px; border-bottom: 1px solid var(--rule); font-size: 14px; }
-  .final th { text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--muted); font-weight: 700; }
-  .final td.ok { color: var(--green); font-weight: 700; }
-  .final td.no { color: var(--red); font-weight: 700; }
+/* -------------------------------------------------------
+   PAGE CONTAINER
+------------------------------------------------------- */
+#pageContainer {
+  padding: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+}
 
-  /* Leaderboard */
-  .lb-form { border: 1px solid var(--rule); padding: 24px; background: var(--paper); margin-bottom: 22px; }
-  .lb-form input { display: block; width: 100%; padding: 10px 12px; margin-top: 6px; margin-bottom: 14px; background: var(--paper-2); border: 1px solid var(--rule); color: var(--ink); font-family: 'Libre Baskerville', serif; font-size: 15px; }
-  .lb-form label { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; }
-  .lb-section { margin-bottom: 28px; }
-  .lb-table { width: 100%; border-collapse: collapse; }
-  .lb-table th, .lb-table td { padding: 10px 8px; border-bottom: 1px solid var(--rule); text-align: left; font-size: 14px; }
-  .lb-table th { text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--muted); font-weight: 700; }
-  .lb-table tr.me { background: rgba(40,80,200,.12); }
-  .lb-table .medal { font-size: 18px; }
-  .lb-user-info { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border: 1px solid var(--rule); background: var(--paper-2); margin-bottom: 22px; }
-  .lb-user-info .who { font-family: 'Playfair Display', serif; font-weight: 700; }
-  .lb-user-info .who span { color: var(--accent); }
+/* -------------------------------------------------------
+   CARDS
+------------------------------------------------------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
 
-  .row { display: flex; gap: 10px; flex-wrap: wrap; }
-  .hidden { display: none !important; }
+.card-title {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
 
-  /* Group pills (multi-group selector) */
-  .group-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .group-pill { padding: 8px 14px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; font-family: 'Libre Baskerville', serif; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; }
-  .group-pill:hover { background: var(--paper-2); }
-  .group-pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .group-pill .code-mini { font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 1.5px; opacity: .75; }
-  .group-pill .pill-x { opacity: .5; cursor: pointer; padding: 0 4px; font-weight: 700; }
-  .group-pill .pill-x:hover { opacity: 1; color: var(--accent); }
+.card-sub {
+  color: var(--fg-muted);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
 
-  /* Modal */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
-  .modal { background: var(--paper); border: 1px solid var(--rule); padding: 24px; max-width: 460px; width: 100%; box-shadow: 0 10px 40px var(--shadow); }
-  .modal h2 { margin-top: 0; }
-  .modal .save-group-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
-  .modal .save-group-row:last-child { border-bottom: none; }
-  .modal .save-group-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-  .modal .save-group-row label { flex: 1; cursor: pointer; font-family: 'Libre Baskerville', serif; }
-  .modal .save-group-row .gname { font-family: 'Playfair Display', serif; font-weight: 700; }
-  .modal .save-group-row .gcode { font-family: 'Playfair Display', serif; letter-spacing: 1.5px; color: var(--accent); font-size: 13px; }
-  .modal .save-group-row .gnote { font-size: 12px; color: var(--muted); font-style: italic; }
+/* -------------------------------------------------------
+   BUTTONS
+------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: var(--transition);
+}
 
-  /* Leaderboard tabs (Crea/Unisciti) */
-  .lb-tabs { display: flex; gap: 0; margin: 18px 0 18px; border-bottom: 1px solid var(--rule); }
-  .lb-tab { flex: 1; padding: 10px 8px; background: transparent; border: none; cursor: pointer; font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; }
-  .lb-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
 
-  .code-box { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(40px, 9vw, 64px); letter-spacing: 8px; text-align: center; padding: 22px; border: 2px dashed var(--rule); background: var(--paper-2); margin: 18px 0; color: var(--accent); }
-  .code-inline { font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: 2px; color: var(--accent); }
+.btn-primary:hover {
+  background: var(--accent-light);
+}
 
-  .daily-status { display: inline-block; margin-top: 6px; font-family: 'Playfair Display', serif; font-weight: 700; color: var(--accent); font-style: italic; font-size: 13px; }
-  .mode-card.completed { opacity: .65; cursor: default; }
-  .mode-card.completed:hover { background: var(--paper); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+}
 
-  /* Decorative background flourishes */
-  body { position: relative; overflow-x: hidden; }
-  .bg-decorations { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .bg-deco { position: absolute; opacity: .14; color: var(--ink); }
-  @media (prefers-color-scheme: dark) { .bg-deco { opacity: .1; } }
-  .bg-deco-1 { top: 70px; left: -30px; width: 230px; transform: rotate(-11deg); }
-  .bg-deco-2 { bottom: 80px; right: -50px; width: 270px; transform: rotate(9deg); }
-  .bg-deco-3 { top: 38%; right: 4%; width: 130px; transform: rotate(18deg); opacity: .10; }
-  .bg-deco-4 { bottom: 32%; left: 3%; width: 140px; transform: rotate(-22deg); opacity: .10; }
-  .wrap { position: relative; z-index: 1; }
+.btn-outline:hover {
+  background: rgba(0,0,0,0.05);
+}
 
-  /* Subtle paper grain on the page */
-  body { background-image: radial-gradient(circle at 20% 10%, transparent 0, transparent 200px, rgba(0,0,0,0.015) 400px), radial-gradient(circle at 80% 90%, transparent 0, transparent 250px, rgba(0,0,0,0.02) 500px); background-attachment: fixed; }
+/* -------------------------------------------------------
+   TABS (Gioca / Archivio / Statistiche / Classifica / Badge / Impostazioni)
+------------------------------------------------------- */
+.tabPage { display: none; }
+.tabPage.active { display: block; }
 
-  /* Editorial pull quote */
-  .pull-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; color: var(--muted); text-align: center; margin: 36px 0 8px; padding: 14px 20px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); position: relative; }
-  .pull-quote::before { content: "\201C"; font-size: 60px; line-height: 0.5; color: var(--accent); margin-right: 6px; vertical-align: -22px; opacity: .5; }
+/* -------------------------------------------------------
+   QUIZ ELEMENTS (placeholder, JS li riempirà)
+------------------------------------------------------- */
+#quizRunning { display: none; }
+#finalScreen { display: none; }
 
-  /* Archive browser (consultazione) */
-  .archive-browser { margin-top: 28px; border-top: 1px solid var(--rule); padding-top: 20px; }
-  .archive-browser summary { cursor: pointer; padding: 12px 8px; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; letter-spacing: 2px; color: var(--ink); list-style: none; user-select: none; }
-  .archive-browser summary::-webkit-details-marker { display: none; }
-  .archive-browser summary::before { content: "▸ "; color: var(--accent); display: inline-block; transition: transform .2s; }
-  .archive-browser details[open] summary::before { content: "▾ "; }
-  .ab-tabs { display: flex !important; gap: 0; margin: 14px 0; border-bottom: 1px solid var(--rule); width: 100%; }
-  .ab-tab { flex: 1 1 50%; padding: 12px 8px; background: transparent; border: none; cursor: pointer; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; color: var(--muted); border-bottom: 3px solid transparent; -webkit-appearance: none; appearance: none; min-height: 44px; }
-  .ab-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-  .ab-pane { padding: 6px 0 14px; }
-  .ab-item { border-bottom: 1px solid var(--rule); padding: 14px 8px; cursor: pointer; transition: background .15s; min-height: 44px; }
-  .ab-item:hover { background: var(--paper-2); }
-  .ab-item h4 { margin: 0 0 4px; font-family: 'Playfair Display', serif; font-size: 17px; }
-  .ab-item .ab-meta { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
-  .ab-detail { margin-top: 10px; padding: 14px; background: var(--paper-2); border-left: 3px solid var(--accent); }
-  .ab-detail h5 { margin: 0 0 6px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 14px; color: var(--accent); }
-  .ab-detail .ab-titolo { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 18px; margin-bottom: 4px; line-height: 1.2; }
-  .ab-detail .ab-sopra { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; }
-  .ab-detail .ab-sotto { font-style: italic; color: var(--ink-2); font-size: 14px; }
-  .ab-detail-block { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); display: flex; gap: 14px; align-items: flex-start; }
-  .ab-detail-block:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-  .ab-detail-block .ab-thumb { flex-shrink: 0; width: 90px; height: 130px; object-fit: cover; border: 1px solid var(--rule); background: var(--paper-2); cursor: pointer; }
-  .ab-detail-block .ab-text { flex: 1; min-width: 0; }
-  .ab-back { color: var(--accent); cursor: pointer; font-size: 13px; margin-bottom: 10px; display: inline-block; padding: 6px 0; }
-  .ab-back:hover { text-decoration: underline; }
+/* -------------------------------------------------------
+   TOAST
+------------------------------------------------------- */
+.ng-toast {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(40px);
+  background: var(--fg);
+  color: var(--bg);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: 0.35s ease;
+  z-index: 200;
+}
 
-  /* Lightbox immagine archivio */
-  .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .lightbox .close { position: absolute; top: 16px; right: 20px; color: #fff; font-size: 32px; cursor: pointer; background: none; border: none; }
+.ng-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
-  @media (max-width: 480px) {
-    .ab-detail-block .ab-thumb { width: 70px; height: 100px; }
-    .ab-tab { font-size: 15px; padding: 14px 6px; }
-  }
+/* -------------------------------------------------------
+   MODALS (Cambia nome, Salva punteggio, Conferma uscita)
+------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  display: none;
+  z-index: 120;
+}
 
-  /* Notifiche */
-  .notif-section { margin-top: 28px; padding: 18px; border: 1px solid var(--rule); background: var(--paper-2); }
-  .notif-section .small-caps { margin: 0; }
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(90%, 420px);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 130;
+}
 
-  /* =========================================================
-     MENU A TENDINA (kebab, top-right)
-  ========================================================= */
-  .masthead { position: relative; }
-  .menu-trigger { position: absolute; top: 14px; right: 8px; width: 44px; height: 44px; border: none; background: transparent; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border-radius: 6px; transition: background .15s, transform .12s; z-index: 5; }
-  .menu-trigger:hover { background: var(--paper-2); }
-  .menu-trigger:active { transform: scale(0.92); }
-  .menu-trigger span { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); transition: transform .25s ease, opacity .2s; }
-  .menu-trigger[aria-expanded="true"] span:nth-child(1) { transform: translateY(9px) rotate(45deg) scale(1.4); background: var(--accent); }
-  .menu-trigger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scale(0); }
-  .menu-trigger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-9px) rotate(-45deg) scale(1.4); background: var(--accent); }
+.modal.show,
+.modal-backdrop.show {
+  display: block;
+}
 
-  .dropdown-backdrop { position: fixed; inset: 0; background: transparent; z-index: 9990; }
-  .dropdown-backdrop.hidden { display: none; }
-
-  .dropdown-menu { position: fixed; top: 56px; right: 12px; min-width: 240px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 10px 30px rgba(0,0,0,0.18); z-index: 9991; padding: 6px 0; transform-origin: top right; animation: ngDropdownOpen .22s cubic-bezier(.34,1.56,.64,1) both; }
-  .dropdown-menu.hidden { display: none; }
-  @keyframes ngDropdownOpen { 0% { opacity: 0; transform: scale(0.85) translateY(-8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-  .dropdown-item { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: none; background: transparent; cursor: pointer; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); text-align: left; transition: background .12s, transform .08s; }
-  .dropdown-item:hover { background: var(--paper-2); }
-  .dropdown-item:active { transform: scale(0.98); background: var(--paper-2); }
-  .dropdown-item .dd-ico { font-size: 20px; flex-shrink: 0; width: 24px; text-align: center; }
-
-  /* Confirm dialog (uscita partita) */
-  .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; animation: ngFadeInUp .25s ease both; }
-  .confirm-overlay.hidden { display: none; }
-  .confirm-dialog { background: var(--paper); border: 2px solid var(--rule); padding: 26px; max-width: 340px; width: 100%; text-align: center; animation: ngPopIn .3s cubic-bezier(.34,1.56,.64,1) both; }
-  .confirm-dialog h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin: 0 0 10px; }
-  .confirm-dialog p { color: var(--ink-2); margin: 0 0 20px; font-size: 15px; line-height: 1.5; }
-  .confirm-dialog .row { display: flex; gap: 10px; justify-content: center; }
-  .confirm-dialog .row .btn { flex: 1; max-width: 140px; }
-
-  /* =========================================================
-     ANIMAZIONI — stile moderno ma coerente con il mood quotidiano
-  ========================================================= */
-  @keyframes ngFadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  @keyframes ngPopIn { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
-  @keyframes ngBounceIn { 0% { transform: translateY(20px) scale(0.92); opacity: 0; } 60% { transform: translateY(-4px) scale(1.03); opacity: 1; } 100% { transform: translateY(0) scale(1); } }
-  @keyframes ngShake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-8px); } 30% { transform: translateX(8px); } 45% { transform: translateX(-6px); } 60% { transform: translateX(6px); } 75% { transform: translateX(-3px); } 90% { transform: translateX(3px); } }
-  @keyframes ngRightFlash { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0.5); } 50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(36,107,58,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0); } }
-  @keyframes ngWrongFlash { 0% { box-shadow: 0 0 0 0 rgba(176,16,16,0.55); } 60% { box-shadow: 0 0 0 14px rgba(176,16,16,0); } 100% { box-shadow: 0 0 0 0 rgba(176,16,16,0); } }
-  @keyframes ngPulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
-  @keyframes ngSlideFadeIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
-  @keyframes ngCountUp { from { transform: scale(0.5) rotate(-6deg); opacity: 0; } 60% { transform: scale(1.15) rotate(2deg); opacity: 1; } to { transform: scale(1) rotate(0); } }
-  @keyframes ngConfettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }
-
-  /* Applicazioni */
-  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; animation: ngFadeInUp .4s ease both; }
-  .mode-card:nth-child(1) { animation-delay: 40ms; }
-  .mode-card:nth-child(2) { animation-delay: 140ms; }
-  .mode-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
-  .mode-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
-
-  /* Pulsanti generici con piccola pressione */
-  .btn { transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
-  .btn:hover:not(:disabled) { transform: translateY(-1px); }
-  .btn:active:not(:disabled) { transform: scale(0.94); transition: transform .08s ease; }
-
-  /* Card domanda: entrata */
-  .qcard { animation: ngFadeInUp .35s ease both; }
-
-  /* Choice: apparizione scaglionata (stagger via --i) */
-  .choice { animation: ngFadeInUp .32s ease both; animation-delay: calc(var(--i, 0) * 70ms); transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
-  .choice:hover:not(:disabled) { transform: translateX(4px); }
-  .choice:active:not(:disabled) { transform: scale(0.96); background: var(--paper-2); transition: transform .08s ease, background .08s; }
-  .choice.right { animation: ngRightFlash .6s ease; }
-  .choice.wrong { animation: ngShake .5s ease, ngWrongFlash .6s ease; }
-
-  /* Progress dots: quello "current" pulsa */
-  .dot.current { animation: ngPulseDot 1.1s ease-in-out infinite; }
-
-  /* Next button */
-  #nextBtn { animation: ngBounceIn .38s ease both; }
-
-  /* Final screen animazioni */
-  .final .big-score { animation: ngCountUp .7s cubic-bezier(.34,1.56,.64,1) both; }
-  .final .verdict { animation: ngFadeInUp .5s ease both; animation-delay: .35s; }
-  .final table { animation: ngFadeInUp .4s ease both; animation-delay: .55s; }
-  .final .row { animation: ngFadeInUp .4s ease both; animation-delay: .75s; }
-
-  /* Tabs: underline glide */
-  .tab { position: relative; }
-  .tab.active { animation: ngPopIn .35s ease; }
-
-  /* Archive card hover lift + entrata staggerata */
-  .past-card { transition: transform .18s ease, box-shadow .18s; animation: ngFadeInUp .4s ease both; animation-delay: calc(var(--i, 0) * 60ms + 200ms); }
-  .past-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow); }
-  .past-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
-
-  /* Sezioni archivio + promemoria + backup: entrata soft */
-  .archive-browser, .notif-section { animation: ngFadeInUp .5s ease both; animation-delay: 350ms; }
-
-  /* Stat cards: entrata scaglionata */
-  .stat-card { animation: ngFadeInUp .4s ease both; }
-  .stat-card:nth-child(1) { animation-delay: 0ms; }
-  .stat-card:nth-child(2) { animation-delay: 80ms; }
-  .stat-card:nth-child(3) { animation-delay: 160ms; }
-  .stat-card:nth-child(4) { animation-delay: 240ms; }
-
-  /* Group pills: entrata leggera */
-  .group-pill { animation: ngSlideFadeIn .35s ease both; transition: transform .12s ease, background .15s; }
-  .group-pill:hover:not(.active) { transform: translateY(-1px); }
-
-  /* Toast (conferma azioni) */
-  .ng-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 12px 20px; border-left: 4px solid var(--accent); font-size: 14px; font-family: 'Libre Baskerville', serif; box-shadow: 0 8px 24px var(--shadow); opacity: 0; z-index: 9999; transition: opacity .25s ease, transform .25s ease; pointer-events: none; max-width: 90%; text-align: center; }
-  .ng-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* Confetti (perfect score) */
-  .ng-confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
-  .ng-confetti-piece { position: absolute; top: -14px; width: 10px; height: 14px; opacity: 0; animation: ngConfettiFall linear forwards; }
-
-  /* Rispetta le preferenze utente */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-  }
+/* -------------------------------------------------------
+   FINE CSS BLOCCO 1
+------------------------------------------------------- */
 </style>
 </head>
+
 <body>
-<div class="bg-decorations" aria-hidden="true">
-  <svg class="bg-deco bg-deco-1" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="10" y="30" width="180" height="150" rx="3"/>
-    <line x1="10" y1="62" x2="190" y2="62"/>
-    <text x="100" y="54" text-anchor="middle" font-family="Playfair Display, serif" font-style="italic" font-weight="900" font-size="20" stroke="none" fill="currentColor">il giornale</text>
-    <line x1="100" y1="62" x2="100" y2="180"/>
-    <line x1="20" y1="80" x2="90" y2="80"/><line x1="20" y1="92" x2="90" y2="92"/><line x1="20" y1="104" x2="85" y2="104"/><line x1="20" y1="116" x2="90" y2="116"/><line x1="20" y1="128" x2="78" y2="128"/><line x1="20" y1="140" x2="90" y2="140"/><line x1="20" y1="152" x2="70" y2="152"/><line x1="20" y1="164" x2="88" y2="164"/>
-    <line x1="110" y1="80" x2="180" y2="80"/><line x1="110" y1="92" x2="180" y2="92"/><line x1="110" y1="104" x2="180" y2="104"/><line x1="110" y1="116" x2="172" y2="116"/><line x1="110" y1="128" x2="180" y2="128"/><line x1="110" y1="140" x2="170" y2="140"/><line x1="110" y1="152" x2="180" y2="152"/><line x1="110" y1="164" x2="160" y2="164"/>
-  </svg>
-  <svg class="bg-deco bg-deco-2" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
-    <path d="M30 40 L130 40 L160 70 L160 175 L30 175 Z"/>
-    <path d="M130 40 L130 70 L160 70"/>
-    <line x1="45" y1="92" x2="145" y2="92"/><line x1="45" y1="106" x2="145" y2="106"/><line x1="45" y1="120" x2="130" y2="120"/><line x1="45" y1="134" x2="145" y2="134"/><line x1="45" y1="148" x2="115" y2="148"/><line x1="45" y1="162" x2="140" y2="162"/>
-  </svg>
-  <svg class="bg-deco bg-deco-3" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2">
-    <path d="M20 80 L20 30 Q20 20 30 20 L65 20 L80 35 L80 80 Z"/>
-    <path d="M65 20 L65 35 L80 35"/>
-    <line x1="32" y1="48" x2="68" y2="48"/><line x1="32" y1="58" x2="68" y2="58"/><line x1="32" y1="68" x2="58" y2="68"/>
-  </svg>
-  <svg class="bg-deco bg-deco-4" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2">
-    <circle cx="38" cy="38" r="18"/>
-    <circle cx="68" cy="38" r="18"/>
-    <line x1="56" y1="38" x2="50" y2="38"/>
-    <line x1="20" y1="38" x2="10" y2="46"/>
-    <line x1="86" y1="38" x2="96" y2="46"/>
-  </svg>
+<div id="appHeader">
+  <div id="menuBtn"><i class="lucide-menu"></i></div>
+  <div id="headerTitle">Newsguess</div>
+  <div id="themeBtn"><i class="lucide-sun"></i></div>
 </div>
-<div class="wrap">
 
-  <!-- Masthead -->
-  <header class="masthead">
-    <button class="menu-trigger" id="menuTrigger" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="brand-rule">EST. 2019 · QUIZ DEI QUOTIDIANI</div>
-    <h1>Newsguess</h1>
-    <div class="tagline">Il quiz delle prime pagine d'Italia</div>
-    <div class="meta">
-      <span id="todayDate">—</span>
-      <span class="accent">Edizione del lettore</span>
-      <span id="installBtn" class="install-link" style="display:none;cursor:pointer" onclick="triggerInstall()">📲 Installa app</span>
-    </div>
-  </header>
+<!-- SIDEBAR SHEET S2-A -->
+<div id="sidebarBackdrop"></div>
+<div id="sidebar">
+  <div class="sidebar-title">Menu</div>
 
-  <!-- Dropdown menu -->
-  <div id="dropdownMenu" class="dropdown-menu hidden" role="menu">
-    <button class="dropdown-item" data-action="archive" role="menuitem">
-      <span class="dd-ico">📂</span><span>Archivio storico</span>
-    </button>
-    <button class="dropdown-item" data-action="stats" role="menuitem">
-      <span class="dd-ico">📊</span><span>Le mie statistiche</span>
-    </button>
-    <button class="dropdown-item" data-action="leaderboard" role="menuitem">
-      <span class="dd-ico">🏆</span><span>Classifica gruppo</span>
-    </button>
-    <button class="dropdown-item" data-action="rename" role="menuitem">
-      <span class="dd-ico">⚙️</span><span>Cambia nome</span>
+  <div class="sidebar-item" data-tab="quiz"><i class="lucide-play-circle"></i> Gioca</div>
+  <div class="sidebar-item" data-tab="archive"><i class="lucide-archive"></i> Archivio</div>
+  <div class="sidebar-item" data-tab="stats"><i class="lucide-bar-chart-2"></i> Statistiche</div>
+  <div class="sidebar-item" data-tab="leaderboard"><i class="lucide-users"></i> Classifica</div>
+  <div class="sidebar-item" data-tab="badge"><i class="lucide-award"></i> Badge</div>
+  <div class="sidebar-item" data-tab="settings"><i class="lucide-settings"></i> Impostazioni</div>
+</div>
+
+<!-- PAGE CONTAINER -->
+<div id="pageContainer">
+  <!-- Le pagine arriveranno nei blocchi successivi -->
+<!-- ============================
+     PAGINA: GIOCA
+============================= -->
+<div id="page-quiz" class="tabPage active">
+
+  <div class="card">
+    <div class="card-title">Livello del giorno</div>
+    <div class="card-sub">Una sola partita al giorno. Mettiti alla prova con il titolo di oggi.</div>
+    <button id="dailyBtn" class="btn btn-primary" style="width:100%">
+      <i class="lucide-sunrise" style="margin-right:8px"></i> Gioca il Daily
     </button>
   </div>
-  <div id="dropdownBackdrop" class="dropdown-backdrop hidden"></div>
 
-  <!-- Tabs -->
-  <nav class="tabs">
-    <button class="tab active" data-tab="quiz">Quiz</button>
-    <button class="tab" data-tab="leaderboard">Classifica</button>
-    <button class="tab" data-tab="stats">Statistiche</button>
-  </nav>
-
-  <!-- iOS install hint (mostrato solo a Safari iOS non installato) -->
-  <div id="iosInstallHint" class="ios-hint hidden">
-    <div class="ios-hint-text">
-      <strong>📲 Installa Newsguess sul tuo iPhone</strong>
-      <span>Tap su <span class="ios-share">⬆︎</span> in basso → <em>"Aggiungi alla schermata Home"</em></span>
-    </div>
-    <button class="ios-hint-close" onclick="document.getElementById('iosInstallHint').classList.add('hidden'); localStorage.setItem('ios-hint-dismissed','1')">×</button>
+  <div class="card">
+    <div class="card-title">Allenamento</div>
+    <div class="card-sub">Gioca liberamente senza limiti. I punteggi non vanno in classifica.</div>
+    <button id="trainingBtn" class="btn btn-outline" style="width:100%">
+      <i class="lucide-dumbbell" style="margin-right:8px"></i> Inizia allenamento
+    </button>
   </div>
 
-  <!-- ======= QUIZ TAB ======= -->
-  <section id="tab-quiz">
+  <div class="card archive-browser">
+    <div class="card-title">Archivio</div>
+    <div class="card-sub">Rigioca i livelli dei giorni passati.</div>
 
-    <!-- Mode picker -->
-    <div id="modePicker">
-      <p class="small-caps">Scegli la modalità</p>
-      <div class="modes">
-        <div class="mode-card" data-mode="daily" id="dailyCard">
-          <h3>Livello del giorno</h3>
-          <p>5 domande con le prime pagine di oggi.<br><span class="daily-status" id="dailyStatus"></span></p>
-        </div>
-        <div class="mode-card" data-mode="training">
-          <h3>Allenamento libero</h3>
-          <p>5 domande casuali da un'edizione passata in archivio. Non conta in classifica.</p>
-        </div>
+    <details>
+      <summary style="cursor:pointer; font-weight:500; margin-bottom:10px">
+        Consulta archivio
+      </summary>
+      <div id="archiveList" style="margin-top:10px; font-size:15px; color:var(--fg-muted)">
+        <!-- JS riempie -->
       </div>
-      <p class="small-caps" style="margin-top:24px">Le 5 prime pagine di oggi che dovrai indovinare sono scelte casualmente fra le 10 testate.</p>
+    </details>
+  </div>
 
-      <div id="archiveSection" class="hidden" style="margin-top:28px">
-        <p class="small-caps">Edizioni precedenti dall'archivio</p>
-        <p style="color:var(--ink-2);font-size:13px;margin-top:6px">L'archivio cresce ogni giorno con le edizioni effettivamente giocate. Sono disponibili solo le date complete (5+ giornali archiviati).</p>
-        <div class="past-grid" id="pastGrid"></div>
-      </div>
+</div>
 
-      <div class="archive-browser">
-        <details>
-          <summary class="small-caps">Consulta archivio</summary>
-          <div class="ab-tabs">
-            <button class="ab-tab active" data-abtab="dates">Per data</button>
-            <button class="ab-tab" data-abtab="papers">Per giornale</button>
-          </div>
-          <div id="ab-pane-dates" class="ab-pane">
-            <p style="color:var(--muted);font-size:13px;margin:8px 0">Le edizioni passate archiviate (escluso il giorno corrente).</p>
-            <div id="abDatesList"></div>
-          </div>
-          <div id="ab-pane-papers" class="ab-pane hidden">
-            <p style="color:var(--muted);font-size:13px;margin:8px 0">Esplora l'archivio per testata.</p>
-            <div id="abPapersList"></div>
-          </div>
-        </details>
-      </div>
 
-      <div class="notif-section">
-        <p class="small-caps">Promemoria</p>
-        <p style="color:var(--ink-2);font-size:13px;margin:6px 0 10px">Ricevi una notifica ogni mattina alle 8:00 per non perderti la sfida del giorno.</p>
-        <button class="btn outline" id="notifBtn">📬 Attiva promemoria</button>
-        <p id="notifStatus" style="color:var(--muted);font-size:13px;margin-top:8px;font-style:italic"></p>
-      </div>
+<!-- ============================
+     PAGINA: ARCHIVIO (dettaglio)
+============================= -->
+<div id="page-archive" class="tabPage">
+  <div class="card">
+    <div class="card-title">Archivio</div>
+    <div class="card-sub">Seleziona un giorno per rigiocare il quiz.</div>
+    <div id="archiveFullList">
+      <!-- JS riempie -->
+    </div>
+  </div>
+</div>
 
-      <div class="notif-section" style="margin-top:14px">
-        <p class="small-caps">Backup archivio</p>
-        <p style="color:var(--ink-2);font-size:13px;margin:6px 0 10px">Scarica una copia di tutti i titoli e immagini archiviati. Conservala per non perdere lo storico.</p>
-        <a href="/api/backup.zip" class="btn outline" download>📥 Scarica backup</a>
-      </div>
 
-      <div class="pull-quote">L'informazione è il più democratico dei diritti.</div>
+<!-- ============================
+     PAGINA: STATISTICHE
+============================= -->
+<div id="page-stats" class="tabPage">
+
+  <div class="card">
+    <div class="card-title">Statistiche personali</div>
+    <div class="card-sub">Andamento, precisione e attività.</div>
+
+    <div id="statsEmpty" class="hidden" style="color:var(--fg-muted); font-style:italic">
+      Nessuna partita registrata.
     </div>
 
-    <!-- Loading -->
-    <div id="loading" class="loading hidden">
-      <div class="spinner"></div>
-      <p class="small-caps" id="loadingText">Caricamento…</p>
-    </div>
-
-    <!-- Error -->
-    <div id="errorBox" class="errbox hidden">
-      <h4>Errore di caricamento</h4>
-      <p id="errorMsg"></p>
-      <p id="errorHint" style="font-size:13px;color:var(--muted)">Suggerimento: prova fra qualche minuto.</p>
-      <button class="btn outline" onclick="resetToMenu()">Torna al menù</button>
-    </div>
-
-    <!-- Quiz running -->
-    <div id="quizRunning" class="hidden">
-      <div class="scorebar">
-        <span class="small-caps" id="qProgress">Domanda 1 di 5</span>
-        <div class="dots" id="dots"></div>
-      </div>
-      <div class="qcard">
-        <div class="extracted">
-          <div class="sopra" id="exSopra"></div>
-          <div class="titolo" id="exTitolo"></div>
-          <div class="sotto" id="exSotto"></div>
-        </div>
-        <p class="small-caps" style="margin-bottom:10px">Da quale giornale proviene?</p>
-        <div class="choices" id="choices"></div>
-        <div class="row">
-          <button class="btn" id="nextBtn" style="display:none">Prossima domanda →</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Final screen -->
-    <div id="finalScreen" class="hidden">
-      <div class="final">
-        <p class="small-caps">Risultato</p>
-        <div class="big-score"><span id="finalScore">0</span><span style="opacity:.3">/5</span></div>
-        <div class="verdict" id="verdict">—</div>
-        <table id="recapTable"></table>
-        <div class="row" style="justify-content:center;margin-top:20px">
-          <button class="btn accent" id="saveScoreBtn">Salva punteggio</button>
-          <button class="btn" id="trainAgainBtn" style="display:none">Altro allenamento</button>
-          <button class="btn outline" onclick="resetToMenu()">Menù principale</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======= LEADERBOARD TAB ======= -->
-  <section id="tab-leaderboard" class="hidden">
-    <div id="lbLogin" class="lb-form">
-      <h2>Sfida con gli amici</h2>
-      <p style="color:var(--ink-2);margin-top:0">Crea un gruppo e condividi il codice con i tuoi amici, oppure unisciti a un gruppo esistente.</p>
-
-      <div class="lb-tabs">
-        <button class="lb-tab active" data-lbtab="join">Unisciti</button>
-        <button class="lb-tab" data-lbtab="create">Crea gruppo</button>
-      </div>
-
-      <!-- JOIN -->
-      <div class="lb-pane" id="lbPane-join">
-        <label for="lbJoinName">Il tuo nome</label>
-        <input id="lbJoinName" type="text" maxlength="24" placeholder="Es. Giulia" />
-        <label for="lbJoinCode">Codice del gruppo</label>
-        <input id="lbJoinCode" type="text" maxlength="8" placeholder="Es. AB12CD" style="text-transform:uppercase;letter-spacing:3px" />
-        <button class="btn accent" id="lbJoinBtn">Entra nel gruppo</button>
-        <p id="lbJoinErr" style="color:var(--red);margin-top:10px;display:none"></p>
-      </div>
-
-      <!-- CREATE -->
-      <div class="lb-pane hidden" id="lbPane-create">
-        <label for="lbCreateName">Il tuo nome</label>
-        <input id="lbCreateName" type="text" maxlength="24" placeholder="Es. Giulia" />
-        <label for="lbCreateGroup">Nome del gruppo</label>
-        <input id="lbCreateGroup" type="text" maxlength="32" placeholder="Es. Amici di Carlo" />
-        <button class="btn accent" id="lbCreateBtn">Crea il gruppo</button>
-        <p id="lbCreateErr" style="color:var(--red);margin-top:10px;display:none"></p>
-      </div>
-    </div>
-
-    <!-- Group just created -->
-    <div id="lbCreated" class="lb-form hidden">
-      <h2>Gruppo creato! 🎉</h2>
-      <p>Condividi questo codice con i tuoi amici per farli partecipare alla classifica.</p>
-      <div class="code-box" id="newGroupCode">—</div>
-      <button class="btn outline" id="lbCopyCodeBtn">Copia codice</button>
-      <button class="btn accent" id="lbCreatedContinueBtn" style="margin-left:8px">Vai alla classifica</button>
-    </div>
-
-    <div id="lbContent" class="hidden">
-      <div class="lb-user-info">
-        <div class="who">Ciao <span id="lbWho">—</span> <button class="edit-name-btn" id="lbEditNameBtn" title="Cambia nome">✏️</button></div>
-        <button class="btn outline" id="lbLogoutBtn">Esci</button>
-      </div>
-      <div class="lb-section">
-        <p class="small-caps">I tuoi gruppi</p>
-        <div class="group-pills" id="groupPills"></div>
-        <div class="row" style="margin-top:10px">
-          <button class="btn outline" id="lbAddJoinBtn">+ Unisciti a un altro gruppo</button>
-          <button class="btn outline" id="lbAddCreateBtn">+ Crea un nuovo gruppo</button>
-        </div>
-      </div>
-      <div class="lb-section">
-        <h2>Classifica del giorno · <span id="lbActiveGroup" class="code-inline">—</span></h2>
-        <p class="small-caps" id="lbDayDate">—</p>
-        <table class="lb-table" id="lbDayTable"><tbody></tbody></table>
-        <p id="lbDayEmpty" style="color:var(--muted);font-style:italic">Nessun punteggio oggi. Sii il primo!</p>
-      </div>
-      <div class="lb-section">
-        <h2>Classifica mensile</h2>
-        <p class="small-caps" id="lbMonthLabel">—</p>
-        <table class="lb-table" id="lbMonthTable"><tbody></tbody></table>
-        <p id="lbMonthEmpty" style="color:var(--muted);font-style:italic">Nessun punteggio questo mese.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======= STATS TAB ======= -->
-  <section id="tab-stats" class="hidden">
-    <div id="statsEmpty" class="hidden" style="text-align:center;padding:40px 20px;color:var(--muted)">
-      <p style="font-size:18px;font-style:italic">Non hai ancora giocato a Newsguess.</p>
-      <p>Gioca la tua prima partita per iniziare a tracciare le statistiche.</p>
-    </div>
     <div id="statsContent" class="hidden">
-      <div class="lb-section">
-        <h2>Le tue statistiche</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="stTotalGames">0</div>
-            <div class="stat-label">Partite giocate</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stAvgScore">0</div>
-            <div class="stat-label">Media punteggio</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stStreak">0</div>
-            <div class="stat-label">Streak giornaliera</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stBestScore">0</div>
-            <div class="stat-label">Punteggio massimo</div>
-          </div>
+
+      <div class="stat-block">
+        <div class="stat-row">
+          <div class="stat-label">Partite totali</div>
+          <div class="stat-value" id="stTotalGames">0</div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-label">Media</div>
+          <div class="stat-value" id="stAvgScore">0.0</div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-label">Streak</div>
+          <div class="stat-value" id="stStreak">0</div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-label">Miglior punteggio</div>
+          <div class="stat-value" id="stBestScore">0</div>
         </div>
       </div>
-      <div class="lb-section">
-        <h2>Precisione per giornale</h2>
-        <p class="small-caps" id="stPaperNote">Aggiornato dopo ogni partita</p>
-        <table class="lb-table" id="stPaperTable"><tbody></tbody></table>
-      </div>
-      <div class="lb-section">
-        <h2>Ultime partite</h2>
-        <table class="lb-table" id="stRecentTable"><tbody></tbody></table>
-      </div>
-      <div class="lb-section" style="text-align:center">
-        <button class="btn outline" id="stResetBtn">Azzera statistiche</button>
-      </div>
-    </div>
-  </section>
 
-  <!-- Confirm exit dialog -->
-  <div id="confirmExit" class="confirm-overlay hidden">
-    <div class="confirm-dialog">
-      <h3>Vuoi davvero uscire?</h3>
-      <p>Stai giocando il <strong>Livello del giorno</strong>. Se esci adesso perderai i progressi della partita.</p>
-      <div class="row">
-        <button class="btn outline" id="confirmExitNo">Annulla</button>
-        <button class="btn accent" id="confirmExitYes">Esci</button>
-      </div>
-    </div>
-  </div>
+      <div class="card-sub" style="margin-top:20px">Precisione per giornale</div>
+      <table id="stPaperTable" class="stats-table"></table>
 
-  <!-- Change name modal -->
-  <div id="nameModal" class="modal-overlay hidden">
-    <div class="modal">
-      <h2>Cambia nome</h2>
-      <p style="margin-top:0">Il tuo nuovo nome apparirà nelle classifiche da ora in poi (i punteggi precedenti restano col vecchio nome).</p>
-      <label for="nameModalInput" style="display:block;margin-top:10px;font-weight:700">Nuovo nome</label>
-      <input id="nameModalInput" type="text" maxlength="24" placeholder="Es. Giulia" style="width:100%;padding:10px;font-family:inherit;font-size:16px;border:1px solid var(--rule);background:var(--paper);color:var(--ink);margin-top:6px" />
-      <p id="nameModalErr" style="color:var(--red);font-size:13px;display:none;margin:6px 0"></p>
-      <div class="row" style="justify-content:flex-end;margin-top:14px">
-        <button class="btn outline" id="nameModalCancel">Annulla</button>
-        <button class="btn accent" id="nameModalConfirm">Salva</button>
-      </div>
-    </div>
-  </div>
-  <div id="saveModal" class="modal-overlay hidden">
-    <div class="modal">
-      <h2>Salva punteggio</h2>
-      <p style="margin-top:0">Scegli in quali gruppi salvare il tuo punteggio (<strong id="saveModalScore">0/5</strong>):</p>
-      <div id="saveModalGroups"></div>
-      <p id="saveModalErr" style="color:var(--red);font-size:13px;display:none;margin:6px 0"></p>
-      <div class="row" style="justify-content:flex-end;margin-top:14px">
-        <button class="btn outline" id="saveModalCancel">Annulla</button>
-        <button class="btn accent" id="saveModalConfirm">Salva</button>
-      </div>
+      <div class="card-sub" style="margin-top:20px">Ultime partite</div>
+      <table id="stRecentTable" class="stats-table"></table>
+
+      <button id="stResetBtn" class="btn btn-outline" style="margin-top:20px; width:100%">
+        <i class="lucide-rotate-ccw" style="margin-right:8px"></i> Azzera statistiche
+      </button>
+
     </div>
   </div>
 
 </div>
 
-<!-- Firebase SDK via CDN (compat for simplicity) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
+<!-- ============================
+     PAGINA: CLASSIFICA
+============================= -->
+<div id="page-leaderboard" class="tabPage">
+
+  <div class="card">
+    <div class="card-title">I tuoi gruppi</div>
+    <div id="groupPills" style="margin-bottom:12px">
+      <!-- JS riempie -->
+    </div>
+
+    <div class="btn btn-outline" id="lbAddJoinBtn" style="width:100%; margin-bottom:8px">
+      <i class="lucide-user-plus" style="margin-right:8px"></i> Unisciti a un gruppo
+    </div>
+
+    <div class="btn btn-outline" id="lbAddCreateBtn" style="width:100%">
+      <i class="lucide-folder-plus" style="margin-right:8px"></i> Crea un gruppo
+    </div>
+  </div>
+
+  <div id="lbLogin" class="card hidden">
+    <div class="card-title">Accedi ai gruppi</div>
+
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-lbtab="join">Unisciti</button>
+      <button class="lb-tab" data-lbtab="create">Crea</button>
+    </div>
+
+    <!-- JOIN -->
+    <div id="lbPane-join">
+      <div class="card-sub">Inserisci il tuo nome e il codice del gruppo.</div>
+      <input id="lbJoinName" class="input" placeholder="Il tuo nome">
+      <input id="lbJoinCode" class="input" placeholder="Codice gruppo">
+      <div id="lbJoinErr" class="err"></div>
+      <button id="lbJoinBtn" class="btn btn-primary" style="width:100%; margin-top:10px">Entra nel gruppo</button>
+    </div>
+
+    <!-- CREATE -->
+    <div id="lbPane-create" class="hidden">
+      <div class="card-sub">Crea un nuovo gruppo.</div>
+      <input id="lbCreateName" class="input" placeholder="Il tuo nome">
+      <input id="lbCreateGroup" class="input" placeholder="Nome del gruppo">
+      <div id="lbCreateErr" class="err"></div>
+      <button id="lbCreateBtn" class="btn btn-primary" style="width:100%; margin-top:10px">Crea il gruppo</button>
+    </div>
+  </div>
+
+  <div id="lbCreated" class="card hidden">
+    <div class="card-title">Gruppo creato!</div>
+    <div class="card-sub">Codice del gruppo:</div>
+    <div id="newGroupCode" style="font-size:26px; font-weight:600; margin-bottom:12px"></div>
+    <button id="lbCopyCodeBtn" class="btn btn-outline" style="width:100%; margin-bottom:10px">Copia codice</button>
+    <button id="lbCreatedContinueBtn" class="btn btn-primary" style="width:100%">Continua</button>
+  </div>
+
+  <div id="lbContent" class="hidden">
+
+    <div class="card">
+      <div class="card-title">Classifica del giorno</div>
+      <div class="card-sub" id="lbDayDate"></div>
+      <table id="lbDayTable" class="stats-table">
+        <tbody></tbody>
+      </table>
+      <div id="lbDayEmpty" class="card-sub" style="display:none; color:var(--fg-muted)">Nessun punteggio oggi.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Classifica del mese</div>
+      <div class="card-sub" id="lbMonthLabel"></div>
+      <table id="lbMonthTable" class="stats-table">
+        <tbody></tbody>
+      </table>
+      <div id="lbMonthEmpty" class="card-sub" style="display:none; color:var(--fg-muted)">Nessun punteggio questo mese.</div>
+    </div>
+
+    <button id="lbLogoutBtn" class="btn btn-outline" style="width:100%; margin-top:10px">
+      <i class="lucide-log-out" style="margin-right:8px"></i> Esci dai gruppi
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ============================
+     PAGINA: BADGE
+============================= -->
+<div id="page-badge" class="tabPage">
+
+  <div class="card">
+    <div class="card-title">Badge</div>
+    <div class="card-sub">Obiettivi e traguardi raggiunti.</div>
+
+    <div id="badgeGrid" class="badge-grid">
+      <!-- JS riempie -->
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ============================
+     PAGINA: IMPOSTAZIONI
+============================= -->
+<div id="page-settings" class="tabPage">
+
+  <div class="card">
+    <div class="card-title">Profilo</div>
+    <div class="card-sub">Modifica il tuo nome.</div>
+    <button id="settingsRenameBtn" class="btn btn-outline" style="width:100%">
+      <i class="lucide-edit-3" style="margin-right:8px"></i> Cambia nome
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tema</div>
+    <div class="card-sub">Scegli l’aspetto dell’app.</div>
+
+    <div class="theme-row">
+      <button class="themeBtn" data-theme="light">Chiaro</button>
+      <button class="themeBtn" data-theme="dark">Scuro</button>
+      <button class="themeBtn" data-theme="system">Sistema</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Informazioni</div>
+    <div class="card-sub">Versione app, privacy e note.</div>
+    <div style="font-size:14px; color:var(--fg-muted)">
+      Newsguess © 2026<br>
+      Tutti i diritti riservati.
+    </div>
+  </div>
+
+</div>
+<!-- ============================
+     QUIZ RUNNING
+============================= -->
+<div id="quizRunning">
+
+  <div class="card" id="quizCard">
+
+    <div id="quizHeader" style="margin-bottom:16px">
+      <div id="quizProgressText" style="font-size:15px; color:var(--fg-muted)">
+        <!-- es: 3 / 10 -->
+      </div>
+
+      <div id="quizProgressBar" style="height:6px; background:var(--border); border-radius:4px; margin-top:6px; overflow:hidden">
+        <div id="quizProgressFill" style="height:100%; width:0%; background:var(--accent); transition:width .25s"></div>
+      </div>
+    </div>
+
+    <div id="quizQuestion">
+      <!-- JS inserisce titolo, sottotitolo, giornale -->
+    </div>
+
+    <div id="quizChoices" style="margin-top:20px">
+      <!-- JS inserisce bottoni -->
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ============================
+     FINAL SCREEN
+============================= -->
+<div id="finalScreen">
+
+  <div class="card" id="finalCard">
+
+    <div style="text-align:center; margin-bottom:20px">
+      <div style="font-family:'Space Grotesk', sans-serif; font-size:48px; font-weight:600" id="finalScoreBig">
+        <!-- es: 7/10 -->
+      </div>
+      <div id="finalBadge" style="font-size:18px; margin-top:6px; color:var(--fg-muted)">
+        <!-- es: “Direttore emerito” -->
+      </div>
+    </div>
+
+    <table class="stats-table" id="finalTable">
+      <!-- JS riempie -->
+    </table>
+
+    <button id="saveScoreBtn" class="btn btn-primary" style="width:100%; margin-top:20px">
+      <i class="lucide-save" style="margin-right:8px"></i> Salva punteggio
+    </button>
+
+    <button id="trainAgainBtn" class="btn btn-outline" style="width:100%; margin-top:10px">
+      <i class="lucide-refresh-ccw" style="margin-right:8px"></i> Allenati ancora
+    </button>
+
+    <button id="backToMenuBtn" class="btn btn-outline" style="width:100%; margin-top:10px">
+      <i class="lucide-home" style="margin-right:8px"></i> Torna al menu
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ============================
+     MODAL: CAMBIA NOME
+============================= -->
+<div id="nameModalBackdrop" class="modal-backdrop"></div>
+<div id="nameModal" class="modal">
+
+  <div class="card-title" style="margin-bottom:10px">Cambia nome</div>
+
+  <input id="nameModalInput" class="input" placeholder="Il tuo nome">
+  <div id="nameModalErr" class="err" style="margin-top:6px; display:none"></div>
+
+  <div style="display:flex; gap:10px; margin-top:20px">
+    <button id="nameModalCancel" class="btn btn-outline" style="flex:1">Annulla</button>
+    <button id="nameModalConfirm" class="btn btn-primary" style="flex:1">Conferma</button>
+  </div>
+
+</div>
+
+
+<!-- ============================
+     MODAL: SALVA PUNTEGGIO
+============================= -->
+<div id="saveModalBackdrop" class="modal-backdrop"></div>
+<div id="saveModal" class="modal">
+
+  <div class="card-title" style="margin-bottom:10px">Salva punteggio</div>
+
+  <div class="card-sub" style="margin-bottom:10px">
+    Punteggio: <strong id="saveModalScore"></strong>
+  </div>
+
+  <div id="saveModalGroups" style="max-height:220px; overflow-y:auto; margin-bottom:10px">
+    <!-- JS riempie -->
+  </div>
+
+  <div id="saveModalErr" class="err" style="display:none; margin-bottom:10px"></div>
+
+  <div style="display:flex; gap:10px; margin-top:10px">
+    <button id="saveModalCancel" class="btn btn-outline" style="flex:1">Annulla</button>
+    <button id="saveModalConfirm" class="btn btn-primary" style="flex:1">Salva</button>
+  </div>
+
+</div>
+
+
+<!-- ============================
+     MODAL: CONFERMA USCITA QUIZ
+============================= -->
+<div id="confirmExitBackdrop" class="modal-backdrop"></div>
+<div id="confirmExit" class="modal">
+
+  <div class="card-title" style="margin-bottom:10px">Uscire dal quiz?</div>
+
+  <div class="card-sub" style="margin-bottom:20px">
+    Se esci ora, perderai il progresso della partita.
+  </div>
+
+  <div style="display:flex; gap:10px">
+    <button id="confirmExitNo" class="btn btn-outline" style="flex:1">Rimani</button>
+    <button id="confirmExitYes" class="btn btn-primary" style="flex:1">Esci</button>
+  </div>
+
+</div>
+
+<style>
+/* -------------------------------------------------------
+   INPUT
+------------------------------------------------------- */
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 15px;
+  margin-bottom: 10px;
+  transition: border-color .2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* -------------------------------------------------------
+   ERROR TEXT
+------------------------------------------------------- */
+.err {
+  color: #e54848;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* -------------------------------------------------------
+   STATISTICHE — TABELLE
+------------------------------------------------------- */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-table tr.me {
+  background: rgba(30, 79, 163, 0.08);
+}
+
+.stats-table tr:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+/* -------------------------------------------------------
+   BADGE GRID
+------------------------------------------------------- */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.badge-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.badge-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.badge-name {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* -------------------------------------------------------
+   GROUP PILLS
+------------------------------------------------------- */
+.group-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 20px;
+  margin: 4px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.group-pill.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.group-pill:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.group-pill.active:hover {
+  background: var(--accent-light);
+}
+
+.pill-name {
+  font-weight: 500;
+}
+
+.code-mini {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.pill-x {
+  margin-left: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.pill-x:hover {
+  opacity: 1;
+}
+
+/* -------------------------------------------------------
+   LB TABS (JOIN / CREATE)
+------------------------------------------------------- */
+.lb-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.lb-tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 15px;
+  transition: background .2s;
+}
+
+.lb-tab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* -------------------------------------------------------
+   THEME BUTTONS
+------------------------------------------------------- */
+.theme-row {
+  display: flex;
+  gap: 10px;
+}
+
+.themeBtn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-size: 15px;
+  transition: background .2s;
+}
+
+.themeBtn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* -------------------------------------------------------
+   QUIZ QUESTION
+------------------------------------------------------- */
+#quizQuestion {
+  font-family: "Playfair Display", serif;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.quiz-subtitle {
+  font-size: 15px;
+  color: var(--fg-muted);
+  margin-top: 6px;
+}
+
+.quiz-paper {
+  font-size: 14px;
+  color: var(--accent);
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------
+   QUIZ CHOICES
+------------------------------------------------------- */
+.choice-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card);
+  margin-bottom: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.choice-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.choice-correct {
+  background: #22c55e !important;
+  border-color: #22c55e !important;
+  color: #fff !important;
+}
+
+.choice-wrong {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  color: #fff !important;
+}
+
+/* -------------------------------------------------------
+   ARCHIVE LIST
+------------------------------------------------------- */
+.archive-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.archive-item:hover {
+  background: rgba(0,0,0,0.04);
+}
+
+/* -------------------------------------------------------
+   MODAL ANIMATIONS
+------------------------------------------------------- */
+.modal {
+  animation: modalIn .25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -46%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* -------------------------------------------------------
+   FINE CSS BLOCCO 4
+------------------------------------------------------- */
+</style>
 <script>
-/* =========================================================
-   CONFIGURAZIONE
-   =========================================================
-   Le chiamate a Claude Vision sono delegate al backend FastAPI
-   (endpoint /api/extract-headlines) che usa la Emergent LLM Key
-   già configurata in /app/backend/.env. Nessuna chiave esposta
-   nel browser.
-
-   Firebase: classifica condivisa via Firestore. Crea un progetto
-   su https://console.firebase.google.com, attiva Firestore in
-   "test mode" e copia qui sotto i valori del Web App Config.
-
-   GROUPS: dizionario {password: nome_gruppo}. Stessa password
-   = stesso gruppo = stessa classifica condivisa.
-========================================================= */
+// ===============================
+// CONFIGURAZIONE + COSTANTI
+// ===============================
 
 const firebaseConfig = {
-  apiKey:            "AIzaSyCMqbGeZjwwExSE3s6RqXSU9czD0gTvn_Y",
-  authDomain:        "giornali-4cdfe.firebaseapp.com",
-  projectId:         "giornali-4cdfe",
-  storageBucket:     "giornali-4cdfe.firebasestorage.app",
+  apiKey: "AIzaSyCMqbGeZjwwExSE3s6RqXSU9czD0gTvn_Y",
+  authDomain: "giornali-4cdfe.firebaseapp.com",
+  projectId: "giornali-4cdfe",
+  storageBucket: "giornali-4cdfe.firebasestorage.app",
   messagingSenderId: "911753113078",
-  appId:             "1:911753113078:web:098f358c69273158ba6bd7"
+  appId: "1:911753113078:web:098f358c69273158ba6bd7"
 };
 
-/* I gruppi vengono creati dinamicamente dagli utenti.
-   Ogni gruppo ha un codice random condivisibile. Vedi sezione "Login" più giù. */
-
-/* ===== I 10 GIORNALI ===== */
 const NEWSPAPERS = [
-  { id: "corriere",   name: "Corriere della Sera",   slug: "corriere-della-sera",   clue: "Quotidiano milanese fondato nel 1876, considerato giornale di riferimento del centro-Italia." },
-  { id: "repubblica", name: "La Repubblica",         slug: "la-repubblica",         clue: "Fondato da Eugenio Scalfari nel 1976, formato tabloid, area progressista." },
-  { id: "stampa",     name: "La Stampa",             slug: "la-stampa",             clue: "Quotidiano torinese di proprietà GEDI, storicamente legato a FIAT." },
-  { id: "fatto",      name: "Il Fatto Quotidiano",   slug: "il-fatto-quotidiano",   clue: "Nato nel 2009, taglio inchiestistico, fondato da Padellaro e Travaglio." },
-  { id: "messaggero", name: "Il Messaggero",         slug: "il-messaggero",         clue: "Storico quotidiano romano, fondato nel 1878." },
-  { id: "giornale",   name: "Il Giornale",           slug: "il-giornale",           clue: "Fondato da Indro Montanelli nel 1974, oggi area centrodestra." },
-  { id: "libero",     name: "Libero",                slug: "libero",                clue: "Quotidiano nato nel 2000, titoli forti e provocatori, area conservatrice." },
-  { id: "manifesto",  name: "Il Manifesto",          slug: "il-manifesto",          clue: "Cooperativa di giornalisti dal 1969, sottotitolo \"quotidiano comunista\"." },
-  { id: "sole",       name: "Il Sole 24 Ore",        slug: "il-sole-24-ore",        clue: "Carta color salmone, di proprietà di Confindustria, focus economico-finanziario." },
-  { id: "avvenire",   name: "Avvenire",              slug: "avvenire",              clue: "Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
+  { id:"corriere", name:"Corriere della Sera", slug:"corriere-della-sera", clue:"Quotidiano milanese fondato nel 1876, considerato giornale di riferimento del centro-Italia." },
+  { id:"repubblica", name:"La Repubblica", slug:"la-repubblica", clue:"Fondato da Eugenio Scalfari nel 1976, formato tabloid, area progressista." },
+  { id:"stampa", name:"La Stampa", slug:"la-stampa", clue:"Quotidiano torinese di proprietà GEDI, storicamente legato a FIAT." },
+  { id:"fatto", name:"Il Fatto Quotidiano", slug:"il-fatto-quotidiano", clue:"Nato nel 2009, taglio inchiestistico, fondato da Padellaro e Travaglio." },
+  { id:"messaggero", name:"Il Messaggero", slug:"il-messaggero", clue:"Storico quotidiano romano, fondato nel 1878." },
+  { id:"giornale", name:"Il Giornale", slug:"il-giornale", clue:"Fondato da Indro Montanelli nel 1974, oggi area centrodestra." },
+  { id:"libero", name:"Libero", slug:"libero", clue:"Quotidiano nato nel 2000, titoli forti e provocatori, area conservatrice." },
+  { id:"manifesto", name:"Il Manifesto", slug:"il-manifesto", clue:"Cooperativa di giornalisti dal 1969, sottotitolo 'quotidiano comunista'." },
+  { id:"sole", name:"Il Sole 24 Ore", slug:"il-sole-24-ore", clue:"Carta color salmone, di proprietà di Confindustria, focus economico-finanziario." },
+  { id:"avvenire", name:"Avvenire", slug:"avvenire", clue:"Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
 ];
 
-/* Nota: giornalone.it non ha un archivio storico realmente accessibile,
-   perciò il quiz lavora solo sulle prime pagine di OGGI. */
-
-/* ===== Stato app ===== */
 const state = {
   mode: null,
   dateISO: null,
   questions: [],
   current: 0,
   score: 0,
-  // user: { name: 'Giulia', groups: [{code, name}, ...], activeGroupCode: 'AB12CD' }
-  user: null,
+  user: null
 };
 
+const USER_KEY = "quizUser";
+const STATS_KEY = "stats-history";
+
+const $ = (id) => document.getElementById(id);
+
+const todayISO = () => {
+  const d = new Date();
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+};
+
+const monthKey = (iso) => iso.slice(0,7);
 const dailyDoneKey = (iso) => `daily-done-${iso}`;
 const dailyDoneToday = () => localStorage.getItem(dailyDoneKey(todayISO()));
 
-/* Persistenza utente: localStorage (resta tra le sessioni). Chiave: quizUser */
-const USER_KEY = 'quizUser';
+const fmtDateIT = (iso) => {
+  const [y,m,d] = iso.split("-");
+  const months = ["gennaio","febbraio","marzo","aprile","maggio","giugno","luglio","agosto","settembre","ottobre","novembre","dicembre"];
+  return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
+};
+
+const shuffle = (arr) => {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+};
+
+const sampleN = (arr,n) => shuffle(arr).slice(0,n);
+
+
+// ===============================
+// USER PERSISTENCE
+// ===============================
+
 function loadUser() {
   let raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
   if (!raw) return null;
   try {
     const u = JSON.parse(raw);
-    // Migrazione formato vecchio: { name, group, groupCode } -> { name, groups: [...], activeGroupCode }
     if (u.groupCode && !u.groups) {
-      return { name: u.name, groups: [{ code: u.groupCode, name: u.group || u.groupCode }], activeGroupCode: u.groupCode };
+      return { name:u.name, groups:[{code:u.groupCode,name:u.group||u.groupCode}], activeGroupCode:u.groupCode };
     }
     if (u.groups && Array.isArray(u.groups)) {
       if (!u.activeGroupCode && u.groups[0]) u.activeGroupCode = u.groups[0].code;
@@ -806,703 +1050,509 @@ function loadUser() {
     return null;
   } catch { return null; }
 }
+
 function saveUser() {
   if (state.user) localStorage.setItem(USER_KEY, JSON.stringify(state.user));
-  else { localStorage.removeItem(USER_KEY); sessionStorage.removeItem(USER_KEY); }
-}
-
-/* ===== Helpers ===== */
-const $ = (id) => document.getElementById(id);
-/* La "giornata" del quiz va dalle 06:00 alle 05:59 della mattina seguente.
-   Prima delle 6 mostriamo ancora la sfida del giorno precedente (i giornali escono fra le 5 e le 6). */
-const todayISO = () => {
-  const d = new Date();
-  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
-  // Calcoliamo la data localmente (no toISOString che è UTC) per evitare slittamenti
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-};
-const monthKey = (iso) => iso.slice(0,7); // YYYY-MM
-const fmtDateIT = (iso) => {
-  const [y,m,d] = iso.split('-');
-  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
-  return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
-};
-const shuffle = (arr) => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
+  else {
+    localStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(USER_KEY);
   }
-  return a;
-};
-const sampleN = (arr, n) => shuffle(arr).slice(0, n);
-
-$('todayDate').textContent = fmtDateIT(todayISO());
-
-/* ===== PWA: registrazione service worker ===== */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/api/sw.js', { scope: '/api/' }).catch(err => console.warn('SW reg failed:', err));
-  });
 }
+
+state.user = loadUser();
+
+
+// ===============================
+// NAVIGAZIONE A PAGINE (NAV-A)
+// ===============================
+
+function openPage(page) {
+  const pages = [
+    "page-quiz",
+    "page-archive",
+    "page-stats",
+    "page-leaderboard",
+    "page-badge",
+    "page-settings"
+  ];
+  pages.forEach(p => $(p).classList.add("hidden"));
+  $(`page-${page}`).classList.remove("hidden");
+
+  if (page === "stats") renderStats();
+  if (page === "leaderboard") refreshLeaderboards();
+
+  NG_HISTORY.push(`page-${page}`);
+}
+
+document.querySelectorAll("#sidebar .sidebar-item").forEach(it => {
+  it.addEventListener("click", () => {
+    const tab = it.dataset.tab;
+    closeSidebar();
+    openPage(tab);
+  });
+});
+
+
+// ===============================
+// SIDEBAR S2-A
+// ===============================
+
+const sidebar = $("sidebar");
+const sidebarBackdrop = $("sidebarBackdrop");
+
+function openSidebar() {
+  sidebar.classList.add("open");
+  sidebarBackdrop.classList.add("open");
+  NG_HISTORY.push("sidebar");
+}
+
+function closeSidebar(skipHistory) {
+  sidebar.classList.remove("open");
+  sidebarBackdrop.classList.remove("open");
+  if (!skipHistory && history.state?.name === "sidebar") history.back();
+}
+
+$("menuBtn").addEventListener("click", openSidebar);
+sidebarBackdrop.addEventListener("click", () => closeSidebar());
+
+
+// ===============================
+// HISTORY STACK
+// ===============================
+
+const NG_HISTORY = {
+  push(name, data={}) {
+    history.pushState({ng:true,name,...data},"","");
+  },
+  isInternal(s) {
+    return s && s.ng === true;
+  }
+};
+
+NG_HISTORY.push("home");
+
+
+// ===============================
+// POPSTATE
+// ===============================
+
+window.addEventListener("popstate", () => {
+  if (sidebar.classList.contains("open")) {
+    closeSidebar(true);
+    return;
+  }
+
+  if (!$("nameModal").classList.contains("hidden")) {
+    closeNameModal();
+    return;
+  }
+
+  if (!$("saveModal").classList.contains("hidden")) {
+    closeSaveModal();
+    return;
+  }
+
+  if (isQuizInProgress()) {
+    NG_HISTORY.push("quiz-running");
+    showConfirmExit(() => {
+      resetToMenu();
+      history.back();
+    });
+    return;
+  }
+});
+
+function isQuizInProgress() {
+  return (
+    state.mode === "daily" &&
+    !$("quizRunning").classList.contains("hidden") &&
+    state.questions.length &&
+    state.current < state.questions.length
+  );
+}
+
+
+// ===============================
+// INSTALL PWA
+// ===============================
+
 let _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', (e) => {
+
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   _deferredInstall = e;
-  const btn = document.getElementById('installBtn');
-  if (btn) btn.style.display = '';
 });
+
 function triggerInstall() {
   if (!_deferredInstall) return;
   _deferredInstall.prompt();
   _deferredInstall.userChoice.finally(() => {
     _deferredInstall = null;
-    const btn = document.getElementById('installBtn');
-    if (btn) btn.style.display = 'none';
   });
 }
+
 window.triggerInstall = triggerInstall;
 
-/* Banner iOS install (mostrato solo a Safari iOS non installato) */
-(function() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const dismissed = localStorage.getItem('ios-hint-dismissed') === '1';
-  if (isIOS && isSafari && !isStandalone && !dismissed) {
-    document.getElementById('iosInstallHint').classList.remove('hidden');
-  }
-})();
 
-/* ===== TAB SWITCHING ===== */
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const t = btn.dataset.tab;
-    $('tab-quiz').classList.toggle('hidden', t !== 'quiz');
-    $('tab-leaderboard').classList.toggle('hidden', t !== 'leaderboard');
-    $('tab-stats').classList.toggle('hidden', t !== 'stats');
-    if (t === 'leaderboard') refreshLeaderboards();
-    if (t === 'stats') renderStats();
-  });
-});
+// ===============================
+// FINE PARTE 1
+// ===============================
+</script>
 
-/* ===== ARCHIVIO: edizioni precedenti dal DB ===== */
-async function loadArchive() {
-  try {
-    const r = await fetch('/api/archive-dates');
-    if (!r.ok) return;
-    const data = await r.json();
-    const dates = (data.dates || []).filter(d => d.papers >= 5).slice(0, 12);
-    const sec = $('archiveSection');
-    const grid = $('pastGrid');
-    grid.innerHTML = '';
-    if (!dates.length) { sec.classList.add('hidden'); return; }
-    sec.classList.remove('hidden');
-    dates.forEach((d, i) => {
-      const saved = localStorage.getItem('past-score-' + d.date);
-      const card = document.createElement('div');
-      card.className = 'past-card' + (saved ? ' completed' : '');
-      card.style.setProperty('--i', i);
-      card.innerHTML = `
-        <div class="date">${fmtDateIT(d.date)}</div>
-        <div class="name">${d.papers} giornali</div>
-        ${saved ? `<div class="score">${saved}/5</div>` : ''}
-      `;
-      card.addEventListener('click', () => startQuiz('past', d.date));
-      grid.appendChild(card);
-    });
-  } catch (e) { console.warn('archive load failed', e); }
-}
-loadArchive();
+<script>
+// ===============================
+// QUIZ FLOW
+// ===============================
 
-/* ===== ARCHIVE BROWSER (consultazione informativa) ===== */
-document.querySelectorAll('.ab-tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.ab-tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    const tab = t.dataset.abtab;
-    $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
-    $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
-  });
-});
-
-async function loadArchiveBrowserDates() {
-  try {
-    const r = await fetch('/api/archive-dates');
-    const data = await r.json();
-    const dates = data.dates || [];
-    const cont = $('abDatesList');
-    if (!dates.length) { cont.innerHTML = '<p style="color:var(--muted);font-style:italic">Archivio ancora vuoto.</p>'; return; }
-    cont.innerHTML = '';
-    dates.forEach(d => {
-      const item = document.createElement('div');
-      item.className = 'ab-item';
-      item.innerHTML = `<h4>${fmtDateIT(d.date)}</h4><div class="ab-meta">${d.papers} giornali archiviati</div>`;
-      item.addEventListener('click', () => showDateDetail(d.date));
-      cont.appendChild(item);
-    });
-  } catch (e) { console.warn(e); }
-}
-
-async function showDateDetail(date) {
-  const cont = $('abDatesList');
-  cont.innerHTML = `<div class="ab-back" onclick="loadArchiveBrowserDates()">← Tutte le date</div><h3>${fmtDateIT(date)}</h3><p style="color:var(--muted)">Caricamento…</p>`;
-  try {
-    const r = await fetch(`/api/archive-papers?date=${date}`);
-    const data = await r.json();
-    let html = `<div class="ab-back" onclick="loadArchiveBrowserDates()">← Tutte le date</div><h3 style="font-family:'Playfair Display',serif">${fmtDateIT(date)}</h3>`;
-    if (!data.items?.length) {
-      html += '<p style="color:var(--muted);font-style:italic">Nessun titolo per questa data.</p>';
-    } else {
-      data.items.forEach(it => {
-        const np = NEWSPAPERS.find(n => n.slug === it.slug);
-        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(it.slug)}&date=${date}`;
-        html += `<div class="ab-detail-block">
-          <img class="ab-thumb" src="${imgUrl}" alt="${escapeHtml(np?.name || it.slug)}" onerror="this.style.display='none'" onclick="openLightbox('${imgUrl}')" />
-          <div class="ab-text">
-            <h5>${escapeHtml(np?.name || it.slug)}</h5>
-            ${it.sopratitolo ? `<div class="ab-sopra">${escapeHtml(it.sopratitolo)}</div>` : ''}
-            <div class="ab-titolo">${escapeHtml(it.titolo_principale || '')}</div>
-            ${it.sottotitolo ? `<div class="ab-sotto">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>
-        </div>`;
-      });
-    }
-    cont.innerHTML = html;
-  } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
-}
-
-function loadArchiveBrowserPapers() {
-  const cont = $('abPapersList');
-  cont.innerHTML = '';
-  NEWSPAPERS.forEach(np => {
-    const item = document.createElement('div');
-    item.className = 'ab-item';
-    item.innerHTML = `<h4>${np.name}</h4><div class="ab-meta">testata</div>`;
-    item.addEventListener('click', () => showPaperDetail(np));
-    cont.appendChild(item);
-  });
-}
-
-async function showPaperDetail(np) {
-  const cont = $('abPapersList');
-  cont.innerHTML = `<div class="ab-back" onclick="loadArchiveBrowserPapers()">← Tutti i giornali</div><h3>${np.name}</h3><p style="color:var(--muted)">Caricamento…</p>`;
-  try {
-    const r = await fetch(`/api/archive-paper-dates?slug=${np.slug}`);
-    const data = await r.json();
-    let html = `<div class="ab-back" onclick="loadArchiveBrowserPapers()">← Tutti i giornali</div><h3 style="font-family:'Playfair Display',serif">${np.name}</h3>`;
-    if (!data.items?.length) {
-      html += '<p style="color:var(--muted);font-style:italic">Nessuna edizione archiviata.</p>';
-    } else {
-      data.items.forEach(it => {
-        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
-        html += `<div class="ab-detail-block">
-          <img class="ab-thumb" src="${imgUrl}" alt="${escapeHtml(np.name)} ${it.date}" onerror="this.style.display='none'" onclick="openLightbox('${imgUrl}')" />
-          <div class="ab-text">
-            <h5>${fmtDateIT(it.date)}</h5>
-            ${it.sopratitolo ? `<div class="ab-sopra">${escapeHtml(it.sopratitolo)}</div>` : ''}
-            <div class="ab-titolo">${escapeHtml(it.titolo_principale || '')}</div>
-            ${it.sottotitolo ? `<div class="ab-sotto">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>
-        </div>`;
-      });
-    }
-    cont.innerHTML = html;
-  } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
-}
-
-/* Lightbox per vedere la prima pagina a schermo intero */
-function openLightbox(url) {
-  let lb = document.getElementById('lightbox');
-  if (!lb) {
-    lb = document.createElement('div');
-    lb.id = 'lightbox';
-    lb.className = 'lightbox';
-    lb.innerHTML = `<button class="close" aria-label="Chiudi">×</button><img alt="Prima pagina" />`;
-    lb.addEventListener('click', closeLightbox);
-    document.body.appendChild(lb);
-  }
-  lb.querySelector('img').src = url;
-  lb.style.display = 'flex';
-}
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  if (lb) lb.style.display = 'none';
-}
-window.openLightbox = openLightbox;
-window.closeLightbox = closeLightbox;
-
-window.loadArchiveBrowserDates = loadArchiveBrowserDates;
-window.loadArchiveBrowserPapers = loadArchiveBrowserPapers;
-loadArchiveBrowserDates();
-loadArchiveBrowserPapers();
-
-/* ===== NOTIFICHE 8:00 ===== */
-function urlBase64ToUint8Array(b64) {
-  const padding = '='.repeat((4 - b64.length % 4) % 4);
-  const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const raw = atob(base64);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return arr;
-}
-
-function refreshNotifStatus() {
-  const status = $('notifStatus');
-  const btn = $('notifBtn');
-  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-    status.textContent = 'Notifiche non supportate da questo browser.';
-    btn.style.display = 'none';
-    return;
-  }
-  if (Notification.permission === 'denied') {
-    status.textContent = 'Notifiche bloccate dal browser. Abilitale dalle impostazioni del sito.';
-    btn.style.display = 'none';
-    return;
-  }
-  if (localStorage.getItem('notif-enabled') === '1') {
-    status.textContent = '✓ Promemoria attivi: riceverai una notifica ogni mattina alle 8:00.';
-    btn.textContent = '🔕 Disattiva promemoria';
-  } else {
-    status.textContent = '';
-    btn.textContent = '📬 Attiva promemoria';
-  }
-}
-refreshNotifStatus();
-
-async function enableNotifications() {
-  try {
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') {
-      $('notifStatus').textContent = 'Permesso negato. Le notifiche restano disattivate.';
-      return;
-    }
-    const reg = await navigator.serviceWorker.ready;
-    const vapidResp = await fetch('/api/push-vapid-key');
-    const { publicKey } = await vapidResp.json();
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
-    });
-    const r = await fetch('/api/push-subscribe', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        subscription: sub.toJSON(),
-        tzOffsetMinutes: new Date().getTimezoneOffset(),
-        hour: 8,
-      }),
-    });
-    if (!r.ok) throw new Error('Salvataggio fallito');
-    localStorage.setItem('notif-enabled', '1');
-    localStorage.setItem('notif-endpoint', sub.endpoint);
-    refreshNotifStatus();
-  } catch (e) {
-    $('notifStatus').textContent = 'Errore: ' + e.message;
-  }
-}
-async function disableNotifications() {
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    const sub = await reg.pushManager.getSubscription();
-    if (sub) {
-      await fetch('/api/push-unsubscribe', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ endpoint: sub.endpoint }),
-      });
-      await sub.unsubscribe();
-    }
-    localStorage.removeItem('notif-enabled');
-    localStorage.removeItem('notif-endpoint');
-    refreshNotifStatus();
-  } catch (e) {
-    $('notifStatus').textContent = 'Errore: ' + e.message;
-  }
-}
-$('notifBtn').addEventListener('click', () => {
-  if (localStorage.getItem('notif-enabled') === '1') disableNotifications();
-  else enableNotifications();
-});
-
-function refreshDailyStatus() {
-  const card = $('dailyCard');
-  const status = $('dailyStatus');
-  const done = dailyDoneToday();
-  if (done) {
-    card.classList.add('completed');
-    status.textContent = 'Sfida giornaliera già disputata';
-  } else {
-    card.classList.remove('completed');
-    status.textContent = '';
-  }
-}
-refreshDailyStatus();
-
-/* ===== MODE PICKER ===== */
-document.querySelectorAll('.mode-card').forEach(c => {
-  c.addEventListener('click', () => {
-    const mode = c.dataset.mode;
-    if (mode === 'daily' && dailyDoneToday()) {
-      const done = JSON.parse(dailyDoneToday());
-      alert(`Hai già giocato la sfida del giorno (${done.score}/5).\nPer la classifica vale solo il primo tentativo. Torna domani per una nuova sfida!`);
-      return;
-    }
-    startQuiz(mode);
-  });
-});
-
-/* ===== QUIZ FLOW ===== */
 async function startQuiz(mode, dateISO) {
   state.mode = mode;
   state.questions = [];
   state.current = 0;
   state.score = 0;
 
-  if (mode === 'daily')    state.dateISO = todayISO();
-  if (mode === 'past')     state.dateISO = dateISO;
+  if (mode === "daily") state.dateISO = todayISO();
+  if (mode === "past") state.dateISO = dateISO;
 
-  $('modePicker').classList.add('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.add('hidden');
-  $('loading').classList.remove('hidden');
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("page-quiz").scrollTo(0,0);
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  // Loading screen (nuova UI)
+  if ($("loadingScreen")) $("loadingScreen").classList.remove("hidden");
 
   try {
-    // Per modalità 'training': scegli una data random dall'archivio (NON oggi)
-    if (mode === 'training') {
-      const r = await fetch('/api/archive-dates');
-      if (!r.ok) throw new Error('Archivio non disponibile.');
+    if (mode === "training") {
+      const r = await fetch("/api/archive-dates");
+      if (!r.ok) throw new Error("Archivio non disponibile.");
       const data = await r.json();
       const today = todayISO();
-      const eligibleDates = (data.dates || []).filter(d => d.papers >= 4 && d.date !== today);
-      if (!eligibleDates.length) {
-        throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno per costruire l\'archivio.');
-      }
-      const pickDate = eligibleDates[Math.floor(Math.random() * eligibleDates.length)].date;
-      state.dateISO = pickDate;
+      const eligible = (data.dates || []).filter(d => d.papers >= 4 && d.date !== today);
+      if (!eligible.length) throw new Error("Allenamento non disponibile.");
+      const pick = eligible[Math.floor(Math.random()*eligible.length)].date;
+      state.dateISO = pick;
     }
 
-    // Per modalità 'past' o 'training' uso solo i giornali archiviati per quella data
     let pickedFrom = NEWSPAPERS;
-    if (mode === 'past' || mode === 'training') {
+
+    if (mode === "past" || mode === "training") {
       const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
-      if (!r.ok) throw new Error('Archivio non disponibile per questa data');
+      if (!r.ok) throw new Error("Archivio non disponibile.");
       const data = await r.json();
       const slugs = new Set(data.slugs || []);
       pickedFrom = NEWSPAPERS.filter(n => slugs.has(n.slug));
-      if (pickedFrom.length < 4) throw new Error('Edizione incompleta in archivio');
+      if (pickedFrom.length < 4) throw new Error("Edizione incompleta.");
     }
+
     const picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
 
-    const LOADING_MESSAGES = [
-      "«Sapere è potere.» — Francis Bacon",
-      "«La libertà di stampa è il sale della libertà.» — Voltaire",
-      "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-      "«La saggezza comincia nella meraviglia.» — Socrate",
-      "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-    ];
-    for (let i = 0; i < picked.length; i++) {
-      const np = picked[i];
-      $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
-      const q = await buildQuestion(np, state.dateISO);
+    for (let i=0;i<picked.length;i++) {
+      const q = await buildQuestion(picked[i], state.dateISO);
       state.questions.push(q);
     }
-    $('loading').classList.add('hidden');
-    $('quizRunning').classList.remove('hidden');
+
+    if ($("loadingScreen")) $("loadingScreen").classList.add("hidden");
+
+    $("quizRunning").classList.remove("hidden");
     renderQuestion();
-  } catch (e) {
-    console.error(e);
-    $('loading').classList.add('hidden');
-    $('errorBox').classList.remove('hidden');
-    $('errorMsg').textContent = e.message || 'Errore sconosciuto.';
+
+  } catch(e) {
+    if ($("loadingScreen")) $("loadingScreen").classList.add("hidden");
+    showToast(e.message || "Errore");
   }
 }
 
-/* Build a single question — pulls from cache if present */
 async function buildQuestion(np, dateISO) {
   const cacheKey = `q3-${dateISO}-${np.id}`;
   const cached = localStorage.getItem(cacheKey);
-  let extracted;
+  let extracted = null;
+
   if (cached) {
-    try { extracted = JSON.parse(cached); } catch { extracted = null; }
+    try { extracted = JSON.parse(cached); } catch {}
   }
+
   if (!extracted) {
     extracted = await fetchHeadlines(np.slug, dateISO);
     try { localStorage.setItem(cacheKey, JSON.stringify(extracted)); } catch {}
   }
-  // 4 choices: correct + 3 random wrongs
+
   const wrongs = sampleN(NEWSPAPERS.filter(n => n.id !== np.id), 3);
-  const choices = shuffle([np, ...wrongs]).map(n => ({ id: n.id, name: n.name }));
+  const choices = shuffle([np, ...wrongs]).map(n => ({id:n.id,name:n.name}));
+
   return {
     paper: np,
     sopra: extracted.sopratitolo || null,
-    titolo: extracted.titolo_principale || '',
+    titolo: extracted.titolo_principale || "",
     sotto: extracted.sottotitolo || null,
     choices,
-    given: null,
+    given: null
   };
 }
 
-/* Fetch headlines (sovratitolo/titolo/sottotitolo) via backend proxy.
-   Backend handles: scaricare immagine da giornalone.it + chiamata Claude Vision via Emergent LLM Key.
-   Retry automatico in caso di 404/502 transitorio (es. backend in restart). */
 async function fetchHeadlines(slug, dateISO) {
   const isToday = dateISO === todayISO();
   const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
   const url = `/api/extract-headlines?${params}`;
-  const delays = [0, 2000, 4000, 8000, 15000]; // 5 tentativi, backoff fino a 15s
+
+  const delays = [0,2000,4000,8000,15000];
   let lastErr;
-  for (let attempt = 0; attempt < delays.length; attempt++) {
+
+  for (let attempt=0;attempt<delays.length;attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
     try {
-      const r = await fetch(url, { cache: 'no-store' });
-      // 404 specifico dal backend (es. edizione non in archivio) = errore reale
+      const r = await fetch(url,{cache:"no-store"});
       if (r.status === 404) {
         const body = await r.text();
-        if (body.includes('archivio') || body.includes('"detail"')) {
-          throw new Error(body.slice(0, 160));
+        if (body.includes("archivio") || body.includes('"detail"')) {
+          throw new Error(body.slice(0,160));
         }
-        // 404 dall'ingress (backend giù) = transient
-        lastErr = new Error('Server temporaneamente offline');
+        lastErr = new Error("Server temporaneamente offline");
         continue;
       }
-      // 502/503/504 = backend in restart, retry
-      if (r.status === 502 || r.status === 503 || r.status === 504) {
+      if ([502,503,504].includes(r.status)) {
         lastErr = new Error(`Server in ripristino (${r.status})`);
         continue;
       }
-      // 429 = rate limit, mostra subito
-      if (r.status === 429) throw new Error('Troppe richieste. Aspetta un minuto e riprova.');
+      if (r.status === 429) throw new Error("Troppe richieste. Riprova.");
       if (!r.ok) {
         const t = await r.text();
         throw new Error(`Errore ${r.status}: ${t.slice(0,160)}`);
       }
       return await r.json();
-    } catch (e) {
-      // Se è un Error sopra (4xx/5xx) lo abbiamo gestito; altrimenti errore di rete
-      if (!lastErr || e.message !== lastErr.message) lastErr = e;
+    } catch(e) {
+      lastErr = e;
     }
   }
-  throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
+  throw lastErr || new Error("Errore sconosciuto");
 }
 
-function blobToBase64(blob) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => res(fr.result.split(',')[1]);
-    fr.onerror = rej;
-    fr.readAsDataURL(blob);
-  });
-}
-
-/* ===== RENDER QUESTION ===== */
 function renderQuestion() {
   const q = state.questions[state.current];
-  $('qProgress').textContent = `Domanda ${state.current + 1} di ${state.questions.length}`;
 
-  // dots
-  const dots = $('dots');
-  dots.innerHTML = '';
-  state.questions.forEach((qq, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
-    if (i === state.current && qq.given == null) d.classList.add('current');
-    dots.appendChild(d);
-  });
+  $("quizProgressText").textContent = `${state.current+1} / ${state.questions.length}`;
+  $("quizProgressFill").style.width = `${((state.current+1)/state.questions.length)*100}%`;
 
-  // extracted
-  $('exSopra').textContent = q.sopra || '';
-  $('exSopra').style.display = q.sopra ? '' : 'none';
-  $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
-  $('exSotto').textContent = q.sotto || '';
-  $('exSotto').style.display = q.sotto ? '' : 'none';
+  const cont = $("quizQuestion");
+  cont.innerHTML = `
+    <div>${q.titolo || "(titolo non rilevato)"}</div>
+    ${q.sopra ? `<div class="quiz-subtitle">${q.sopra}</div>` : ""}
+    ${q.sotto ? `<div class="quiz-subtitle">${q.sotto}</div>` : ""}
+    <div class="quiz-paper">${q.paper.name}</div>
+  `;
 
-  // choices
-  const cont = $('choices');
-  cont.innerHTML = '';
-  q.choices.forEach((c, i) => {
-    const b = document.createElement('button');
-    b.className = 'choice';
-    b.style.setProperty('--i', i);
+  const choices = $("quizChoices");
+  choices.innerHTML = "";
+  q.choices.forEach((c,i) => {
+    const b = document.createElement("button");
+    b.className = "choice-btn";
     b.textContent = c.name;
-    b.addEventListener('click', () => answer(c.id, b));
-    cont.appendChild(b);
+    b.addEventListener("click", () => answer(c.id,b));
+    choices.appendChild(b);
   });
-
-  // dots
-  $('nextBtn').style.display = 'none';
 }
 
 function answer(givenId, btnEl) {
   const q = state.questions[state.current];
   if (q.given) return;
+
   q.given = givenId;
   const correct = q.paper.id;
   if (givenId === correct) state.score++;
-  // disable + colour
-  document.querySelectorAll('.choice').forEach(b => {
+
+  document.querySelectorAll(".choice-btn").forEach(b => {
     b.disabled = true;
     const cid = q.choices.find(c => c.name === b.textContent)?.id;
-    if (cid === correct) b.classList.add('right');
-    else if (cid === givenId) b.classList.add('wrong');
+    if (cid === correct) b.classList.add("choice-correct");
+    else if (cid === givenId) b.classList.add("choice-wrong");
   });
-  // refresh dots
-  renderDotsOnly();
-  $('nextBtn').style.display = '';
-}
-function renderDotsOnly() {
-  const dots = $('dots');
-  dots.innerHTML = '';
-  state.questions.forEach((qq, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
-    if (i === state.current && qq.given == null) d.classList.add('current');
-    dots.appendChild(d);
-  });
+
+  setTimeout(() => {
+    if (state.current < state.questions.length-1) {
+      state.current++;
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  }, 600);
 }
 
-$('nextBtn').addEventListener('click', () => {
-  if (state.current < state.questions.length - 1) {
-    state.current++;
-    renderQuestion();
-  } else {
-    finishQuiz();
-  }
-});
-
-/* ===== FINAL SCREEN ===== */
-function verdictFor(score) {
-  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
-}
 function finishQuiz() {
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.remove('hidden');
-  // Reset animazioni re-applicando le classi
-  $('finalScreen').querySelectorAll('.big-score,.verdict,table,.row').forEach(el => {
-    el.style.animation = 'none';
-    void el.offsetWidth; // force reflow
-    el.style.animation = '';
-  });
-  animateScoreCountUp($('finalScore'), state.score, 800);
-  $('verdict').textContent = verdictFor(state.score);
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.remove("hidden");
 
-  // recap
-  let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
-  state.questions.forEach((q, i) => {
+  $("finalScoreBig").textContent = `${state.score}/${state.questions.length}`;
+  $("finalBadge").textContent = verdictFor(state.score);
+
+  const table = $("finalTable");
+  let html = "<tbody>";
+  state.questions.forEach((q,i) => {
     const ok = q.given === q.paper.id;
-    const givenName = q.choices.find(c => c.id === q.given)?.name || '—';
-    html += `<tr><td>${i+1}</td><td><em>${q.paper.name}</em></td><td>${givenName}</td><td class="${ok?'ok':'no'}">${ok?'✓':'✗'}</td></tr>`;
+    const givenName = q.choices.find(c => c.id === q.given)?.name || "—";
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${q.paper.name}</td>
+        <td>${givenName}</td>
+        <td>${ok ? "✓" : "✗"}</td>
+      </tr>`;
   });
-  html += '</tbody>';
-  $('recapTable').innerHTML = html;
+  html += "</tbody>";
+  table.innerHTML = html;
 
-  // train again button
-  $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
-  // L'allenamento non va in classifica → nascondo "Salva punteggio"
-  $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
+  if (state.mode === "training") $("saveScoreBtn").style.display = "none";
+  else $("saveScoreBtn").style.display = "";
 
-  // Traccia statistica personale
   trackGameInStats({
     mode: state.mode,
     dateISO: state.dateISO,
     score: state.score,
     total: state.questions.length,
     questions: state.questions.map(q => ({
-      paperId: q.paper.id,
-      paperSlug: q.paper.slug,
-      paperName: q.paper.name,
-      ok: q.given === q.paper.id,
+      paperId:q.paper.id,
+      paperSlug:q.paper.slug,
+      paperName:q.paper.name,
+      ok:q.given === q.paper.id
     })),
-    ts: Date.now(),
+    ts: Date.now()
   });
 
-  // past completed → save in localStorage e ricarica l'archivio
-  if (state.mode === 'past') {
-    localStorage.setItem('past-score-' + state.dateISO, state.score);
-    loadArchive();
-  }
-  // daily completed → mark as done so it can't be replayed today
-  if (state.mode === 'daily') {
-    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
-    refreshDailyStatus();
-    // Daily appena giocata: l'archivio si è arricchito, ricarico la lista (sarà disponibile da domani)
-    loadArchive();
+  if (state.mode === "past") {
+    localStorage.setItem(`past-score-${state.dateISO}`, state.score);
   }
 
-  // Confetti per punteggio pieno 🎉
+  if (state.mode === "daily") {
+    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({
+      score:state.score,
+      total:state.questions.length,
+      ts:Date.now()
+    }));
+  }
+
   if (state.score === state.questions.length) {
-    setTimeout(() => launchConfetti(), 450);
+    setTimeout(() => launchConfetti(), 400);
   }
 }
 
-/* ===== Utility di animazione ===== */
-function animateScoreCountUp(el, target, duration) {
-  if (!el) return;
-  const start = performance.now();
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / duration);
-    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-    el.textContent = Math.round(target * eased);
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target;
-  };
-  requestAnimationFrame(step);
+function verdictFor(score) {
+  return [
+    "Lettore distratto",
+    "Apprendista cronista",
+    "Cronista di nera",
+    "Caporedattore",
+    "Vicedirettore",
+    "Direttore emerito"
+  ][score];
 }
 
 function launchConfetti() {
-  const layer = document.createElement('div');
-  layer.className = 'ng-confetti-layer';
+  const layer = document.createElement("div");
+  layer.className = "ng-confetti-layer";
   document.body.appendChild(layer);
-  const colors = ['#b01010', '#246b3a', '#d4a017', '#2b6cb0', '#8e44ad', '#e67e22'];
+
+  const colors = ["#b01010","#246b3a","#d4a017","#2b6cb0","#8e44ad","#e67e22"];
   const N = 80;
-  for (let i = 0; i < N; i++) {
-    const p = document.createElement('div');
-    p.className = 'ng-confetti-piece';
-    p.style.left = (Math.random() * 100) + 'vw';
-    p.style.background = colors[i % colors.length];
-    p.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
-    p.style.animationDelay = (Math.random() * 0.35) + 's';
-    p.style.width = (6 + Math.random() * 8) + 'px';
-    p.style.height = (10 + Math.random() * 10) + 'px';
-    p.style.transform = `rotate(${Math.random() * 360}deg)`;
-    p.style.opacity = '1';
+
+  for (let i=0;i<N;i++) {
+    const p = document.createElement("div");
+    p.className = "ng-confetti-piece";
+    p.style.left = (Math.random()*100)+"vw";
+    p.style.background = colors[i%colors.length];
+    p.style.animationDuration = (1.8+Math.random()*1.4)+"s";
+    p.style.animationDelay = (Math.random()*0.35)+"s";
+    p.style.width = (6+Math.random()*8)+"px";
+    p.style.height = (10+Math.random()*10)+"px";
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
     layer.appendChild(p);
   }
+
   setTimeout(() => layer.remove(), 4000);
 }
 
 function showToast(msg) {
-  let t = document.querySelector('.ng-toast');
-  if (!t) { t = document.createElement('div'); t.className = 'ng-toast'; document.body.appendChild(t); }
+  let t = document.querySelector(".ng-toast");
+  if (!t) {
+    t = document.createElement("div");
+    t.className = "ng-toast";
+    document.body.appendChild(t);
+  }
   t.textContent = msg;
-  requestAnimationFrame(() => t.classList.add('show'));
+  requestAnimationFrame(() => t.classList.add("show"));
   clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove('show'), 2400);
+  t._h = setTimeout(() => t.classList.remove("show"), 2400);
 }
-$('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 
-/* =========================================================
-   STATISTICHE PERSONALI
-   - Storia partite in localStorage chiave 'stats-history'
-   - Streak giornaliera calcolata sui daily completati
-========================================================= */
-const STATS_KEY = 'stats-history';
+$("trainAgainBtn").addEventListener("click", () => startQuiz("training"));
+$("backToMenuBtn").addEventListener("click", () => openPage("quiz"));
+</script>
+
+<script>
+// ===============================
+// STATISTICHE PERSONALI
+// ===============================
 
 function loadStatsHistory() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); }
+  try { return JSON.parse(localStorage.getItem(STATS_KEY) || "[]"); }
   catch { return []; }
 }
+
 function saveStatsHistory(arr) {
   try { localStorage.setItem(STATS_KEY, JSON.stringify(arr.slice(-500))); } catch {}
 }
+
 function trackGameInStats(entry) {
   const arr = loadStatsHistory();
   arr.push(entry);
@@ -1510,123 +1560,170 @@ function trackGameInStats(entry) {
 }
 
 function computeStreak(history) {
-  // streak = giorni consecutivi (terminanti oggi o ieri) con un daily completato
-  const dailyDates = new Set(history.filter(h => h.mode === 'daily').map(h => h.dateISO));
+  const dailyDates = new Set(history.filter(h => h.mode === "daily").map(h => h.dateISO));
   if (!dailyDates.size) return 0;
+
   let streak = 0;
   const d = new Date();
-  // Se oggi non ho giocato ma ieri sì, lo streak parte da ieri
   let iso = d.toISOString().slice(0,10);
+
   if (!dailyDates.has(iso)) {
-    d.setDate(d.getDate() - 1);
+    d.setDate(d.getDate()-1);
     iso = d.toISOString().slice(0,10);
     if (!dailyDates.has(iso)) return 0;
   }
+
   while (dailyDates.has(iso)) {
     streak++;
-    d.setDate(d.getDate() - 1);
+    d.setDate(d.getDate()-1);
     iso = d.toISOString().slice(0,10);
   }
+
   return streak;
 }
 
 function renderStats() {
   const history = loadStatsHistory();
+
   if (!history.length) {
-    $('statsEmpty').classList.remove('hidden');
-    $('statsContent').classList.add('hidden');
+    $("statsEmpty").classList.remove("hidden");
+    $("statsContent").classList.add("hidden");
     return;
   }
-  $('statsEmpty').classList.add('hidden');
-  $('statsContent').classList.remove('hidden');
 
-  // Totali
+  $("statsEmpty").classList.add("hidden");
+  $("statsContent").classList.remove("hidden");
+
   const total = history.length;
-  const sumScore = history.reduce((s, h) => s + h.score, 0);
-  const sumTotal = history.reduce((s, h) => s + h.total, 0);
-  const avg = sumTotal ? (sumScore / sumTotal * 5) : 0;
-  const best = history.reduce((m, h) => Math.max(m, h.score), 0);
+  const sumScore = history.reduce((s,h)=>s+h.score,0);
+  const sumTotal = history.reduce((s,h)=>s+h.total,0);
+  const avg = sumTotal ? (sumScore/sumTotal*5) : 0;
+  const best = history.reduce((m,h)=>Math.max(m,h.score),0);
   const streak = computeStreak(history);
 
-  $('stTotalGames').textContent = total;
-  $('stAvgScore').textContent = avg.toFixed(1);
-  $('stStreak').textContent = streak;
-  $('stBestScore').textContent = best;
+  $("stTotalGames").textContent = total;
+  $("stAvgScore").textContent = avg.toFixed(1);
+  $("stStreak").textContent = streak;
+  $("stBestScore").textContent = best;
 
-  // Precisione per giornale
   const perPaper = {};
   history.forEach(h => {
-    (h.questions || []).forEach(q => {
-      if (!perPaper[q.paperId]) perPaper[q.paperId] = { name: q.paperName, slug: q.paperSlug, ok: 0, tot: 0 };
-      perPaper[q.paperId].tot += 1;
-      if (q.ok) perPaper[q.paperId].ok += 1;
+    (h.questions||[]).forEach(q => {
+      if (!perPaper[q.paperId]) perPaper[q.paperId] = {name:q.paperName,slug:q.paperSlug,ok:0,tot:0};
+      perPaper[q.paperId].tot++;
+      if (q.ok) perPaper[q.paperId].ok++;
     });
   });
-  const rows = Object.values(perPaper).sort((a,b) => (b.ok/b.tot) - (a.ok/a.tot));
-  let html = '<thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody>';
+
+  const rows = Object.values(perPaper).sort((a,b)=>(b.ok/b.tot)-(a.ok/a.tot));
+  let html = "<thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody>";
   rows.forEach(r => {
-    const pct = r.tot ? Math.round(r.ok / r.tot * 100) : 0;
+    const pct = r.tot ? Math.round(r.ok/r.tot*100) : 0;
     html += `<tr><td><em>${escapeHtml(r.name)}</em></td><td><strong>${pct}%</strong></td><td>${r.ok}/${r.tot}</td></tr>`;
   });
-  html += '</tbody>';
-  $('stPaperTable').innerHTML = html;
+  html += "</tbody>";
+  $("stPaperTable").innerHTML = html;
 
-  // Ultime 10 partite
-  const recent = history.slice().reverse().slice(0, 10);
-  let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
+  const recent = history.slice().reverse().slice(0,10);
+  let html2 = "<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>";
   recent.forEach(h => {
     const dt = new Date(h.ts);
-    const when = dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + ' ' + dt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const modeName = h.mode === 'daily' ? 'Giorno' : (h.mode === 'training' ? 'Allenamento' : 'Archivio');
+    const when = dt.toLocaleDateString("it-IT",{day:"numeric",month:"short"})+" "+dt.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+    const modeName = h.mode==="daily" ? "Giorno" : (h.mode==="training" ? "Allenamento" : "Archivio");
     html2 += `<tr><td>${when}</td><td>${modeName}</td><td><strong>${h.score}/${h.total}</strong></td></tr>`;
   });
-  html2 += '</tbody>';
-  $('stRecentTable').innerHTML = html2;
+  html2 += "</tbody>";
+  $("stRecentTable").innerHTML = html2;
 }
 
-$('stResetBtn').addEventListener('click', () => {
-  if (confirm('Sei sicuro di voler azzerare tutte le statistiche? Questa azione non può essere annullata.')) {
+$("stResetBtn").addEventListener("click", () => {
+  if (confirm("Sei sicuro di voler azzerare tutte le statistiche?")) {
     localStorage.removeItem(STATS_KEY);
     renderStats();
   }
 });
 
-/* =========================================================
-   CAMBIA NOME (modal)
-========================================================= */
-function openNameModal() {
-  $('nameModalInput').value = state.user?.name || '';
-  $('nameModalErr').style.display = 'none';
-  $('nameModal').classList.remove('hidden');
-  setTimeout(() => $('nameModalInput').focus(), 50);
+
+// ===============================
+// ARCHIVIO (browser)
+// ===============================
+
+async function loadArchiveBrowserDates() {
+  try {
+    const r = await fetch("/api/archive-dates");
+    const data = await r.json();
+    const dates = data.dates || [];
+    const cont = $("archiveList");
+    cont.innerHTML = "";
+
+    if (!dates.length) {
+      cont.innerHTML = "<p style='color:var(--fg-muted);font-style:italic'>Archivio vuoto.</p>";
+      return;
+    }
+
+    dates.forEach(d => {
+      const item = document.createElement("div");
+      item.className = "archive-item";
+      item.textContent = `${fmtDateIT(d.date)} — ${d.papers} giornali`;
+      item.addEventListener("click", () => startQuiz("past", d.date));
+      cont.appendChild(item);
+    });
+
+  } catch(e) {
+    showToast("Errore archivio");
+  }
 }
-function closeNameModal() { $('nameModal').classList.add('hidden'); }
-$('lbEditNameBtn').addEventListener('click', openNameModal);
-$('nameModalCancel').addEventListener('click', closeNameModal);
-$('nameModalConfirm').addEventListener('click', () => {
-  const newName = $('nameModalInput').value.trim();
+
+loadArchiveBrowserDates();
+
+
+// ===============================
+// MODAL: CAMBIA NOME
+// ===============================
+
+function openNameModal() {
+  $("nameModalInput").value = state.user?.name || "";
+  $("nameModalErr").style.display = "none";
+  $("nameModal").classList.remove("hidden");
+  setTimeout(()=>$("nameModalInput").focus(),50);
+}
+
+function closeNameModal() {
+  $("nameModal").classList.add("hidden");
+}
+
+$("settingsRenameBtn").addEventListener("click", openNameModal);
+$("nameModalCancel").addEventListener("click", closeNameModal);
+
+$("nameModalConfirm").addEventListener("click", () => {
+  const newName = $("nameModalInput").value.trim();
   if (!newName) {
-    $('nameModalErr').textContent = 'Inserisci un nome.';
-    $('nameModalErr').style.display = '';
+    $("nameModalErr").textContent = "Inserisci un nome.";
+    $("nameModalErr").style.display = "";
     return;
   }
   if (newName.length > 24) {
-    $('nameModalErr').textContent = 'Il nome è troppo lungo (max 24 caratteri).';
-    $('nameModalErr').style.display = '';
+    $("nameModalErr").textContent = "Nome troppo lungo.";
+    $("nameModalErr").style.display = "";
     return;
   }
-  if (!state.user) state.user = { name: newName, groups: [], activeGroupCode: null };
+
+  if (!state.user) state.user = {name:newName,groups:[],activeGroupCode:null};
   else state.user.name = newName;
+
   saveUser();
-  $('lbWho').textContent = newName;
   closeNameModal();
 });
 
-/* Save score to leaderboard — apre un modal per scegliere i gruppi target */
-$('saveScoreBtn').addEventListener('click', () => {
+
+// ===============================
+// MODAL: SALVA PUNTEGGIO
+// ===============================
+
+$("saveScoreBtn").addEventListener("click", () => {
   if (!state.user || !state.user.groups?.length) {
-    if (confirm('Per salvare il punteggio devi prima entrare in un gruppo (Crea o Unisciti).\nVuoi andare alla scheda Classifica ora?')) {
-      document.querySelector('.tab[data-tab="leaderboard"]').click();
+    if (confirm("Per salvare il punteggio devi entrare in un gruppo. Vai alla Classifica?")) {
+      openPage("leaderboard");
     }
     return;
   }
@@ -1634,193 +1731,347 @@ $('saveScoreBtn').addEventListener('click', () => {
 });
 
 function openSaveModal() {
-  const cont = $('saveModalGroups');
-  cont.innerHTML = '';
-  $('saveModalScore').textContent = `${state.score}/${state.questions.length}`;
-  $('saveModalErr').style.display = 'none';
-  state.user.groups.forEach((g, i) => {
-    const isDailyAlreadySaved = state.mode === 'daily' && !!localStorage.getItem(`daily-saved-${todayISO()}-${g.code}-${state.user.name}`);
+  const cont = $("saveModalGroups");
+  cont.innerHTML = "";
+
+  $("saveModalScore").textContent = `${state.score}/${state.questions.length}`;
+  $("saveModalErr").style.display = "none";
+
+  state.user.groups.forEach(g => {
+    const isDailyAlreadySaved =
+      state.mode==="daily" &&
+      !!localStorage.getItem(`daily-saved-${todayISO()}-${g.code}-${state.user.name}`);
+
     const id = `chk-${g.code}`;
-    const row = document.createElement('div');
-    row.className = 'save-group-row';
+    const row = document.createElement("div");
+    row.className = "save-group-row";
     row.innerHTML = `
-      <input type="checkbox" id="${id}" data-code="${g.code}" ${isDailyAlreadySaved ? 'disabled' : 'checked'} />
+      <input type="checkbox" id="${id}" data-code="${g.code}" ${isDailyAlreadySaved?"disabled":"checked"}>
       <label for="${id}">
         <div><span class="gname">${escapeHtml(g.name)}</span> <span class="gcode">· ${g.code}</span></div>
-        ${isDailyAlreadySaved ? '<div class="gnote">Sfida giornaliera già salvata in questo gruppo</div>' : ''}
+        ${isDailyAlreadySaved ? "<div class='gnote'>Già salvato oggi</div>" : ""}
       </label>
     `;
     cont.appendChild(row);
   });
-  $('saveModal').classList.remove('hidden');
-}
-function closeSaveModal() { $('saveModal').classList.add('hidden'); }
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-$('saveModalCancel').addEventListener('click', closeSaveModal);
-$('saveModalConfirm').addEventListener('click', async () => {
-  const checks = [...document.querySelectorAll('#saveModalGroups input[type="checkbox"]:checked')];
+  $("saveModal").classList.remove("hidden");
+}
+
+function closeSaveModal() {
+  $("saveModal").classList.add("hidden");
+}
+
+$("saveModalCancel").addEventListener("click", closeSaveModal);
+
+$("saveModalConfirm").addEventListener("click", async () => {
+  const checks = [...document.querySelectorAll("#saveModalGroups input[type='checkbox']:checked")];
   if (!checks.length) {
-    $('saveModalErr').textContent = 'Seleziona almeno un gruppo.';
-    $('saveModalErr').style.display = '';
+    $("saveModalErr").textContent = "Seleziona almeno un gruppo.";
+    $("saveModalErr").style.display = "";
     return;
   }
-  $('saveModalConfirm').disabled = true;
-  $('saveModalConfirm').textContent = 'Salvo…';
+
+  $("saveModalConfirm").disabled = true;
+  $("saveModalConfirm").textContent = "Salvo…";
+
   let okCount = 0, errors = [];
+
   for (const ch of checks) {
     const code = ch.dataset.code;
     const grp = state.user.groups.find(g => g.code === code);
+
     try {
-      // Per daily, segna salvataggio per evitare doppioni
-      if (state.mode === 'daily') {
+      if (state.mode === "daily") {
         const flagKey = `daily-saved-${todayISO()}-${code}-${state.user.name}`;
         if (localStorage.getItem(flagKey)) continue;
-        localStorage.setItem(flagKey, '1');
+        localStorage.setItem(flagKey,"1");
       }
+
       await saveLeaderboardEntry({
         name: state.user.name,
         group: grp.name,
         groupCode: code,
         score: state.score,
         total: state.questions.length,
-        pct: state.score / state.questions.length,
+        pct: state.score/state.questions.length,
         mode: state.mode,
-        dateISO: todayISO(),
+        dateISO: todayISO()
       });
+
       okCount++;
-    } catch (e) { errors.push(`${grp.name}: ${e.message}`); }
+
+    } catch(e) {
+      errors.push(`${grp.name}: ${e.message}`);
+    }
   }
-  $('saveModalConfirm').disabled = false;
-  $('saveModalConfirm').textContent = 'Salva';
+
+  $("saveModalConfirm").disabled = false;
+  $("saveModalConfirm").textContent = "Salva";
+
   if (errors.length) {
-    $('saveModalErr').textContent = errors.join(' · ');
-    $('saveModalErr').style.display = '';
+    $("saveModalErr").textContent = errors.join(" · ");
+    $("saveModalErr").style.display = "";
     return;
   }
+
   closeSaveModal();
-  $('saveScoreBtn').textContent = `✓ Salvato in ${okCount} ${okCount === 1 ? 'gruppo' : 'gruppi'}`;
-  $('saveScoreBtn').disabled = true;
+  $("saveScoreBtn").textContent = `✓ Salvato in ${okCount} gruppi`;
+  $("saveScoreBtn").disabled = true;
 });
 
-function resetToMenu() {
-  $('loading').classList.add('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.add('hidden');
-  $('modePicker').classList.remove('hidden');
-  $('saveScoreBtn').textContent = 'Salva punteggio';
-  $('saveScoreBtn').disabled = false;
-  $('saveScoreBtn').style.display = '';
+
+// ===============================
+// NOTIFICHE PUSH
+// ===============================
+
+function urlBase64ToUint8Array(b64) {
+  const padding = "=".repeat((4 - b64.length % 4) % 4);
+  const base64 = (b64 + padding).replace(/-/g,"+").replace(/_/g,"/");
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i=0;i<raw.length;i++) arr[i] = raw.charCodeAt(i);
+  return arr;
 }
 
-/* =========================================================
-   FIREBASE LEADERBOARD
-========================================================= */
+function refreshNotifStatus() {
+  const status = $("notifStatus");
+  const btn = $("notifBtn");
+
+  if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+    status.textContent = "Notifiche non supportate.";
+    btn.style.display = "none";
+    return;
+  }
+
+  if (Notification.permission === "denied") {
+    status.textContent = "Notifiche bloccate dal browser.";
+    btn.style.display = "none";
+    return;
+  }
+
+  if (localStorage.getItem("notif-enabled") === "1") {
+    status.textContent = "✓ Promemoria attivi.";
+    btn.textContent = "Disattiva";
+  } else {
+    status.textContent = "";
+    btn.textContent = "Attiva";
+  }
+}
+
+refreshNotifStatus();
+
+async function enableNotifications() {
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") {
+      $("notifStatus").textContent = "Permesso negato.";
+      return;
+    }
+
+    const reg = await navigator.serviceWorker.ready;
+    const vapidResp = await fetch("/api/push-vapid-key");
+    const { publicKey } = await vapidResp.json();
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey)
+    });
+
+    const r = await fetch("/api/push-subscribe", {
+      method:"POST",
+      headers:{"content-type":"application/json"},
+      body:JSON.stringify({
+        subscription: sub.toJSON(),
+        tzOffsetMinutes: new Date().getTimezoneOffset(),
+        hour: 8
+      })
+    });
+
+    if (!r.ok) throw new Error("Errore salvataggio");
+
+    localStorage.setItem("notif-enabled","1");
+    localStorage.setItem("notif-endpoint", sub.endpoint);
+    refreshNotifStatus();
+
+  } catch(e) {
+    $("notifStatus").textContent = "Errore: "+e.message;
+  }
+}
+
+async function disableNotifications() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await fetch("/api/push-unsubscribe", {
+        method:"POST",
+        headers:{"content-type":"application/json"},
+        body:JSON.stringify({endpoint:sub.endpoint})
+      });
+      await sub.unsubscribe();
+    }
+
+    localStorage.removeItem("notif-enabled");
+    localStorage.removeItem("notif-endpoint");
+    refreshNotifStatus();
+
+  } catch(e) {
+    $("notifStatus").textContent = "Errore: "+e.message;
+  }
+}
+
+$("notifBtn").addEventListener("click", () => {
+  if (localStorage.getItem("notif-enabled") === "1") disableNotifications();
+  else enableNotifications();
+});
+
+
+// ===============================
+// UTILS
+// ===============================
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+</script>
+<script>
+// ===============================
+// FIREBASE
+// ===============================
+
 let fbDb = null;
 let fbReady = false;
+
 function initFirebase() {
   if (fbReady) return;
-  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('INSERISCI_QUI')) return;
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("INSERISCI_QUI")) return;
   try {
     firebase.initializeApp(firebaseConfig);
     fbDb = firebase.firestore();
     fbReady = true;
-  } catch (e) { console.error('Firebase init error', e); }
+  } catch(e) {}
 }
+
 initFirebase();
 
 async function saveLeaderboardEntry(entry) {
   initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato. Inserisci i valori nel file HTML.');
-  await fbDb.collection('scores').add({
+  if (!fbReady) throw new Error("Firebase non configurato.");
+  await fbDb.collection("scores").add({
     ...entry,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    monthKey: monthKey(entry.dateISO),
+    monthKey: monthKey(entry.dateISO)
   });
 }
 
-/* ===== Codice gruppo: 6 caratteri alfanumerici ===== */
+
+// ===============================
+// GRUPPI
+// ===============================
+
 function genGroupCode() {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I,O,0,1 per leggibilità
-  let s = '';
-  for (let i = 0; i < 6; i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i=0;i<6;i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
   return s;
 }
+
 async function createGroup(name, groupName) {
   initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato.');
-  // Genera codice univoco (provo max 5 volte)
+  if (!fbReady) throw new Error("Firebase non configurato.");
+
   let code;
-  for (let i = 0; i < 5; i++) {
+  for (let i=0;i<5;i++) {
     code = genGroupCode();
-    const exists = await fbDb.collection('groups').doc(code).get();
+    const exists = await fbDb.collection("groups").doc(code).get();
     if (!exists.exists) break;
     code = null;
   }
-  if (!code) throw new Error('Impossibile generare codice univoco. Riprova.');
-  await fbDb.collection('groups').doc(code).set({
+  if (!code) throw new Error("Errore generazione codice.");
+
+  await fbDb.collection("groups").doc(code).set({
     name: groupName,
     createdBy: name,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+
   return code;
 }
+
 async function joinGroup(code) {
   initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato.');
-  const snap = await fbDb.collection('groups').doc(code).get();
-  if (!snap.exists) throw new Error('Codice gruppo non trovato.');
+  if (!fbReady) throw new Error("Firebase non configurato.");
+  const snap = await fbDb.collection("groups").doc(code).get();
+  if (!snap.exists) throw new Error("Codice gruppo non trovato.");
   return { code, name: snap.data().name };
 }
 
-/* ===== Login / sessione (persistente in localStorage) ===== */
-state.user = loadUser();
+
+// ===============================
+// UI GRUPPI + LEADERBOARD
+// ===============================
 
 function showLBLoggedIn() {
-  $('lbLogin').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbContent').classList.remove('hidden');
-  $('lbWho').textContent = state.user.name;
+  $("lbLogin").classList.add("hidden");
+  $("lbCreated").classList.add("hidden");
+  $("lbContent").classList.remove("hidden");
   renderGroupPills();
   refreshLeaderboards();
 }
+
 function showLBLogin() {
-  $('lbContent').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbLogin').classList.remove('hidden');
-  // Pre-compila il nome se già impostato
+  $("lbContent").classList.add("hidden");
+  $("lbCreated").classList.add("hidden");
+  $("lbLogin").classList.remove("hidden");
+
   if (state.user?.name) {
-    $('lbJoinName').value = state.user.name;
-    $('lbCreateName').value = state.user.name;
+    $("lbJoinName").value = state.user.name;
+    $("lbCreateName").value = state.user.name;
   }
 }
 
 function renderGroupPills() {
-  const cont = $('groupPills');
-  cont.innerHTML = '';
+  const cont = $("groupPills");
+  cont.innerHTML = "";
+
   if (!state.user.groups.length) {
-    cont.innerHTML = '<p style="color:var(--muted);font-style:italic;margin:0">Nessun gruppo. Creane uno o uniscitene a uno.</p>';
-    $('lbActiveGroup').textContent = '—';
+    cont.innerHTML = "<p style='color:var(--fg-muted);font-style:italic;margin:0'>Nessun gruppo.</p>";
     return;
   }
+
   state.user.groups.forEach(g => {
-    const pill = document.createElement('div');
-    pill.className = 'group-pill' + (g.code === state.user.activeGroupCode ? ' active' : '');
-    pill.innerHTML = `<span class="pill-name">${escapeHtml(g.name)}</span><span class="code-mini">${g.code}</span><span class="pill-x" title="Esci da questo gruppo">×</span>`;
-    pill.querySelector('.pill-name').addEventListener('click', () => {
+    const pill = document.createElement("div");
+    pill.className = "group-pill" + (g.code === state.user.activeGroupCode ? " active" : "");
+    pill.innerHTML = `
+      <span class="pill-name">${escapeHtml(g.name)}</span>
+      <span class="code-mini">${g.code}</span>
+      <span class="pill-x">×</span>
+    `;
+
+    pill.querySelector(".pill-name").addEventListener("click", () => {
       state.user.activeGroupCode = g.code;
       saveUser();
       renderGroupPills();
       refreshLeaderboards();
     });
-    pill.querySelector('.code-mini').addEventListener('click', () => {
+
+    pill.querySelector(".code-mini").addEventListener("click", () => {
       state.user.activeGroupCode = g.code;
-      saveUser(); renderGroupPills(); refreshLeaderboards();
+      saveUser();
+      renderGroupPills();
+      refreshLeaderboards();
     });
-    pill.querySelector('.pill-x').addEventListener('click', (e) => {
+
+    pill.querySelector(".pill-x").addEventListener("click", (e) => {
       e.stopPropagation();
-      if (!confirm(`Vuoi davvero uscire dal gruppo "${g.name}" (${g.code})?`)) return;
+      if (!confirm(`Uscire dal gruppo "${g.name}" (${g.code})?`)) return;
       state.user.groups = state.user.groups.filter(x => x.code !== g.code);
       if (state.user.activeGroupCode === g.code) {
         state.user.activeGroupCode = state.user.groups[0]?.code || null;
@@ -1829,322 +2080,358 @@ function renderGroupPills() {
       if (!state.user.groups.length) showLBLogin();
       else { renderGroupPills(); refreshLeaderboards(); }
     });
+
     cont.appendChild(pill);
   });
-  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
-  $('lbActiveGroup').textContent = active ? `${active.name} (${active.code})` : '—';
 }
 
-/* Switch tab Crea/Unisciti */
-document.querySelectorAll('.lb-tab').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
+
+// ===============================
+// JOIN / CREATE
+// ===============================
+
+document.querySelectorAll(".lb-tab").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".lb-tab").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
     const t = b.dataset.lbtab;
-    $('lbPane-join').classList.toggle('hidden', t !== 'join');
-    $('lbPane-create').classList.toggle('hidden', t !== 'create');
-    $('lbJoinErr').style.display = 'none';
-    $('lbCreateErr').style.display = 'none';
+    $("lbPane-join").classList.toggle("hidden", t !== "join");
+    $("lbPane-create").classList.toggle("hidden", t !== "create");
+    $("lbJoinErr").style.display = "none";
+    $("lbCreateErr").style.display = "none";
   });
 });
 
-/* Crea gruppo */
-$('lbCreateBtn').addEventListener('click', async () => {
-  const name = $('lbCreateName').value.trim().slice(0,24);
-  const groupName = $('lbCreateGroup').value.trim().slice(0,32);
-  const err = $('lbCreateErr');
-  err.style.display = 'none';
-  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
-  if (!groupName) { err.textContent = 'Inserisci il nome del gruppo.'; err.style.display = ''; return; }
-  $('lbCreateBtn').disabled = true;
-  $('lbCreateBtn').textContent = 'Creo…';
+$("lbCreateBtn").addEventListener("click", async () => {
+  const name = $("lbCreateName").value.trim().slice(0,24);
+  const groupName = $("lbCreateGroup").value.trim().slice(0,32);
+  const err = $("lbCreateErr");
+  err.style.display = "none";
+
+  if (!name) { err.textContent = "Inserisci il tuo nome."; err.style.display = ""; return; }
+  if (!groupName) { err.textContent = "Inserisci il nome del gruppo."; err.style.display = ""; return; }
+
+  $("lbCreateBtn").disabled = true;
+  $("lbCreateBtn").textContent = "Creo…";
+
   try {
     const code = await createGroup(name, groupName);
-    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
+    if (!state.user) state.user = {name,groups:[],activeGroupCode:null};
     state.user.name = name;
-    if (!state.user.groups.find(g => g.code === code)) state.user.groups.push({ code, name: groupName });
+    if (!state.user.groups.find(g => g.code === code)) {
+      state.user.groups.push({code,name:groupName});
+    }
     state.user.activeGroupCode = code;
     saveUser();
-    $('newGroupCode').textContent = code;
-    $('lbLogin').classList.add('hidden');
-    $('lbCreated').classList.remove('hidden');
-  } catch (e) {
+
+    $("newGroupCode").textContent = code;
+    $("lbLogin").classList.add("hidden");
+    $("lbCreated").classList.remove("hidden");
+
+  } catch(e) {
     err.textContent = e.message;
-    err.style.display = '';
+    err.style.display = "";
   } finally {
-    $('lbCreateBtn').disabled = false;
-    $('lbCreateBtn').textContent = 'Crea il gruppo';
-  }
-});
-$('lbCreatedContinueBtn').addEventListener('click', () => {
-  showLBLoggedIn();
-});
-$('lbCopyCodeBtn').addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText($('newGroupCode').textContent);
-    $('lbCopyCodeBtn').textContent = '✓ Copiato';
-    setTimeout(() => { $('lbCopyCodeBtn').textContent = 'Copia codice'; }, 2000);
-  } catch {
-    alert('Codice: ' + $('newGroupCode').textContent);
+    $("lbCreateBtn").disabled = false;
+    $("lbCreateBtn").textContent = "Crea il gruppo";
   }
 });
 
-/* Unisciti */
-$('lbJoinBtn').addEventListener('click', async () => {
-  const name = $('lbJoinName').value.trim().slice(0,24);
-  const code = $('lbJoinCode').value.trim().toUpperCase().slice(0,8);
-  const err = $('lbJoinErr');
-  err.style.display = 'none';
-  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
-  if (!code) { err.textContent = 'Inserisci il codice gruppo.'; err.style.display = ''; return; }
-  $('lbJoinBtn').disabled = true;
-  $('lbJoinBtn').textContent = 'Verifico…';
+$("lbCreatedContinueBtn").addEventListener("click", showLBLoggedIn);
+
+$("lbCopyCodeBtn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("newGroupCode").textContent);
+    $("lbCopyCodeBtn").textContent = "✓ Copiato";
+    setTimeout(()=>$("lbCopyCodeBtn").textContent="Copia codice",2000);
+  } catch {
+    alert("Codice: "+$("newGroupCode").textContent);
+  }
+});
+
+$("lbJoinBtn").addEventListener("click", async () => {
+  const name = $("lbJoinName").value.trim().slice(0,24);
+  const code = $("lbJoinCode").value.trim().toUpperCase().slice(0,8);
+  const err = $("lbJoinErr");
+  err.style.display = "none";
+
+  if (!name) { err.textContent = "Inserisci il tuo nome."; err.style.display = ""; return; }
+  if (!code) { err.textContent = "Inserisci il codice gruppo."; err.style.display = ""; return; }
+
+  $("lbJoinBtn").disabled = true;
+  $("lbJoinBtn").textContent = "Verifico…";
+
   try {
     const g = await joinGroup(code);
-    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
+    if (!state.user) state.user = {name,groups:[],activeGroupCode:null};
     state.user.name = name;
-    if (!state.user.groups.find(x => x.code === g.code)) state.user.groups.push({ code: g.code, name: g.name });
+    if (!state.user.groups.find(x => x.code === g.code)) {
+      state.user.groups.push({code:g.code,name:g.name});
+    }
     state.user.activeGroupCode = g.code;
     saveUser();
     showLBLoggedIn();
-  } catch (e) {
+
+  } catch(e) {
     err.textContent = e.message;
-    err.style.display = '';
+    err.style.display = "";
   } finally {
-    $('lbJoinBtn').disabled = false;
-    $('lbJoinBtn').textContent = 'Entra nel gruppo';
+    $("lbJoinBtn").disabled = false;
+    $("lbJoinBtn").textContent = "Entra nel gruppo";
   }
 });
 
-/* "Aggiungi un altro gruppo" — riapre il login pannello pertinente */
-$('lbAddJoinBtn').addEventListener('click', () => {
+$("lbAddJoinBtn").addEventListener("click", () => {
   showLBLogin();
   document.querySelector('.lb-tab[data-lbtab="join"]').click();
 });
-$('lbAddCreateBtn').addEventListener('click', () => {
+
+$("lbAddCreateBtn").addEventListener("click", () => {
   showLBLogin();
   document.querySelector('.lb-tab[data-lbtab="create"]').click();
 });
 
-$('lbLogoutBtn').addEventListener('click', () => {
-  if (!confirm('Vuoi davvero uscire? Tutti i tuoi gruppi salvati su questo dispositivo verranno dimenticati.')) return;
+$("lbLogoutBtn").addEventListener("click", () => {
+  if (!confirm("Vuoi davvero uscire?")) return;
   state.user = null;
   saveUser();
-  $('lbContent').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbLogin').classList.remove('hidden');
-  $('lbJoinName').value = ''; $('lbJoinCode').value = '';
-  $('lbCreateName').value = ''; $('lbCreateGroup').value = '';
+  $("lbContent").classList.add("hidden");
+  $("lbCreated").classList.add("hidden");
+  $("lbLogin").classList.remove("hidden");
+  $("lbJoinName").value = "";
+  $("lbJoinCode").value = "";
+  $("lbCreateName").value = "";
+  $("lbCreateGroup").value = "";
 });
 
 if (state.user && state.user.groups?.length) showLBLoggedIn();
 else if (state.user?.name) showLBLogin();
 
-/* ===== Leaderboards ===== */
-let _lbDayUnsub = null, _lbMonthUnsub = null;
+
+// ===============================
+// LEADERBOARD
+// ===============================
+
+let _lbDayUnsub = null;
+let _lbMonthUnsub = null;
+
 async function refreshLeaderboards() {
   if (!state.user || !state.user.activeGroupCode) return;
+
   initFirebase();
   if (!fbReady) {
-    $('lbDayEmpty').textContent = 'Firebase non configurato — vedi commenti nel file HTML.';
-    $('lbDayEmpty').style.display = '';
-    $('lbMonthEmpty').textContent = 'Firebase non configurato — vedi commenti nel file HTML.';
-    $('lbMonthEmpty').style.display = '';
+    $("lbDayEmpty").textContent = "Firebase non configurato.";
+    $("lbDayEmpty").style.display = "";
+    $("lbMonthEmpty").textContent = "Firebase non configurato.";
+    $("lbMonthEmpty").style.display = "";
     return;
   }
-  // unsubscribe precedenti listener
-  if (_lbDayUnsub)   { _lbDayUnsub();   _lbDayUnsub = null; }
-  if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
+
+  if (_lbDayUnsub) {_lbDayUnsub(); _lbDayUnsub=null;}
+  if (_lbMonthUnsub) {_lbMonthUnsub(); _lbMonthUnsub=null;}
 
   const today = todayISO();
   const mk = monthKey(today);
-  $('lbDayDate').textContent = fmtDateIT(today);
-  $('lbMonthLabel').textContent = mk;
+  $("lbDayDate").textContent = fmtDateIT(today);
+  $("lbMonthLabel").textContent = mk;
 
   const code = state.user.activeGroupCode;
-  _lbDayUnsub = fbDb.collection('scores')
-    .where('groupCode', '==', code)
-    .where('dateISO', '==', today)
-    .onSnapshot(snap => renderDayTable(snap.docs.map(d => d.data())));
 
-  _lbMonthUnsub = fbDb.collection('scores')
-    .where('groupCode', '==', code)
-    .where('monthKey', '==', mk)
-    .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+  _lbDayUnsub = fbDb.collection("scores")
+    .where("groupCode","==",code)
+    .where("dateISO","==",today)
+    .onSnapshot(snap => renderDayTable(snap.docs.map(d=>d.data())));
+
+  _lbMonthUnsub = fbDb.collection("scores")
+    .where("groupCode","==",code)
+    .where("monthKey","==",mk)
+    .onSnapshot(snap => renderMonthTable(snap.docs.map(d=>d.data())));
 }
 
 function renderDayTable(rows) {
-  // best % per name
   const byName = {};
   rows.forEach(r => {
     if (!byName[r.name] || r.pct > byName[r.name].pct) byName[r.name] = r;
   });
-  const list = Object.values(byName).sort((a,b) => b.pct - a.pct || b.score - a.score);
-  const tbody = $('lbDayTable').querySelector('tbody');
-  tbody.innerHTML = '';
-  if (!list.length) { $('lbDayEmpty').style.display = ''; return; }
-  $('lbDayEmpty').style.display = 'none';
-  const medals = ['🥇','🥈','🥉'];
-  list.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    if (r.name === state.user.name) tr.classList.add('me');
-    tr.innerHTML = `<td><span class="medal">${medals[i]||(i+1)}</span></td><td>${r.name}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
+
+  const list = Object.values(byName).sort((a,b)=>b.pct-a.pct || b.score-a.score);
+  const tbody = $("lbDayTable").querySelector("tbody");
+  tbody.innerHTML = "";
+
+  if (!list.length) {
+    $("lbDayEmpty").style.display = "";
+    return;
+  }
+
+  $("lbDayEmpty").style.display = "none";
+  const medals = ["🥇","🥈","🥉"];
+
+  list.forEach((r,i) => {
+    const tr = document.createElement("tr");
+    if (r.name === state.user.name) tr.classList.add("me");
+    tr.innerHTML = `
+      <td>${medals[i]||(i+1)}</td>
+      <td>${r.name}</td>
+      <td>${Math.round(r.pct*100)}%</td>
+      <td>${r.score}/${r.total}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
+
 function renderMonthTable(rows) {
-  // sum points per name
   const byName = {};
   rows.forEach(r => {
-    if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
+    if (!byName[r.name]) byName[r.name] = {name:r.name,points:0,games:0};
     byName[r.name].points += r.score;
     byName[r.name].games += 1;
   });
-  const list = Object.values(byName).sort((a,b) => b.points - a.points || b.games - a.games);
-  const tbody = $('lbMonthTable').querySelector('tbody');
-  tbody.innerHTML = '';
-  if (!list.length) { $('lbMonthEmpty').style.display = ''; return; }
-  $('lbMonthEmpty').style.display = 'none';
-  list.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    if (r.name === state.user.name) tr.classList.add('me');
-    tr.innerHTML = `<td>${i+1}</td><td>${r.name}</td><td>${r.points} pt</td><td>${r.games} partite</td>`;
+
+  const list = Object.values(byName).sort((a,b)=>b.points-a.points || b.games-a.games);
+  const tbody = $("lbMonthTable").querySelector("tbody");
+  tbody.innerHTML = "";
+
+  if (!list.length) {
+    $("lbMonthEmpty").style.display = "";
+    return;
+  }
+
+  $("lbMonthEmpty").style.display = "none";
+
+  list.forEach((r,i) => {
+    const tr = document.createElement("tr");
+    if (r.name === state.user.name) tr.classList.add("me");
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.points} pt</td>
+      <td>${r.games} partite</td>
+    `;
     tbody.appendChild(tr);
   });
 }
-
-/* =========================================================
-   MENU A TENDINA + HISTORY (back button intelligente)
-========================================================= */
-const NG_HISTORY = {
-  // Stack interno per gestire pushState con stati nominati
-  push(stateName, data = {}) {
-    history.pushState({ ng: true, name: stateName, ...data }, '', '');
-  },
-  isInternal(state) {
-    return state && state.ng === true;
-  }
-};
-
-/* Apertura/chiusura menu */
-function openDropdown() {
-  $('dropdownMenu').classList.remove('hidden');
-  $('dropdownBackdrop').classList.remove('hidden');
-  $('menuTrigger').setAttribute('aria-expanded', 'true');
-  NG_HISTORY.push('menu');
-}
-function closeDropdown(skipHistory) {
-  $('dropdownMenu').classList.add('hidden');
-  $('dropdownBackdrop').classList.add('hidden');
-  $('menuTrigger').setAttribute('aria-expanded', 'false');
-  if (!skipHistory && history.state && history.state.name === 'menu') {
-    history.back();
-  }
-}
-function isDropdownOpen() { return !$('dropdownMenu').classList.contains('hidden'); }
-
-$('menuTrigger').addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (isDropdownOpen()) closeDropdown();
-  else openDropdown();
-});
-$('dropdownBackdrop').addEventListener('click', () => closeDropdown());
-
-/* Click su voci menu */
-document.querySelectorAll('.dropdown-item').forEach(it => {
-  it.addEventListener('click', () => {
-    const action = it.dataset.action;
-    closeDropdown(true); // chiudo senza un history.back perché farò una nuova navigazione subito
-    if (action === 'archive') {
-      // Vai in tab quiz e apri il details "Consulta archivio"
-      document.querySelector('.tab[data-tab="quiz"]').click();
-      const det = document.querySelector('.archive-browser details');
-      if (det) {
-        det.open = true;
-        setTimeout(() => det.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
-      }
-    } else if (action === 'stats') {
-      document.querySelector('.tab[data-tab="stats"]').click();
-    } else if (action === 'leaderboard') {
-      document.querySelector('.tab[data-tab="leaderboard"]').click();
-    } else if (action === 'rename') {
-      openNameModal();
-    }
-  });
-});
-
-/* =========================================================
-   POPSTATE: tasto indietro intelligente
-========================================================= */
-function isQuizInProgress() {
-  return state.mode === 'daily' && !$('quizRunning').classList.contains('hidden') && state.questions.length && state.current < state.questions.length;
-}
+</script>
+<script>
+// ===============================
+// CONFERMA USCITA QUIZ
+// ===============================
 
 function showConfirmExit(onYes) {
-  $('confirmExit').classList.remove('hidden');
-  const yes = $('confirmExitYes'), no = $('confirmExitNo');
+  $("confirmExit").classList.remove("hidden");
+
+  const yes = $("confirmExitYes");
+  const no = $("confirmExitNo");
+
   const cleanup = () => {
-    $('confirmExit').classList.add('hidden');
+    $("confirmExit").classList.add("hidden");
     yes.replaceWith(yes.cloneNode(true));
     no.replaceWith(no.cloneNode(true));
   };
-  $('confirmExitYes').addEventListener('click', () => { cleanup(); onYes(); }, { once: true });
-  $('confirmExitNo').addEventListener('click', () => { cleanup(); }, { once: true });
+
+  $("confirmExitYes").addEventListener("click", () => {
+    cleanup();
+    onYes();
+  }, { once:true });
+
+  $("confirmExitNo").addEventListener("click", () => {
+    cleanup();
+  }, { once:true });
 }
 
-window.addEventListener('popstate', (e) => {
-  // 1) Se c'è un modal "cambia nome" aperto → chiudilo
-  if (!$('nameModal').classList.contains('hidden')) {
+
+// ===============================
+// RESET AL MENU PRINCIPALE
+// ===============================
+
+function resetToMenu() {
+  $("quizRunning").classList.add("hidden");
+  $("finalScreen").classList.add("hidden");
+
+  $("saveScoreBtn").textContent = "Salva punteggio";
+  $("saveScoreBtn").disabled = false;
+  $("saveScoreBtn").style.display = "";
+
+  openPage("quiz");
+}
+
+
+// ===============================
+// OVERRIDE PER HISTORY INTELLIGENTE
+// ===============================
+
+const _origStartQuiz = startQuiz;
+window.startQuiz = async function(mode, dateISO) {
+  if (mode === "daily") NG_HISTORY.push("quiz-running");
+  return _origStartQuiz(mode, dateISO);
+};
+
+const _origOpenNameModal = openNameModal;
+window.openNameModal = function() {
+  _origOpenNameModal();
+  NG_HISTORY.push("modal-rename");
+};
+
+const _origOpenSaveModal = openSaveModal;
+window.openSaveModal = function() {
+  _origOpenSaveModal();
+  NG_HISTORY.push("modal-save");
+};
+
+
+// ===============================
+// CHIUSURA MODALI E SIDEBAR
+// ===============================
+
+function closeSidebar(skipHistory) {
+  $("sidebar").classList.remove("open");
+  $("sidebarBackdrop").classList.remove("open");
+  if (!skipHistory && history.state?.name === "sidebar") history.back();
+}
+
+function closeNameModal() {
+  $("nameModal").classList.add("hidden");
+}
+
+function closeSaveModal() {
+  $("saveModal").classList.add("hidden");
+}
+
+
+// ===============================
+// POPSTATE FINALE
+// ===============================
+
+window.addEventListener("popstate", () => {
+  if ($("sidebar").classList.contains("open")) {
+    closeSidebar(true);
+    return;
+  }
+
+  if (!$("nameModal").classList.contains("hidden")) {
     closeNameModal();
     return;
   }
-  // 2) Se c'è il save modal aperto → chiudilo
-  if (!$('saveModal').classList.contains('hidden')) {
+
+  if (!$("saveModal").classList.contains("hidden")) {
     closeSaveModal();
     return;
   }
-  // 3) Se il dropdown è aperto → chiudilo
-  if (isDropdownOpen()) {
-    closeDropdown(true);
-    return;
-  }
-  // 4) Se c'è un quiz daily in corso → chiedi conferma
+
   if (isQuizInProgress()) {
-    // Riapro lo stato con pushState così il "back" non esce dall'app
-    NG_HISTORY.push('quiz-running');
+    NG_HISTORY.push("quiz-running");
     showConfirmExit(() => {
-      // Utente conferma uscita: torna al menù principale
       resetToMenu();
-      // Esce davvero dalla cronologia
       history.back();
     });
     return;
   }
 });
 
-/* Push iniziale: garantisce che il primo "back" non esca subito dall'app */
-NG_HISTORY.push('home');
-
-/* Quando inizia un quiz daily, registro un punto di ripristino */
-const _origStartQuiz = startQuiz;
-window.startQuiz = async function(mode, dateISO) {
-  if (mode === 'daily') NG_HISTORY.push('quiz-running');
-  return _origStartQuiz(mode, dateISO);
-};
-
-/* Apertura modal cambia nome registra anche history */
-const _origOpenNameModal = openNameModal;
-window.openNameModal = function() {
-  _origOpenNameModal();
-  NG_HISTORY.push('modal-rename');
-};
-
-/* Apertura save modal registra history */
-const _origOpenSaveModal = openSaveModal;
-window.openSaveModal = function() {
-  _origOpenSaveModal();
-  NG_HISTORY.push('modal-save');
-};
 </script>
+<!-- ===============================
+     FINE JAVASCRIPT
+=============================== -->
+</script>
+
 </body>
 </html>
