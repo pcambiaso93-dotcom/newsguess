@@ -111,7 +111,7 @@
   /* Score bar */
   .scorebar { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
   .dots { display: flex; gap: 8px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; transition: background .2s, border-color .2s; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; }
   .dot.right { background: var(--green); border-color: var(--green); }
   .dot.wrong { background: var(--red); border-color: var(--red); }
   .dot.current { border-color: var(--accent); }
@@ -125,14 +125,14 @@
 
   /* Choices */
   .choices { display: grid; gap: 10px; margin-bottom: 16px; }
-  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s, transform .1s; }
+  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s; }
   .choice:hover:not(:disabled) { background: var(--paper-2); }
   .choice:disabled { cursor: default; }
   .choice.right { background: var(--green); color: #fff; border-color: var(--green); }
   .choice.wrong { background: var(--red); color: #fff; border-color: var(--red); }
 
   /* Buttons */
-  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; transition: background .15s, transform .1s; }
+  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; }
   .btn:hover { background: var(--ink-2); }
   .btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
   .btn.outline:hover { background: var(--paper-2); }
@@ -150,43 +150,15 @@
   .errbox { border: 2px solid var(--red); padding: 18px; background: var(--paper-2); margin: 20px 0; }
   .errbox h4 { margin: 0 0 8px; color: var(--red); font-family: 'Playfair Display', serif; }
 
-  /* Final screen — stile prima pagina di giornale */
-  .final { padding: 0; text-align: left; }
-
-  /* Testata edizione speciale */
-  .final-masthead { border-top: 4px solid var(--rule); border-bottom: 4px solid var(--rule); padding: 10px 0 8px; text-align: center; margin-bottom: 0; position: relative; }
-  .final-masthead::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: var(--rule); }
-  .final-edition { text-transform: uppercase; letter-spacing: 4px; font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
-  .final-masthead-title { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; font-size: clamp(36px, 8vw, 64px); line-height: 1; margin: 0; }
-  .final-masthead-sub { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-top: 6px; }
-
-  /* Headline principale */
-  .final-headline { padding: 28px 0 20px; border-bottom: 2px solid var(--rule); margin-bottom: 20px; }
-  .final-kicker { text-transform: uppercase; letter-spacing: 3px; font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
-  .final-title { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(26px, 5.5vw, 48px); line-height: 1.05; margin: 0 0 12px; letter-spacing: -.5px; }
-  .final-deck { font-style: italic; font-size: clamp(15px, 2.5vw, 19px); color: var(--ink-2); line-height: 1.5; margin: 0; }
-
-  /* Colonna punteggio */
-  .final-score-row { display: flex; align-items: flex-end; gap: 20px; margin: 20px 0 24px; padding-bottom: 20px; border-bottom: 1px solid var(--rule); }
-  .final-score-box { text-align: center; border: 2px solid var(--rule); padding: 18px 24px; background: var(--paper-2); flex-shrink: 0; }
-  .final .big-score { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(64px, 16vw, 120px); line-height: 1; margin: 0; display: block; }
-  .final-score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); font-weight: 700; margin-top: 4px; }
-  .final-body-text { font-size: 14px; line-height: 1.7; color: var(--ink-2); font-style: italic; flex: 1; }
-
-  /* Tabella riepilogo */
-  .final-recap-head { text-transform: uppercase; letter-spacing: 2px; font-size: 11px; font-weight: 700; color: var(--muted); margin: 0 0 8px; padding-bottom: 6px; border-bottom: 2px solid var(--rule); }
-  .final table { width: 100%; border-collapse: collapse; margin: 0 0 24px; text-align: left; }
+  /* Final screen */
+  .final { text-align: center; padding: 40px 20px; }
+  .final .big-score { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(72px, 18vw, 140px); line-height: 1; margin: 10px 0; }
+  .final .verdict { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(22px, 4vw, 32px); margin-bottom: 28px; color: var(--accent); }
+  .final table { width: 100%; border-collapse: collapse; margin: 24px 0; text-align: left; }
   .final th, .final td { padding: 10px 8px; border-bottom: 1px solid var(--rule); font-size: 14px; }
   .final th { text-transform: uppercase; letter-spacing: 1px; font-size: 11px; color: var(--muted); font-weight: 700; }
   .final td.ok { color: var(--green); font-weight: 700; }
   .final td.no { color: var(--red); font-weight: 700; }
-
-  /* Bottone condivisione */
-  .btn.share { background: #25D366; color: #fff; border: none; display: inline-flex; align-items: center; gap: 8px; }
-  .btn.share:hover { background: #20b858; }
-  .btn.share-copy { background: var(--paper-2); color: var(--ink); border: 1px solid var(--rule); display: inline-flex; align-items: center; gap: 8px; }
-  .btn.share-copy:hover { background: var(--paper); }
-  .final-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--rule); }
 
   /* Leaderboard */
   .lb-form { border: 1px solid var(--rule); padding: 24px; background: var(--paper); margin-bottom: 22px; }
@@ -296,290 +268,124 @@
   .notif-section { margin-top: 28px; padding: 18px; border: 1px solid var(--rule); background: var(--paper-2); }
   .notif-section .small-caps { margin: 0; }
 
-  /* ===================================================
-     ANIMAZIONI VIVACI — aggiunte
-     =================================================== */
+  /* =========================================================
+     MENU A TENDINA (kebab, top-right)
+  ========================================================= */
+  .masthead { position: relative; }
+  .menu-trigger { position: absolute; top: 14px; right: 8px; width: 44px; height: 44px; border: none; background: transparent; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border-radius: 6px; transition: background .15s, transform .12s; z-index: 5; }
+  .menu-trigger:hover { background: var(--paper-2); }
+  .menu-trigger:active { transform: scale(0.92); }
+  .menu-trigger span { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--ink); transition: transform .25s ease, opacity .2s; }
+  .menu-trigger[aria-expanded="true"] span:nth-child(1) { transform: translateY(9px) rotate(45deg) scale(1.4); background: var(--accent); }
+  .menu-trigger[aria-expanded="true"] span:nth-child(2) { opacity: 0; transform: scale(0); }
+  .menu-trigger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-9px) rotate(-45deg) scale(1.4); background: var(--accent); }
 
-  /* Keyframes */
-  @keyframes slideUpFade {
-    from { opacity: 0; transform: translateY(30px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes scorePop {
-    0%   { opacity: 0; transform: scale(0.35) rotate(-8deg); }
-    55%  { transform: scale(1.15) rotate(3deg); }
-    75%  { transform: scale(0.94) rotate(-1deg); }
-    90%  { transform: scale(1.04) rotate(0.5deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0) rotate(0deg); }
-    12%  { transform: translateX(-9px) rotate(-1deg); }
-    25%  { transform: translateX(9px) rotate(1deg); }
-    37%  { transform: translateX(-7px) rotate(-0.8deg); }
-    50%  { transform: translateX(7px) rotate(0.8deg); }
-    62%  { transform: translateX(-4px) rotate(-0.4deg); }
-    75%  { transform: translateX(4px) rotate(0.4deg); }
-    87%  { transform: translateX(-2px); }
-  }
-  @keyframes correctPulse {
-    0%   { transform: scale(1); }
-    35%  { transform: scale(1.06); }
-    65%  { transform: scale(0.97); }
-    100% { transform: scale(1); }
-  }
-  @keyframes verdictSlide {
-    from { opacity: 0; transform: translateY(-18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes dotPulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(176,16,16,.3); }
-    50%       { transform: scale(1.35); box-shadow: 0 0 0 6px rgba(176,16,16,.0); }
-  }
-  @keyframes choiceIn {
-    from { opacity: 0; transform: translateX(-22px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes cardWobble {
-    0%   { transform: scale(1) rotate(0deg); }
-    30%  { transform: scale(1.025) rotate(-0.9deg); }
-    60%  { transform: scale(1.025) rotate(0.7deg); }
-    80%  { transform: scale(1.01) rotate(-0.3deg); }
-    100% { transform: scale(1) rotate(0deg); }
-  }
-  @keyframes tabPress {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(0.92); }
-    100% { transform: scale(1); }
-  }
-  @keyframes dotRight {
-    0%   { transform: scale(0.5); opacity: 0; }
-    60%  { transform: scale(1.3); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-  @keyframes dotWrong {
-    0%   { transform: scale(0.5); opacity: 0; }
-    50%  { transform: scale(1.2); }
-    100% { transform: scale(1); opacity: 1; }
-  }
+  .dropdown-backdrop { position: fixed; inset: 0; background: transparent; z-index: 9990; }
+  .dropdown-backdrop.hidden { display: none; }
 
-  /* Applicazione animazioni */
-  .qcard                { animation: slideUpFade .38s cubic-bezier(.22,1,.36,1) both; }
+  .dropdown-menu { position: fixed; top: 56px; right: 12px; min-width: 240px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 10px 30px rgba(0,0,0,0.18); z-index: 9991; padding: 6px 0; transform-origin: top right; animation: ngDropdownOpen .22s cubic-bezier(.34,1.56,.64,1) both; }
+  .dropdown-menu.hidden { display: none; }
+  @keyframes ngDropdownOpen { 0% { opacity: 0; transform: scale(0.85) translateY(-8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  .dropdown-item { width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border: none; background: transparent; cursor: pointer; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); text-align: left; transition: background .12s, transform .08s; }
+  .dropdown-item:hover { background: var(--paper-2); }
+  .dropdown-item:active { transform: scale(0.98); background: var(--paper-2); }
+  .dropdown-item .dd-ico { font-size: 20px; flex-shrink: 0; width: 24px; text-align: center; }
 
-  /* Choice staggered entry */
-  .choice               { animation: choiceIn .28s cubic-bezier(.22,1,.36,1) both; opacity: 0; animation-fill-mode: forwards; }
-  .choice:nth-child(1)  { animation-delay: .04s; }
-  .choice:nth-child(2)  { animation-delay: .10s; }
-  .choice:nth-child(3)  { animation-delay: .16s; }
-  .choice:nth-child(4)  { animation-delay: .22s; }
+  /* Confirm dialog (uscita partita) */
+  .confirm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; animation: ngFadeInUp .25s ease both; }
+  .confirm-overlay.hidden { display: none; }
+  .confirm-dialog { background: var(--paper); border: 2px solid var(--rule); padding: 26px; max-width: 340px; width: 100%; text-align: center; animation: ngPopIn .3s cubic-bezier(.34,1.56,.64,1) both; }
+  .confirm-dialog h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin: 0 0 10px; }
+  .confirm-dialog p { color: var(--ink-2); margin: 0 0 20px; font-size: 15px; line-height: 1.5; }
+  .confirm-dialog .row { display: flex; gap: 10px; justify-content: center; }
+  .confirm-dialog .row .btn { flex: 1; max-width: 140px; }
 
-  /* Override quando risponde */
-  .choice.right         { animation: correctPulse .42s ease both !important; opacity: 1 !important; }
-  .choice.wrong         { animation: shake .48s ease both !important; opacity: 1 !important; }
+  /* =========================================================
+     ANIMAZIONI — stile moderno ma coerente con il mood quotidiano
+  ========================================================= */
+  @keyframes ngFadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes ngPopIn { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
+  @keyframes ngBounceIn { 0% { transform: translateY(20px) scale(0.92); opacity: 0; } 60% { transform: translateY(-4px) scale(1.03); opacity: 1; } 100% { transform: translateY(0) scale(1); } }
+  @keyframes ngShake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-8px); } 30% { transform: translateX(8px); } 45% { transform: translateX(-6px); } 60% { transform: translateX(6px); } 75% { transform: translateX(-3px); } 90% { transform: translateX(3px); } }
+  @keyframes ngRightFlash { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0.5); } 50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(36,107,58,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0); } }
+  @keyframes ngWrongFlash { 0% { box-shadow: 0 0 0 0 rgba(176,16,16,0.55); } 60% { box-shadow: 0 0 0 14px rgba(176,16,16,0); } 100% { box-shadow: 0 0 0 0 rgba(176,16,16,0); } }
+  @keyframes ngPulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+  @keyframes ngSlideFadeIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+  @keyframes ngCountUp { from { transform: scale(0.5) rotate(-6deg); opacity: 0; } 60% { transform: scale(1.15) rotate(2deg); opacity: 1; } to { transform: scale(1) rotate(0); } }
+  @keyframes ngConfettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }
 
-  /* Dot corrente pulsante */
-  .dot.current          { animation: dotPulse 1.2s ease-in-out infinite; }
-  .dot.right            { animation: dotRight .35s cubic-bezier(.22,1,.36,1) both; }
-  .dot.wrong            { animation: dotWrong .3s ease both; }
+  /* Applicazioni */
+  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; animation: ngFadeInUp .4s ease both; }
+  .mode-card:nth-child(1) { animation-delay: 40ms; }
+  .mode-card:nth-child(2) { animation-delay: 140ms; }
+  .mode-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
+  .mode-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
 
-  /* Mode card hover */
-  .mode-card:hover:not(.completed) { animation: cardWobble .48s ease; }
+  /* Pulsanti generici con piccola pressione */
+  .btn { transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
+  .btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .btn:active:not(:disabled) { transform: scale(0.94); transition: transform .08s ease; }
 
-  /* Finale */
-  .final .big-score     { animation: scorePop .7s cubic-bezier(.22,1,.36,1) both; }
-  .final-masthead       { animation: fadeInUp .3s ease both; }
-  .final-headline       { animation: fadeInUp .35s .15s ease both; opacity: 0; animation-fill-mode: forwards; }
-  .final-score-row      { animation: fadeInUp .35s .3s ease both; opacity: 0; animation-fill-mode: forwards; }
-  .final table          { animation: fadeInUp .4s .48s ease both; opacity: 0; animation-fill-mode: forwards; }
-  .final-actions        { animation: fadeInUp .38s .64s ease both; opacity: 0; animation-fill-mode: forwards; }
+  /* Card domanda: entrata */
+  .qcard { animation: ngFadeInUp .35s ease both; }
 
-  /* Tab content */
-  #tab-quiz:not(.hidden),
-  #tab-leaderboard:not(.hidden),
-  #tab-stats:not(.hidden) { animation: fadeInUp .22s ease both; }
+  /* Choice: apparizione scaglionata (stagger via --i) */
+  .choice { animation: ngFadeInUp .32s ease both; animation-delay: calc(var(--i, 0) * 70ms); transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
+  .choice:hover:not(:disabled) { transform: translateX(4px); }
+  .choice:active:not(:disabled) { transform: scale(0.96); background: var(--paper-2); transition: transform .08s ease, background .08s; }
+  .choice.right { animation: ngRightFlash .6s ease; }
+  .choice.wrong { animation: ngShake .5s ease, ngWrongFlash .6s ease; }
 
-  /* Click feedback */
-  .btn:active           { transform: scale(0.94); transition: transform .08s ease !important; }
-  .choice:active:not(:disabled) { transform: scale(0.97); transition: transform .06s ease !important; }
-  .tab                  { transition: color .15s, border-color .15s, transform .12s ease; }
+  /* Progress dots: quello "current" pulsa */
+  .dot.current { animation: ngPulseDot 1.1s ease-in-out infinite; }
 
-  /* Colore punteggio finale */
-  .big-score.score-great { color: var(--green); }
-  .big-score.score-ok    { color: var(--ink); }
-  .big-score.score-bad   { color: var(--red); }
+  /* Next button */
+  #nextBtn { animation: ngBounceIn .38s ease both; }
 
-  /* Canvas confetti */
-  #confettiCanvas {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none; z-index: 50;
-    display: none;
-  }
+  /* Final screen animazioni */
+  .final .big-score { animation: ngCountUp .7s cubic-bezier(.34,1.56,.64,1) both; }
+  .final .verdict { animation: ngFadeInUp .5s ease both; animation-delay: .35s; }
+  .final table { animation: ngFadeInUp .4s ease both; animation-delay: .55s; }
+  .final .row { animation: ngFadeInUp .4s ease both; animation-delay: .75s; }
 
-  /* ===================================================
-     SPLASH SCREEN
-     =================================================== */
-  #splashScreen {
-    position: fixed;
-    inset: 0;
-    background: #0a0804;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  #splashScreen.hide {
-    animation: splashFadeOut .7s cubic-bezier(.4,0,.2,1) forwards;
-  }
-  @keyframes splashFadeOut {
-    0%   { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
-  }
+  /* Tabs: underline glide */
+  .tab { position: relative; }
+  .tab.active { animation: ngPopIn .35s ease; }
 
-  /* Righe di titoli scorrevoli */
-  .splash-ticker-wrap {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0;
-    opacity: 0;
-    animation: splashTickerIn .5s .1s ease forwards;
-  }
-  @keyframes splashTickerIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-  .splash-row {
-    display: flex;
-    white-space: nowrap;
-    overflow: hidden;
-    padding: 10px 0;
-    border-top: 1px solid rgba(255,255,255,.07);
-  }
-  .splash-row:last-child { border-bottom: 1px solid rgba(255,255,255,.07); }
-  .splash-row-inner {
-    display: flex;
-    gap: 0;
-    /* velocità diversa per ogni riga, alternate direzioni */
-  }
-  .splash-row:nth-child(odd)  .splash-row-inner { animation: tickerLeft  18s linear infinite; }
-  .splash-row:nth-child(even) .splash-row-inner { animation: tickerRight 22s linear infinite; }
-  @keyframes tickerLeft  { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  @keyframes tickerRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  /* Archive card hover lift + entrata staggerata */
+  .past-card { transition: transform .18s ease, box-shadow .18s; animation: ngFadeInUp .4s ease both; animation-delay: calc(var(--i, 0) * 60ms + 200ms); }
+  .past-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow); }
+  .past-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
 
-  .splash-item {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 12px;
-    padding: 0 32px;
-    flex-shrink: 0;
-  }
-  .splash-item-name {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: clamp(10px, 1.8vw, 13px);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #b01010;
-    flex-shrink: 0;
-  }
-  .splash-item-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-style: italic;
-    font-size: clamp(15px, 2.8vw, 22px);
-    color: rgba(255,255,255,.82);
-    letter-spacing: -.3px;
-  }
-  .splash-item-sep {
-    color: rgba(255,255,255,.2);
-    font-size: 18px;
-    margin: 0 8px;
-  }
+  /* Sezioni archivio + promemoria + backup: entrata soft */
+  .archive-browser, .notif-section { animation: ngFadeInUp .5s ease both; animation-delay: 350ms; }
 
-  /* Overlay gradiente per sfumare i bordi */
-  .splash-vignette {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(10,8,4,.85) 0%, rgba(10,8,4,0) 100%),
-      linear-gradient(to right,  #0a0804 0%, transparent 12%, transparent 88%, #0a0804 100%),
-      linear-gradient(to bottom, #0a0804 0%, transparent 18%, transparent 82%, #0a0804 100%);
-    pointer-events: none;
-  }
+  /* Stat cards: entrata scaglionata */
+  .stat-card { animation: ngFadeInUp .4s ease both; }
+  .stat-card:nth-child(1) { animation-delay: 0ms; }
+  .stat-card:nth-child(2) { animation-delay: 80ms; }
+  .stat-card:nth-child(3) { animation-delay: 160ms; }
+  .stat-card:nth-child(4) { animation-delay: 240ms; }
 
-  /* Logo centrale */
-  .splash-logo {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    opacity: 0;
-    animation: splashLogoIn .8s .8s cubic-bezier(.22,1,.36,1) forwards;
-  }
-  @keyframes splashLogoIn {
-    from { opacity: 0; transform: scale(.88) translateY(12px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-  .splash-logo-brand {
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    font-size: 11px;
-    color: #b01010;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-  .splash-logo-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-style: italic;
-    font-size: clamp(56px, 14vw, 110px);
-    color: #f5f1e8;
-    line-height: 1;
-    letter-spacing: -2px;
-    text-shadow: 0 2px 40px rgba(176,16,16,.35);
-  }
-  .splash-logo-tagline {
-    font-family: 'Libre Baskerville', serif;
-    font-style: italic;
-    font-size: clamp(13px, 2.5vw, 17px);
-    color: rgba(245,241,232,.55);
-    margin-top: 10px;
-    opacity: 0;
-    animation: splashLogoIn .6s 1.3s ease forwards;
-  }
-  /* Lineetta decorativa */
-  .splash-logo-rule {
-    width: 60px;
-    height: 2px;
-    background: #b01010;
-    margin: 14px auto 0;
-    opacity: 0;
-    animation: splashLogoIn .5s 1.6s ease forwards;
-  }
+  /* Group pills: entrata leggera */
+  .group-pill { animation: ngSlideFadeIn .35s ease both; transition: transform .12s ease, background .15s; }
+  .group-pill:hover:not(.active) { transform: translateY(-1px); }
 
+  /* Toast (conferma azioni) */
+  .ng-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 12px 20px; border-left: 4px solid var(--accent); font-size: 14px; font-family: 'Libre Baskerville', serif; box-shadow: 0 8px 24px var(--shadow); opacity: 0; z-index: 9999; transition: opacity .25s ease, transform .25s ease; pointer-events: none; max-width: 90%; text-align: center; }
+  .ng-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Confetti (perfect score) */
+  .ng-confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
+  .ng-confetti-piece { position: absolute; top: -14px; width: 10px; height: 14px; opacity: 0; animation: ngConfettiFall linear forwards; }
+
+  /* Rispetta le preferenze utente */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
 </style>
 </head>
 <body>
-
-<!-- ===== SPLASH SCREEN ===== -->
-<div id="splashScreen" aria-hidden="true">
-  <div class="splash-ticker-wrap" id="splashTicker"></div>
-  <div class="splash-vignette"></div>
-  <div class="splash-logo">
-    <div class="splash-logo-brand">Quiz dei quotidiani</div>
-    <div class="splash-logo-title">Newsguess</div>
-    <div class="splash-logo-tagline">Il quiz delle prime pagine d'Italia</div>
-    <div class="splash-logo-rule"></div>
-  </div>
-</div>
-
 <div class="bg-decorations" aria-hidden="true">
   <svg class="bg-deco bg-deco-1" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="10" y="30" width="180" height="150" rx="3"/>
@@ -607,14 +413,13 @@
     <line x1="86" y1="38" x2="96" y2="46"/>
   </svg>
 </div>
-
-<!-- Canvas per confetti (finale con punteggio alto) -->
-<canvas id="confettiCanvas"></canvas>
-
 <div class="wrap">
 
   <!-- Masthead -->
   <header class="masthead">
+    <button class="menu-trigger" id="menuTrigger" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
     <div class="brand-rule">EST. 2019 · QUIZ DEI QUOTIDIANI</div>
     <h1>Newsguess</h1>
     <div class="tagline">Il quiz delle prime pagine d'Italia</div>
@@ -624,6 +429,23 @@
       <span id="installBtn" class="install-link" style="display:none;cursor:pointer" onclick="triggerInstall()">📲 Installa app</span>
     </div>
   </header>
+
+  <!-- Dropdown menu -->
+  <div id="dropdownMenu" class="dropdown-menu hidden" role="menu">
+    <button class="dropdown-item" data-action="archive" role="menuitem">
+      <span class="dd-ico">📂</span><span>Archivio storico</span>
+    </button>
+    <button class="dropdown-item" data-action="stats" role="menuitem">
+      <span class="dd-ico">📊</span><span>Le mie statistiche</span>
+    </button>
+    <button class="dropdown-item" data-action="leaderboard" role="menuitem">
+      <span class="dd-ico">🏆</span><span>Classifica gruppo</span>
+    </button>
+    <button class="dropdown-item" data-action="rename" role="menuitem">
+      <span class="dd-ico">⚙️</span><span>Cambia nome</span>
+    </button>
+  </div>
+  <div id="dropdownBackdrop" class="dropdown-backdrop hidden"></div>
 
   <!-- Tabs -->
   <nav class="tabs">
@@ -736,49 +558,15 @@
     <!-- Final screen -->
     <div id="finalScreen" class="hidden">
       <div class="final">
-
-        <!-- Testata edizione speciale -->
-        <div class="final-masthead">
-          <div class="final-edition">Edizione speciale · <span id="finalDate">—</span></div>
-          <div class="final-masthead-title">Newsguess</div>
-          <div class="final-masthead-sub">Il verdetto della redazione</div>
-        </div>
-
-        <!-- Headline principale con titolo ironico -->
-        <div class="final-headline" style="margin-top:28px">
-          <div class="final-kicker" id="finalKicker">—</div>
-          <h2 class="final-title" id="finalTitleHeadline">—</h2>
-          <p class="final-deck" id="finalDeck">—</p>
-        </div>
-
-        <!-- Punteggio + testo -->
-        <div class="final-score-row">
-          <div class="final-score-box">
-            <div class="big-score"><span id="finalScore">0</span><span style="opacity:.3">/5</span></div>
-            <div class="final-score-label">Punti</div>
-          </div>
-          <p class="final-body-text" id="finalBodyText">—</p>
-        </div>
-
-        <!-- Riepilogo risposte -->
-        <p class="final-recap-head">Riepilogo partita</p>
+        <p class="small-caps">Risultato</p>
+        <div class="big-score"><span id="finalScore">0</span><span style="opacity:.3">/5</span></div>
+        <div class="verdict" id="verdict">—</div>
         <table id="recapTable"></table>
-
-        <!-- Azioni -->
-        <div class="final-actions">
+        <div class="row" style="justify-content:center;margin-top:20px">
           <button class="btn accent" id="saveScoreBtn">Salva punteggio</button>
-          <button class="btn share" id="shareWhatsappBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            Condividi
-          </button>
-          <button class="btn share-copy" id="shareCopyBtn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copia testo
-          </button>
           <button class="btn" id="trainAgainBtn" style="display:none">Altro allenamento</button>
           <button class="btn outline" onclick="resetToMenu()">Menù principale</button>
         </div>
-
       </div>
     </div>
   </section>
@@ -895,6 +683,18 @@
     </div>
   </section>
 
+  <!-- Confirm exit dialog -->
+  <div id="confirmExit" class="confirm-overlay hidden">
+    <div class="confirm-dialog">
+      <h3>Vuoi davvero uscire?</h3>
+      <p>Stai giocando il <strong>Livello del giorno</strong>. Se esci adesso perderai i progressi della partita.</p>
+      <div class="row">
+        <button class="btn outline" id="confirmExitNo">Annulla</button>
+        <button class="btn accent" id="confirmExitYes">Esci</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Change name modal -->
   <div id="nameModal" class="modal-overlay hidden">
     <div class="modal">
@@ -931,6 +731,18 @@
 <script>
 /* =========================================================
    CONFIGURAZIONE
+   =========================================================
+   Le chiamate a Claude Vision sono delegate al backend FastAPI
+   (endpoint /api/extract-headlines) che usa la Emergent LLM Key
+   già configurata in /app/backend/.env. Nessuna chiave esposta
+   nel browser.
+
+   Firebase: classifica condivisa via Firestore. Crea un progetto
+   su https://console.firebase.google.com, attiva Firestore in
+   "test mode" e copia qui sotto i valori del Web App Config.
+
+   GROUPS: dizionario {password: nome_gruppo}. Stessa password
+   = stesso gruppo = stessa classifica condivisa.
 ========================================================= */
 
 const firebaseConfig = {
@@ -941,6 +753,9 @@ const firebaseConfig = {
   messagingSenderId: "911753113078",
   appId:             "1:911753113078:web:098f358c69273158ba6bd7"
 };
+
+/* I gruppi vengono creati dinamicamente dagli utenti.
+   Ogni gruppo ha un codice random condivisibile. Vedi sezione "Login" più giù. */
 
 /* ===== I 10 GIORNALI ===== */
 const NEWSPAPERS = [
@@ -956,6 +771,9 @@ const NEWSPAPERS = [
   { id: "avvenire",   name: "Avvenire",              slug: "avvenire",              clue: "Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
 ];
 
+/* Nota: giornalone.it non ha un archivio storico realmente accessibile,
+   perciò il quiz lavora solo sulle prime pagine di OGGI. */
+
 /* ===== Stato app ===== */
 const state = {
   mode: null,
@@ -963,18 +781,21 @@ const state = {
   questions: [],
   current: 0,
   score: 0,
+  // user: { name: 'Giulia', groups: [{code, name}, ...], activeGroupCode: 'AB12CD' }
   user: null,
 };
 
 const dailyDoneKey = (iso) => `daily-done-${iso}`;
 const dailyDoneToday = () => localStorage.getItem(dailyDoneKey(todayISO()));
 
+/* Persistenza utente: localStorage (resta tra le sessioni). Chiave: quizUser */
 const USER_KEY = 'quizUser';
 function loadUser() {
   let raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
   if (!raw) return null;
   try {
     const u = JSON.parse(raw);
+    // Migrazione formato vecchio: { name, group, groupCode } -> { name, groups: [...], activeGroupCode }
     if (u.groupCode && !u.groups) {
       return { name: u.name, groups: [{ code: u.groupCode, name: u.group || u.groupCode }], activeGroupCode: u.groupCode };
     }
@@ -992,15 +813,18 @@ function saveUser() {
 
 /* ===== Helpers ===== */
 const $ = (id) => document.getElementById(id);
+/* La "giornata" del quiz va dalle 06:00 alle 05:59 della mattina seguente.
+   Prima delle 6 mostriamo ancora la sfida del giorno precedente (i giornali escono fra le 5 e le 6). */
 const todayISO = () => {
   const d = new Date();
   if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  // Calcoliamo la data localmente (no toISOString che è UTC) per evitare slittamenti
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 };
-const monthKey = (iso) => iso.slice(0,7);
+const monthKey = (iso) => iso.slice(0,7); // YYYY-MM
 const fmtDateIT = (iso) => {
   const [y,m,d] = iso.split('-');
   const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
@@ -1018,7 +842,7 @@ const sampleN = (arr, n) => shuffle(arr).slice(0, n);
 
 $('todayDate').textContent = fmtDateIT(todayISO());
 
-/* ===== PWA ===== */
+/* ===== PWA: registrazione service worker ===== */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/api/sw.js', { scope: '/api/' }).catch(err => console.warn('SW reg failed:', err));
@@ -1042,6 +866,7 @@ function triggerInstall() {
 }
 window.triggerInstall = triggerInstall;
 
+/* Banner iOS install (mostrato solo a Safari iOS non installato) */
 (function() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -1066,7 +891,7 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-/* ===== ARCHIVIO ===== */
+/* ===== ARCHIVIO: edizioni precedenti dal DB ===== */
 async function loadArchive() {
   try {
     const r = await fetch('/api/archive-dates');
@@ -1078,10 +903,11 @@ async function loadArchive() {
     grid.innerHTML = '';
     if (!dates.length) { sec.classList.add('hidden'); return; }
     sec.classList.remove('hidden');
-    dates.forEach(d => {
+    dates.forEach((d, i) => {
       const saved = localStorage.getItem('past-score-' + d.date);
       const card = document.createElement('div');
       card.className = 'past-card' + (saved ? ' completed' : '');
+      card.style.setProperty('--i', i);
       card.innerHTML = `
         <div class="date">${fmtDateIT(d.date)}</div>
         <div class="name">${d.papers} giornali</div>
@@ -1094,7 +920,7 @@ async function loadArchive() {
 }
 loadArchive();
 
-/* ===== ARCHIVE BROWSER ===== */
+/* ===== ARCHIVE BROWSER (consultazione informativa) ===== */
 document.querySelectorAll('.ab-tab').forEach(t => {
   t.addEventListener('click', () => {
     document.querySelectorAll('.ab-tab').forEach(x => x.classList.remove('active'));
@@ -1190,6 +1016,7 @@ async function showPaperDetail(np) {
   } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
 }
 
+/* Lightbox per vedere la prima pagina a schermo intero */
 function openLightbox(url) {
   let lb = document.getElementById('lightbox');
   if (!lb) {
@@ -1215,7 +1042,7 @@ window.loadArchiveBrowserPapers = loadArchiveBrowserPapers;
 loadArchiveBrowserDates();
 loadArchiveBrowserPapers();
 
-/* ===== NOTIFICHE ===== */
+/* ===== NOTIFICHE 8:00 ===== */
 function urlBase64ToUint8Array(b64) {
   const padding = '='.repeat((4 - b64.length % 4) % 4);
   const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -1347,6 +1174,7 @@ async function startQuiz(mode, dateISO) {
   $('loading').classList.remove('hidden');
 
   try {
+    // Per modalità 'training': scegli una data random dall'archivio (NON oggi)
     if (mode === 'training') {
       const r = await fetch('/api/archive-dates');
       if (!r.ok) throw new Error('Archivio non disponibile.');
@@ -1360,6 +1188,7 @@ async function startQuiz(mode, dateISO) {
       state.dateISO = pickDate;
     }
 
+    // Per modalità 'past' o 'training' uso solo i giornali archiviati per quella data
     let pickedFrom = NEWSPAPERS;
     if (mode === 'past' || mode === 'training') {
       const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
@@ -1369,59 +1198,20 @@ async function startQuiz(mode, dateISO) {
       pickedFrom = NEWSPAPERS.filter(n => slugs.has(n.slug));
       if (pickedFrom.length < 4) throw new Error('Edizione incompleta in archivio');
     }
-    // FIX 1: per la sfida giornaliera, se un giornale non è disponibile oggi
-    // lo sostituiamo silenziosamente con un altro dei 10, senza dirlo all'utente.
-    // Per allenamento/archivio usa solo l'archivio già verificato, quindi non serve.
-    let picked;
-    if (mode === 'daily') {
-      // Pesca 5 giornali, ma tieni un pool di riserve per eventuali sostituzioni
-      const shuffled = shuffle([...pickedFrom]);
-      const chosen = [];
-      const reserves = [];
-      shuffled.forEach((np, i) => { if (i < 5) chosen.push(np); else reserves.push(np); });
-      picked = chosen;
+    const picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
 
-      const LOADING_MESSAGES = [
-        "«Sapere è potere.» — Francis Bacon",
-        "«La libertà di stampa è il sale della libertà.» — Voltaire",
-        "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-        "«La saggezza comincia nella meraviglia.» — Socrate",
-        "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-      ];
-      let qi = 0;
-      const toLoad = [...chosen];
-      while (toLoad.length > 0) {
-        const np = toLoad.shift();
-        $('loadingText').textContent = LOADING_MESSAGES[qi % LOADING_MESSAGES.length];
-        try {
-          const q = await buildQuestion(np, state.dateISO);
-          state.questions.push(q);
-          qi++;
-        } catch(e) {
-          if (e.isUnavailable && reserves.length > 0) {
-            // Giornale non ancora online: sostituisci silenziosamente con uno di riserva
-            const replacement = reserves.shift();
-            toLoad.unshift(replacement);
-          } else {
-            throw e;
-          }
-        }
-      }
-    } else {
-      picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
-      const LOADING_MESSAGES = [
-        "«Sapere è potere.» — Francis Bacon",
-        "«La libertà di stampa è il sale della libertà.» — Voltaire",
-        "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-        "«La saggezza comincia nella meraviglia.» — Socrate",
-        "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-      ];
-      for (let i = 0; i < picked.length; i++) {
-        const np = picked[i];
-        $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
-        const q = await buildQuestion(np, state.dateISO);
-        state.questions.push(q);
-      }
+    const LOADING_MESSAGES = [
+      "«Sapere è potere.» — Francis Bacon",
+      "«La libertà di stampa è il sale della libertà.» — Voltaire",
+      "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
+      "«La saggezza comincia nella meraviglia.» — Socrate",
+      "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
+    ];
+    for (let i = 0; i < picked.length; i++) {
+      const np = picked[i];
+      $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
+      const q = await buildQuestion(np, state.dateISO);
+      state.questions.push(q);
     }
     $('loading').classList.add('hidden');
     $('quizRunning').classList.remove('hidden');
@@ -1434,6 +1224,7 @@ async function startQuiz(mode, dateISO) {
   }
 }
 
+/* Build a single question — pulls from cache if present */
 async function buildQuestion(np, dateISO) {
   const cacheKey = `q3-${dateISO}-${np.id}`;
   const cached = localStorage.getItem(cacheKey);
@@ -1445,6 +1236,7 @@ async function buildQuestion(np, dateISO) {
     extracted = await fetchHeadlines(np.slug, dateISO);
     try { localStorage.setItem(cacheKey, JSON.stringify(extracted)); } catch {}
   }
+  // 4 choices: correct + 3 random wrongs
   const wrongs = sampleN(NEWSPAPERS.filter(n => n.id !== np.id), 3);
   const choices = shuffle([np, ...wrongs]).map(n => ({ id: n.id, name: n.name }));
   return {
@@ -1457,41 +1249,35 @@ async function buildQuestion(np, dateISO) {
   };
 }
 
-// Errore speciale: giornale non ancora disponibile oggi (503 unavailable)
-class UnavailableError extends Error {
-  constructor(slug) { super(`unavailable:${slug}`); this.slug = slug; this.isUnavailable = true; }
-}
-
+/* Fetch headlines (sovratitolo/titolo/sottotitolo) via backend proxy.
+   Backend handles: scaricare immagine da giornalone.it + chiamata Claude Vision via Emergent LLM Key.
+   Retry automatico in caso di 404/502 transitorio (es. backend in restart). */
 async function fetchHeadlines(slug, dateISO) {
   const isToday = dateISO === todayISO();
   const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
   const url = `/api/extract-headlines?${params}`;
-  const delays = [0, 2000, 4000, 8000, 15000];
+  const delays = [0, 2000, 4000, 8000, 15000]; // 5 tentativi, backoff fino a 15s
   let lastErr;
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
     try {
       const r = await fetch(url, { cache: 'no-store' });
+      // 404 specifico dal backend (es. edizione non in archivio) = errore reale
       if (r.status === 404) {
         const body = await r.text();
         if (body.includes('archivio') || body.includes('"detail"')) {
           throw new Error(body.slice(0, 160));
         }
+        // 404 dall'ingress (backend giù) = transient
         lastErr = new Error('Server temporaneamente offline');
         continue;
       }
-      // FIX 1: 503 con unavailable=true → giornale non ancora online oggi
-      if (r.status === 503) {
-        let body = {};
-        try { body = await r.json(); } catch {}
-        if (body?.detail?.unavailable) throw new UnavailableError(slug);
-        lastErr = new Error(`Server in ripristino (503)`);
-        continue;
-      }
-      if (r.status === 502 || r.status === 504) {
+      // 502/503/504 = backend in restart, retry
+      if (r.status === 502 || r.status === 503 || r.status === 504) {
         lastErr = new Error(`Server in ripristino (${r.status})`);
         continue;
       }
+      // 429 = rate limit, mostra subito
       if (r.status === 429) throw new Error('Troppe richieste. Aspetta un minuto e riprova.');
       if (!r.ok) {
         const t = await r.text();
@@ -1499,11 +1285,20 @@ async function fetchHeadlines(slug, dateISO) {
       }
       return await r.json();
     } catch (e) {
-      if (e.isUnavailable) throw e; // propaga subito, non fare retry
+      // Se è un Error sopra (4xx/5xx) lo abbiamo gestito; altrimenti errore di rete
       if (!lastErr || e.message !== lastErr.message) lastErr = e;
     }
   }
-  throw lastErr || new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
+  throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
+}
+
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result.split(',')[1]);
+    fr.onerror = rej;
+    fr.readAsDataURL(blob);
+  });
 }
 
 /* ===== RENDER QUESTION ===== */
@@ -1511,34 +1306,37 @@ function renderQuestion() {
   const q = state.questions[state.current];
   $('qProgress').textContent = `Domanda ${state.current + 1} di ${state.questions.length}`;
 
-  // Forza re-animazione della qcard
-  const qcard = document.querySelector('.qcard');
-  if (qcard) {
-    qcard.style.animation = 'none';
-    qcard.offsetHeight; // reflow
-    qcard.style.animation = '';
-  }
+  // dots
+  const dots = $('dots');
+  dots.innerHTML = '';
+  state.questions.forEach((qq, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
+    if (i === state.current && qq.given == null) d.classList.add('current');
+    dots.appendChild(d);
+  });
 
-  renderDotsOnly();
-
+  // extracted
   $('exSopra').textContent = q.sopra || '';
   $('exSopra').style.display = q.sopra ? '' : 'none';
   $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
   $('exSotto').textContent = q.sotto || '';
   $('exSotto').style.display = q.sotto ? '' : 'none';
 
+  // choices
   const cont = $('choices');
   cont.innerHTML = '';
   q.choices.forEach((c, i) => {
     const b = document.createElement('button');
     b.className = 'choice';
+    b.style.setProperty('--i', i);
     b.textContent = c.name;
-    // Reset animazione per re-trigger
-    b.style.animationDelay = (i * 0.07) + 's';
     b.addEventListener('click', () => answer(c.id, b));
     cont.appendChild(b);
   });
 
+  // dots
   $('nextBtn').style.display = 'none';
 }
 
@@ -1548,16 +1346,17 @@ function answer(givenId, btnEl) {
   q.given = givenId;
   const correct = q.paper.id;
   if (givenId === correct) state.score++;
+  // disable + colour
   document.querySelectorAll('.choice').forEach(b => {
     b.disabled = true;
     const cid = q.choices.find(c => c.name === b.textContent)?.id;
     if (cid === correct) b.classList.add('right');
     else if (cid === givenId) b.classList.add('wrong');
   });
+  // refresh dots
   renderDotsOnly();
   $('nextBtn').style.display = '';
 }
-
 function renderDotsOnly() {
   const dots = $('dots');
   dots.innerHTML = '';
@@ -1580,79 +1379,22 @@ $('nextBtn').addEventListener('click', () => {
 });
 
 /* ===== FINAL SCREEN ===== */
-
-// Titoli ironici per punteggio (kicker, titolo, deck, testo corpo)
-const FINAL_COPY = [
-  { // 0/5
-    kicker: '🚨 Notizia dell\'ultimo minuto',
-    title: 'Lettore in fuga dalle edicole: zero su cinque',
-    deck: 'Le edicole di tutta Italia piangono. I giornalai sono in lutto.',
-    body: 'La nostra inviata sul campo riferisce scene di incredulità nelle redazioni. «Non lo riconosciamo nemmeno come abbonato», ha dichiarato un direttore sotto anonimato. Torni domani — o forse no.'
-  },
-  { // 1/5
-    kicker: '📰 Cronaca locale',
-    title: 'Un punto su cinque: «Almeno ho provato», dichiara l\'imputato',
-    deck: 'Un risultato che solleva più domande di quante ne risponda.',
-    body: 'Fonti vicine alla redazione parlano di «potenziale inespresso». Il giurato popolare ha emesso il suo verdetto: ci vuole più allenamento. Molto più allenamento.'
-  },
-  { // 2/5
-    kicker: '📋 Economia & mercati',
-    title: 'Rendimento del 40%: analisti divisi sul futuro del lettore',
-    deck: 'I mercati restano in attesa. Le previsioni per domani sono caute.',
-    body: '«È un portafoglio da diversificare», commentano gli esperti. Due risposte esatte su cinque aprono scenari interessanti, ma la strada verso la redazione è ancora lunga. Riunione di crisi fissata per domani mattina.'
-  },
-  { // 3/5
-    kicker: '⚖️ Politica interna',
-    title: 'Tre su cinque: maggioranza raggiunta, governo a rischio',
-    deck: 'La coalizione regge, ma l\'opposizione è agguerrita.',
-    body: 'Il cronista ha superato il quorum, ma la fiducia della redazione resta da conquistare. «Sa distinguere un tabloid da un broadsheet», ammettono i colleghi. «Ma non sempre.» Voto di fiducia fissato per domani.'
-  },
-  { // 4/5
-    kicker: '🏆 Sport & risultati',
-    title: 'Quattro su cinque: prestazione da prima pagina',
-    deck: 'La curva esulta. L\'allenatore parla di «talento cristallino».',
-    body: 'Standing ovation in sala stampa. Solo un errorino macchia un\'altrimenti impeccabile prestazione. «È il tipo di lettore che fa la differenza», ha dichiarato il nostro capo redattore con una lacrima agli occhi. Domani si fa cinque.'
-  },
-  { // 5/5
-    kicker: '🌟 Edizione straordinaria',
-    title: 'Cinque su cinque: il lettore perfetto esiste davvero',
-    deck: 'La notizia che non pensavamo di dover dare. Le redazioni festeggiano.',
-    body: 'Stop the press. Abbiamo trovato il lettore che legge ogni mattina tutti i giornali prima di colazione. La redazione è in lacrime di gioia. Il direttore ha offerto il caffè a tutti. Leggenda assoluta.'
-  },
-];
-
+function verdictFor(score) {
+  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
+}
 function finishQuiz() {
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
+  // Reset animazioni re-applicando le classi
+  $('finalScreen').querySelectorAll('.big-score,.verdict,table,.row').forEach(el => {
+    el.style.animation = 'none';
+    void el.offsetWidth; // force reflow
+    el.style.animation = '';
+  });
+  animateScoreCountUp($('finalScore'), state.score, 800);
+  $('verdict').textContent = verdictFor(state.score);
 
-  const s = state.score;
-  const copy = FINAL_COPY[s];
-
-  // Data
-  $('finalDate').textContent = fmtDateIT(state.dateISO || todayISO());
-
-  // Testi ironici
-  $('finalKicker').textContent = copy.kicker;
-  $('finalTitleHeadline').textContent = copy.title;
-  $('finalDeck').textContent = copy.deck;
-  $('finalBodyText').textContent = copy.body;
-
-  // Punteggio
-  $('finalScore').textContent = s;
-
-  // Colore punteggio
-  const bigScore = document.querySelector('.final .big-score');
-  if (bigScore) {
-    bigScore.classList.remove('score-great','score-ok','score-bad');
-    if (s >= 4)      bigScore.classList.add('score-great');
-    else if (s <= 1) bigScore.classList.add('score-bad');
-    else             bigScore.classList.add('score-ok');
-  }
-
-  // Confetti
-  setTimeout(() => launchConfetti(s), 300);
-
-  // Riepilogo risposte
+  // recap
   let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
   state.questions.forEach((q, i) => {
     const ok = q.given === q.paper.id;
@@ -1662,23 +1404,12 @@ function finishQuiz() {
   html += '</tbody>';
   $('recapTable').innerHTML = html;
 
+  // train again button
   $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
+  // L'allenamento non va in classifica → nascondo "Salva punteggio"
   $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
 
-  // Condivisione WhatsApp
-  const emoji = ['😬','😅','🤔','💪','🎯','🏆'][s];
-  const shareText = `${emoji} Newsguess del ${fmtDateIT(state.dateISO || todayISO())}\n\n"${copy.title}"\n\nPunteggio: ${s}/5\n\n📰 Gioca anche tu → https://newsguess-lgh5.onrender.com/api/quiz`;
-  $('shareWhatsappBtn').onclick = () => {
-    window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank');
-  };
-  $('shareCopyBtn').onclick = async () => {
-    try {
-      await navigator.clipboard.writeText(shareText);
-      $('shareCopyBtn').textContent = '✓ Copiato!';
-      setTimeout(() => { $('shareCopyBtn').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copia testo`; }, 2000);
-    } catch { alert(shareText); }
-  };
-
+  // Traccia statistica personale
   trackGameInStats({
     mode: state.mode,
     dateISO: state.dateISO,
@@ -1693,68 +1424,75 @@ function finishQuiz() {
     ts: Date.now(),
   });
 
+  // past completed → save in localStorage e ricarica l'archivio
   if (state.mode === 'past') {
     localStorage.setItem('past-score-' + state.dateISO, state.score);
     loadArchive();
   }
+  // daily completed → mark as done so it can't be replayed today
   if (state.mode === 'daily') {
     localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
     refreshDailyStatus();
+    // Daily appena giocata: l'archivio si è arricchito, ricarico la lista (sarà disponibile da domani)
     loadArchive();
   }
+
+  // Confetti per punteggio pieno 🎉
+  if (state.score === state.questions.length) {
+    setTimeout(() => launchConfetti(), 450);
+  }
+}
+
+/* ===== Utility di animazione ===== */
+function animateScoreCountUp(el, target, duration) {
+  if (!el) return;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+
+function launchConfetti() {
+  const layer = document.createElement('div');
+  layer.className = 'ng-confetti-layer';
+  document.body.appendChild(layer);
+  const colors = ['#b01010', '#246b3a', '#d4a017', '#2b6cb0', '#8e44ad', '#e67e22'];
+  const N = 80;
+  for (let i = 0; i < N; i++) {
+    const p = document.createElement('div');
+    p.className = 'ng-confetti-piece';
+    p.style.left = (Math.random() * 100) + 'vw';
+    p.style.background = colors[i % colors.length];
+    p.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+    p.style.animationDelay = (Math.random() * 0.35) + 's';
+    p.style.width = (6 + Math.random() * 8) + 'px';
+    p.style.height = (10 + Math.random() * 10) + 'px';
+    p.style.transform = `rotate(${Math.random() * 360}deg)`;
+    p.style.opacity = '1';
+    layer.appendChild(p);
+  }
+  setTimeout(() => layer.remove(), 4000);
+}
+
+function showToast(msg) {
+  let t = document.querySelector('.ng-toast');
+  if (!t) { t = document.createElement('div'); t.className = 'ng-toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove('show'), 2400);
 }
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 
 /* =========================================================
-   CONFETTI
-========================================================= */
-function launchConfetti(score) {
-  if (score < 4) return;
-  const canvas = document.getElementById('confettiCanvas');
-  if (!canvas) return;
-  canvas.style.display = '';
-  const ctx = canvas.getContext('2d');
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const N = score === 5 ? 140 : 75;
-  const palette = ['#b01010','#246b3a','#f5c518','#1a73e8','#ff6d00','#9c27b0','#e91e63','#00bcd4'];
-  const pieces = Array.from({length: N}, () => ({
-    x: Math.random() * canvas.width,
-    y: -30 - Math.random() * canvas.height * 0.4,
-    r: Math.random() * 8 + 3,
-    vy: Math.random() * 3.5 + 1.5,
-    vx: (Math.random() - 0.5) * 2.5,
-    tilt: Math.random() * Math.PI * 2,
-    tiltSpeed: (Math.random() - 0.5) * 0.18,
-    color: palette[Math.floor(Math.random() * palette.length)],
-  }));
-  let frame = 0;
-  const maxFrames = 200;
-  (function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const alpha = Math.max(0, 1 - (frame - 140) / 60);
-    pieces.forEach(p => {
-      p.y += p.vy;
-      p.x += p.vx + Math.sin(frame * 0.04 + p.tilt) * 0.5;
-      p.tilt += p.tiltSpeed;
-      ctx.save();
-      ctx.globalAlpha = frame > 140 ? alpha : 1;
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.tilt);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, p.r, p.r * 0.42, 0, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-      ctx.restore();
-    });
-    frame++;
-    if (frame < maxFrames) requestAnimationFrame(draw);
-    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
-  })();
-}
-
-/* =========================================================
    STATISTICHE PERSONALI
+   - Storia partite in localStorage chiave 'stats-history'
+   - Streak giornaliera calcolata sui daily completati
 ========================================================= */
 const STATS_KEY = 'stats-history';
 
@@ -1772,10 +1510,12 @@ function trackGameInStats(entry) {
 }
 
 function computeStreak(history) {
+  // streak = giorni consecutivi (terminanti oggi o ieri) con un daily completato
   const dailyDates = new Set(history.filter(h => h.mode === 'daily').map(h => h.dateISO));
   if (!dailyDates.size) return 0;
   let streak = 0;
   const d = new Date();
+  // Se oggi non ho giocato ma ieri sì, lo streak parte da ieri
   let iso = d.toISOString().slice(0,10);
   if (!dailyDates.has(iso)) {
     d.setDate(d.getDate() - 1);
@@ -1800,6 +1540,7 @@ function renderStats() {
   $('statsEmpty').classList.add('hidden');
   $('statsContent').classList.remove('hidden');
 
+  // Totali
   const total = history.length;
   const sumScore = history.reduce((s, h) => s + h.score, 0);
   const sumTotal = history.reduce((s, h) => s + h.total, 0);
@@ -1812,6 +1553,7 @@ function renderStats() {
   $('stStreak').textContent = streak;
   $('stBestScore').textContent = best;
 
+  // Precisione per giornale
   const perPaper = {};
   history.forEach(h => {
     (h.questions || []).forEach(q => {
@@ -1829,6 +1571,7 @@ function renderStats() {
   html += '</tbody>';
   $('stPaperTable').innerHTML = html;
 
+  // Ultime 10 partite
   const recent = history.slice().reverse().slice(0, 10);
   let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
   recent.forEach(h => {
@@ -1849,7 +1592,7 @@ $('stResetBtn').addEventListener('click', () => {
 });
 
 /* =========================================================
-   CAMBIA NOME
+   CAMBIA NOME (modal)
 ========================================================= */
 function openNameModal() {
   $('nameModalInput').value = state.user?.name || '';
@@ -1879,6 +1622,7 @@ $('nameModalConfirm').addEventListener('click', () => {
   closeNameModal();
 });
 
+/* Save score to leaderboard — apre un modal per scegliere i gruppi target */
 $('saveScoreBtn').addEventListener('click', () => {
   if (!state.user || !state.user.groups?.length) {
     if (confirm('Per salvare il punteggio devi prima entrare in un gruppo (Crea o Unisciti).\nVuoi andare alla scheda Classifica ora?')) {
@@ -1928,6 +1672,7 @@ $('saveModalConfirm').addEventListener('click', async () => {
     const code = ch.dataset.code;
     const grp = state.user.groups.find(g => g.code === code);
     try {
+      // Per daily, segna salvataggio per evitare doppioni
       if (state.mode === 'daily') {
         const flagKey = `daily-saved-${todayISO()}-${code}-${state.user.name}`;
         if (localStorage.getItem(flagKey)) continue;
@@ -1995,8 +1740,9 @@ async function saveLeaderboardEntry(entry) {
   });
 }
 
+/* ===== Codice gruppo: 6 caratteri alfanumerici ===== */
 function genGroupCode() {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I,O,0,1 per leggibilità
   let s = '';
   for (let i = 0; i < 6; i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
   return s;
@@ -2004,6 +1750,7 @@ function genGroupCode() {
 async function createGroup(name, groupName) {
   initFirebase();
   if (!fbReady) throw new Error('Firebase non configurato.');
+  // Genera codice univoco (provo max 5 volte)
   let code;
   for (let i = 0; i < 5; i++) {
     code = genGroupCode();
@@ -2027,6 +1774,7 @@ async function joinGroup(code) {
   return { code, name: snap.data().name };
 }
 
+/* ===== Login / sessione (persistente in localStorage) ===== */
 state.user = loadUser();
 
 function showLBLoggedIn() {
@@ -2041,6 +1789,7 @@ function showLBLogin() {
   $('lbContent').classList.add('hidden');
   $('lbCreated').classList.add('hidden');
   $('lbLogin').classList.remove('hidden');
+  // Pre-compila il nome se già impostato
   if (state.user?.name) {
     $('lbJoinName').value = state.user.name;
     $('lbCreateName').value = state.user.name;
@@ -2086,6 +1835,7 @@ function renderGroupPills() {
   $('lbActiveGroup').textContent = active ? `${active.name} (${active.code})` : '—';
 }
 
+/* Switch tab Crea/Unisciti */
 document.querySelectorAll('.lb-tab').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
@@ -2098,6 +1848,7 @@ document.querySelectorAll('.lb-tab').forEach(b => {
   });
 });
 
+/* Crea gruppo */
 $('lbCreateBtn').addEventListener('click', async () => {
   const name = $('lbCreateName').value.trim().slice(0,24);
   const groupName = $('lbCreateGroup').value.trim().slice(0,32);
@@ -2125,7 +1876,9 @@ $('lbCreateBtn').addEventListener('click', async () => {
     $('lbCreateBtn').textContent = 'Crea il gruppo';
   }
 });
-$('lbCreatedContinueBtn').addEventListener('click', () => { showLBLoggedIn(); });
+$('lbCreatedContinueBtn').addEventListener('click', () => {
+  showLBLoggedIn();
+});
 $('lbCopyCodeBtn').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText($('newGroupCode').textContent);
@@ -2136,6 +1889,7 @@ $('lbCopyCodeBtn').addEventListener('click', async () => {
   }
 });
 
+/* Unisciti */
 $('lbJoinBtn').addEventListener('click', async () => {
   const name = $('lbJoinName').value.trim().slice(0,24);
   const code = $('lbJoinCode').value.trim().toUpperCase().slice(0,8);
@@ -2162,6 +1916,7 @@ $('lbJoinBtn').addEventListener('click', async () => {
   }
 });
 
+/* "Aggiungi un altro gruppo" — riapre il login pannello pertinente */
 $('lbAddJoinBtn').addEventListener('click', () => {
   showLBLogin();
   document.querySelector('.lb-tab[data-lbtab="join"]').click();
@@ -2197,6 +1952,7 @@ async function refreshLeaderboards() {
     $('lbMonthEmpty').style.display = '';
     return;
   }
+  // unsubscribe precedenti listener
   if (_lbDayUnsub)   { _lbDayUnsub();   _lbDayUnsub = null; }
   if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
 
@@ -2218,6 +1974,7 @@ async function refreshLeaderboards() {
 }
 
 function renderDayTable(rows) {
+  // best % per name
   const byName = {};
   rows.forEach(r => {
     if (!byName[r.name] || r.pct > byName[r.name].pct) byName[r.name] = r;
@@ -2236,6 +1993,7 @@ function renderDayTable(rows) {
   });
 }
 function renderMonthTable(rows) {
+  // sum points per name
   const byName = {};
   rows.forEach(r => {
     if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
@@ -2254,126 +2012,139 @@ function renderMonthTable(rows) {
     tbody.appendChild(tr);
   });
 }
-</script>
 
-<script>
-/* ===== SPLASH SCREEN JS ===== */
-(function() {
-  // Titoli di fallback (usati subito, prima che l'archivio risponda)
-  const FALLBACK_TITLES = [
-    { name: "Corriere della Sera", title: "Il governo vara la manovra economica" },
-    { name: "La Repubblica",       title: "Crisi climatica: l'Europa risponde" },
-    { name: "La Stampa",           title: "Torino capitale della cultura 2025" },
-    { name: "Il Fatto Quotidiano", title: "Inchiesta sui fondi pubblici dispersi" },
-    { name: "Il Messaggero",       title: "Roma, nuovi investimenti per il metro" },
-    { name: "Il Giornale",         title: "Sicurezza nelle città: il piano del governo" },
-    { name: "Libero",              title: "Fisco, arriva la riforma tanto attesa" },
-    { name: "Il Manifesto",        title: "Diritti al lavoro: la piazza risponde" },
-    { name: "Il Sole 24 Ore",      title: "Borsa in rialzo, spread sotto controllo" },
-    { name: "Avvenire",            title: "Solidarietà: l'Italia che non si arrende" },
-    { name: "Corriere della Sera", title: "Vertice europeo: accordo sull'immigrazione" },
-    { name: "La Repubblica",       title: "Scuola, il ministro annuncia la riforma" },
-    { name: "La Stampa",           title: "Elezioni regionali, la sfida è aperta" },
-    { name: "Il Fatto Quotidiano", title: "Appalti, nuove rivelazioni dall'inchiesta" },
-    { name: "Il Messaggero",       title: "Turismo record: Italia mèta preferita" },
-    { name: "Il Sole 24 Ore",      title: "Inflazione in calo, segnali positivi" },
-    { name: "Avvenire",            title: "Il Papa: pace è possibile, non arrendetevi" },
-    { name: "Il Manifesto",        title: "Sciopero generale, cortei in tutta Italia" },
-    { name: "Libero",              title: "Immigrazione, il nodo delle politiche europee" },
-    { name: "Il Giornale",         title: "Giustizia, la riforma divide il Parlamento" },
-  ];
-
-  const NUM_ROWS = 5;
-  const ticker = document.getElementById('splashTicker');
-  if (!ticker) return;
-
-  // Costruisci le righe con i titoli di fallback
-  function buildRows(items) {
-    ticker.innerHTML = '';
-    // Dividi in NUM_ROWS gruppi
-    const rowSize = Math.ceil(items.length / NUM_ROWS);
-    for (let r = 0; r < NUM_ROWS; r++) {
-      const rowItems = [];
-      for (let i = 0; i < items.length; i++) {
-        if (i % NUM_ROWS === r) rowItems.push(items[i]);
-      }
-      if (!rowItems.length) continue;
-
-      const row = document.createElement('div');
-      row.className = 'splash-row';
-      const inner = document.createElement('div');
-      inner.className = 'splash-row-inner';
-
-      // Duplica per loop infinito
-      for (let rep = 0; rep < 4; rep++) {
-        rowItems.forEach(item => {
-          const el = document.createElement('span');
-          el.className = 'splash-item';
-          el.innerHTML = `<span class="splash-item-name">${item.name}</span><span class="splash-item-title">${item.title}</span><span class="splash-item-sep">·</span>`;
-          inner.appendChild(el);
-        });
-      }
-      row.appendChild(inner);
-      ticker.appendChild(row);
-    }
+/* =========================================================
+   MENU A TENDINA + HISTORY (back button intelligente)
+========================================================= */
+const NG_HISTORY = {
+  // Stack interno per gestire pushState con stati nominati
+  push(stateName, data = {}) {
+    history.pushState({ ng: true, name: stateName, ...data }, '', '');
+  },
+  isInternal(state) {
+    return state && state.ng === true;
   }
+};
 
-  buildRows(FALLBACK_TITLES);
+/* Apertura/chiusura menu */
+function openDropdown() {
+  $('dropdownMenu').classList.remove('hidden');
+  $('dropdownBackdrop').classList.remove('hidden');
+  $('menuTrigger').setAttribute('aria-expanded', 'true');
+  NG_HISTORY.push('menu');
+}
+function closeDropdown(skipHistory) {
+  $('dropdownMenu').classList.add('hidden');
+  $('dropdownBackdrop').classList.add('hidden');
+  $('menuTrigger').setAttribute('aria-expanded', 'false');
+  if (!skipHistory && history.state && history.state.name === 'menu') {
+    history.back();
+  }
+}
+function isDropdownOpen() { return !$('dropdownMenu').classList.contains('hidden'); }
 
-  // Prova a caricare titoli reali dall'archivio (non bloccante)
-  fetch('/api/archive-dates')
-    .then(r => r.ok ? r.json() : null)
-    .then(async data => {
-      if (!data?.dates?.length) return;
-      // Prendi la data più recente con almeno 5 giornali
-      const recent = data.dates.find(d => d.papers >= 5);
-      if (!recent) return;
-      const r2 = await fetch(`/api/archive-papers?date=${recent.date}`);
-      if (!r2.ok) return;
-      const papers = await r2.json();
-      if (!papers.items?.length) return;
-      const realItems = papers.items
-        .filter(it => it.titolo_principale)
-        .map(it => {
-          const NAMES = {
-            'corriere-della-sera': 'Corriere della Sera',
-            'la-repubblica': 'La Repubblica',
-            'la-stampa': 'La Stampa',
-            'il-fatto-quotidiano': 'Il Fatto Quotidiano',
-            'il-messaggero': 'Il Messaggero',
-            'il-giornale': 'Il Giornale',
-            'libero': 'Libero',
-            'il-manifesto': 'Il Manifesto',
-            'il-sole-24-ore': 'Il Sole 24 Ore',
-            'avvenire': 'Avvenire',
-          };
-          return { name: NAMES[it.slug] || it.slug, title: it.titolo_principale };
-        });
-      if (realItems.length >= 3) buildRows([...realItems, ...realItems, ...realItems]);
-    })
-    .catch(() => {}); // silenzioso
+$('menuTrigger').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (isDropdownOpen()) closeDropdown();
+  else openDropdown();
+});
+$('dropdownBackdrop').addEventListener('click', () => closeDropdown());
 
-  // Rimuovi splash dopo 3.5s
-  const SPLASH_DURATION = 3500;
-  setTimeout(() => {
-    const splash = document.getElementById('splashScreen');
-    if (!splash) return;
-    splash.classList.add('hide');
-    splash.addEventListener('animationend', () => {
-      splash.style.display = 'none';
-    }, { once: true });
-  }, SPLASH_DURATION);
-
-  // Salta splash se l'utente tocca/clicca
-  document.getElementById('splashScreen').addEventListener('click', () => {
-    const splash = document.getElementById('splashScreen');
-    if (!splash) return;
-    splash.classList.add('hide');
-    splash.addEventListener('animationend', () => splash.style.display = 'none', { once: true });
+/* Click su voci menu */
+document.querySelectorAll('.dropdown-item').forEach(it => {
+  it.addEventListener('click', () => {
+    const action = it.dataset.action;
+    closeDropdown(true); // chiudo senza un history.back perché farò una nuova navigazione subito
+    if (action === 'archive') {
+      // Vai in tab quiz e apri il details "Consulta archivio"
+      document.querySelector('.tab[data-tab="quiz"]').click();
+      const det = document.querySelector('.archive-browser details');
+      if (det) {
+        det.open = true;
+        setTimeout(() => det.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+      }
+    } else if (action === 'stats') {
+      document.querySelector('.tab[data-tab="stats"]').click();
+    } else if (action === 'leaderboard') {
+      document.querySelector('.tab[data-tab="leaderboard"]').click();
+    } else if (action === 'rename') {
+      openNameModal();
+    }
   });
-})();
-</script>
+});
 
+/* =========================================================
+   POPSTATE: tasto indietro intelligente
+========================================================= */
+function isQuizInProgress() {
+  return state.mode === 'daily' && !$('quizRunning').classList.contains('hidden') && state.questions.length && state.current < state.questions.length;
+}
+
+function showConfirmExit(onYes) {
+  $('confirmExit').classList.remove('hidden');
+  const yes = $('confirmExitYes'), no = $('confirmExitNo');
+  const cleanup = () => {
+    $('confirmExit').classList.add('hidden');
+    yes.replaceWith(yes.cloneNode(true));
+    no.replaceWith(no.cloneNode(true));
+  };
+  $('confirmExitYes').addEventListener('click', () => { cleanup(); onYes(); }, { once: true });
+  $('confirmExitNo').addEventListener('click', () => { cleanup(); }, { once: true });
+}
+
+window.addEventListener('popstate', (e) => {
+  // 1) Se c'è un modal "cambia nome" aperto → chiudilo
+  if (!$('nameModal').classList.contains('hidden')) {
+    closeNameModal();
+    return;
+  }
+  // 2) Se c'è il save modal aperto → chiudilo
+  if (!$('saveModal').classList.contains('hidden')) {
+    closeSaveModal();
+    return;
+  }
+  // 3) Se il dropdown è aperto → chiudilo
+  if (isDropdownOpen()) {
+    closeDropdown(true);
+    return;
+  }
+  // 4) Se c'è un quiz daily in corso → chiedi conferma
+  if (isQuizInProgress()) {
+    // Riapro lo stato con pushState così il "back" non esce dall'app
+    NG_HISTORY.push('quiz-running');
+    showConfirmExit(() => {
+      // Utente conferma uscita: torna al menù principale
+      resetToMenu();
+      // Esce davvero dalla cronologia
+      history.back();
+    });
+    return;
+  }
+});
+
+/* Push iniziale: garantisce che il primo "back" non esca subito dall'app */
+NG_HISTORY.push('home');
+
+/* Quando inizia un quiz daily, registro un punto di ripristino */
+const _origStartQuiz = startQuiz;
+window.startQuiz = async function(mode, dateISO) {
+  if (mode === 'daily') NG_HISTORY.push('quiz-running');
+  return _origStartQuiz(mode, dateISO);
+};
+
+/* Apertura modal cambia nome registra anche history */
+const _origOpenNameModal = openNameModal;
+window.openNameModal = function() {
+  _origOpenNameModal();
+  NG_HISTORY.push('modal-rename');
+};
+
+/* Apertura save modal registra history */
+const _origOpenSaveModal = openSaveModal;
+window.openSaveModal = function() {
+  _origOpenSaveModal();
+  NG_HISTORY.push('modal-save');
+};
+</script>
 </body>
 </html>
-
