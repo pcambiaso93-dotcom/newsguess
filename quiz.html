@@ -111,7 +111,7 @@
   /* Score bar */
   .scorebar { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin-bottom: 24px; }
   .dots { display: flex; gap: 8px; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--rule); background: transparent; transition: background .2s, border-color .2s; }
   .dot.right { background: var(--green); border-color: var(--green); }
   .dot.wrong { background: var(--red); border-color: var(--red); }
   .dot.current { border-color: var(--accent); }
@@ -125,14 +125,14 @@
 
   /* Choices */
   .choices { display: grid; gap: 10px; margin-bottom: 16px; }
-  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s; }
+  .choice { padding: 14px 18px; border: 1px solid var(--rule); background: var(--paper); cursor: pointer; text-align: left; font-family: 'Libre Baskerville', serif; font-size: 16px; color: var(--ink); transition: background .15s, transform .1s; }
   .choice:hover:not(:disabled) { background: var(--paper-2); }
   .choice:disabled { cursor: default; }
   .choice.right { background: var(--green); color: #fff; border-color: var(--green); }
   .choice.wrong { background: var(--red); color: #fff; border-color: var(--red); }
 
   /* Buttons */
-  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; }
+  .btn { display: inline-block; padding: 10px 20px; background: var(--ink); color: var(--paper); border: none; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; cursor: pointer; letter-spacing: .5px; transition: background .15s, transform .1s; }
   .btn:hover { background: var(--ink-2); }
   .btn.outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
   .btn.outline:hover { background: var(--paper-2); }
@@ -268,88 +268,126 @@
   .notif-section { margin-top: 28px; padding: 18px; border: 1px solid var(--rule); background: var(--paper-2); }
   .notif-section .small-caps { margin: 0; }
 
-  /* =========================================================
-     ANIMAZIONI — stile moderno ma coerente con il mood quotidiano
-  ========================================================= */
-  @keyframes ngFadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-  @keyframes ngPopIn { 0% { transform: scale(0.85); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
-  @keyframes ngBounceIn { 0% { transform: translateY(20px) scale(0.92); opacity: 0; } 60% { transform: translateY(-4px) scale(1.03); opacity: 1; } 100% { transform: translateY(0) scale(1); } }
-  @keyframes ngShake { 0%, 100% { transform: translateX(0); } 15% { transform: translateX(-8px); } 30% { transform: translateX(8px); } 45% { transform: translateX(-6px); } 60% { transform: translateX(6px); } 75% { transform: translateX(-3px); } 90% { transform: translateX(3px); } }
-  @keyframes ngRightFlash { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0.5); } 50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(36,107,58,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(36,107,58,0); } }
-  @keyframes ngWrongFlash { 0% { box-shadow: 0 0 0 0 rgba(176,16,16,0.55); } 60% { box-shadow: 0 0 0 14px rgba(176,16,16,0); } 100% { box-shadow: 0 0 0 0 rgba(176,16,16,0); } }
-  @keyframes ngPulseDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
-  @keyframes ngSlideFadeIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
-  @keyframes ngCountUp { from { transform: scale(0.5) rotate(-6deg); opacity: 0; } 60% { transform: scale(1.15) rotate(2deg); opacity: 1; } to { transform: scale(1) rotate(0); } }
-  @keyframes ngConfettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }
+  /* ===================================================
+     ANIMAZIONI VIVACI — aggiunte
+     =================================================== */
 
-  /* Applicazioni */
-  .mode-card { transition: transform .18s ease, background .15s, box-shadow .18s; animation: ngFadeInUp .4s ease both; }
-  .mode-card:nth-child(1) { animation-delay: 40ms; }
-  .mode-card:nth-child(2) { animation-delay: 140ms; }
-  .mode-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
-  .mode-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
+  /* Keyframes */
+  @keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes scorePop {
+    0%   { opacity: 0; transform: scale(0.35) rotate(-8deg); }
+    55%  { transform: scale(1.15) rotate(3deg); }
+    75%  { transform: scale(0.94) rotate(-1deg); }
+    90%  { transform: scale(1.04) rotate(0.5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    12%  { transform: translateX(-9px) rotate(-1deg); }
+    25%  { transform: translateX(9px) rotate(1deg); }
+    37%  { transform: translateX(-7px) rotate(-0.8deg); }
+    50%  { transform: translateX(7px) rotate(0.8deg); }
+    62%  { transform: translateX(-4px) rotate(-0.4deg); }
+    75%  { transform: translateX(4px) rotate(0.4deg); }
+    87%  { transform: translateX(-2px); }
+  }
+  @keyframes correctPulse {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.06); }
+    65%  { transform: scale(0.97); }
+    100% { transform: scale(1); }
+  }
+  @keyframes verdictSlide {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(176,16,16,.3); }
+    50%       { transform: scale(1.35); box-shadow: 0 0 0 6px rgba(176,16,16,.0); }
+  }
+  @keyframes choiceIn {
+    from { opacity: 0; transform: translateX(-22px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes cardWobble {
+    0%   { transform: scale(1) rotate(0deg); }
+    30%  { transform: scale(1.025) rotate(-0.9deg); }
+    60%  { transform: scale(1.025) rotate(0.7deg); }
+    80%  { transform: scale(1.01) rotate(-0.3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  @keyframes tabPress {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+  @keyframes dotRight {
+    0%   { transform: scale(0.5); opacity: 0; }
+    60%  { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes dotWrong {
+    0%   { transform: scale(0.5); opacity: 0; }
+    50%  { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
 
-  /* Pulsanti generici con piccola pressione */
-  .btn { transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
-  .btn:hover:not(:disabled) { transform: translateY(-1px); }
-  .btn:active:not(:disabled) { transform: scale(0.94); transition: transform .08s ease; }
+  /* Applicazione animazioni */
+  .qcard                { animation: slideUpFade .38s cubic-bezier(.22,1,.36,1) both; }
 
-  /* Card domanda: entrata */
-  .qcard { animation: ngFadeInUp .35s ease both; }
+  /* Choice staggered entry */
+  .choice               { animation: choiceIn .28s cubic-bezier(.22,1,.36,1) both; opacity: 0; animation-fill-mode: forwards; }
+  .choice:nth-child(1)  { animation-delay: .04s; }
+  .choice:nth-child(2)  { animation-delay: .10s; }
+  .choice:nth-child(3)  { animation-delay: .16s; }
+  .choice:nth-child(4)  { animation-delay: .22s; }
 
-  /* Choice: apparizione scaglionata (stagger via --i) */
-  .choice { animation: ngFadeInUp .32s ease both; animation-delay: calc(var(--i, 0) * 70ms); transition: transform .12s ease, background .15s, border-color .15s, color .15s; }
-  .choice:hover:not(:disabled) { transform: translateX(4px); }
-  .choice:active:not(:disabled) { transform: scale(0.96); background: var(--paper-2); transition: transform .08s ease, background .08s; }
-  .choice.right { animation: ngRightFlash .6s ease; }
-  .choice.wrong { animation: ngShake .5s ease, ngWrongFlash .6s ease; }
+  /* Override quando risponde */
+  .choice.right         { animation: correctPulse .42s ease both !important; opacity: 1 !important; }
+  .choice.wrong         { animation: shake .48s ease both !important; opacity: 1 !important; }
 
-  /* Progress dots: quello "current" pulsa */
-  .dot.current { animation: ngPulseDot 1.1s ease-in-out infinite; }
+  /* Dot corrente pulsante */
+  .dot.current          { animation: dotPulse 1.2s ease-in-out infinite; }
+  .dot.right            { animation: dotRight .35s cubic-bezier(.22,1,.36,1) both; }
+  .dot.wrong            { animation: dotWrong .3s ease both; }
 
-  /* Next button */
-  #nextBtn { animation: ngBounceIn .38s ease both; }
+  /* Mode card hover */
+  .mode-card:hover:not(.completed) { animation: cardWobble .48s ease; }
 
-  /* Final screen animazioni */
-  .final .big-score { animation: ngCountUp .7s cubic-bezier(.34,1.56,.64,1) both; }
-  .final .verdict { animation: ngFadeInUp .5s ease both; animation-delay: .35s; }
-  .final table { animation: ngFadeInUp .4s ease both; animation-delay: .55s; }
-  .final .row { animation: ngFadeInUp .4s ease both; animation-delay: .75s; }
+  /* Finale */
+  .final .big-score     { animation: scorePop .7s cubic-bezier(.22,1,.36,1) both; }
+  .final .verdict       { animation: verdictSlide .4s .28s ease both; opacity: 0; animation-fill-mode: forwards; }
+  .final table          { animation: fadeInUp .4s .48s ease both; opacity: 0; animation-fill-mode: forwards; }
+  .final .row           { animation: fadeInUp .38s .64s ease both; opacity: 0; animation-fill-mode: forwards; }
 
-  /* Tabs: underline glide */
-  .tab { position: relative; }
-  .tab.active { animation: ngPopIn .35s ease; }
+  /* Tab content */
+  #tab-quiz:not(.hidden),
+  #tab-leaderboard:not(.hidden),
+  #tab-stats:not(.hidden) { animation: fadeInUp .22s ease both; }
 
-  /* Archive card hover lift + entrata staggerata */
-  .past-card { transition: transform .18s ease, box-shadow .18s; animation: ngFadeInUp .4s ease both; animation-delay: calc(var(--i, 0) * 60ms + 200ms); }
-  .past-card:hover:not(.completed) { transform: translateY(-2px); box-shadow: 0 6px 14px var(--shadow); }
-  .past-card:active:not(.completed) { transform: scale(0.96); transition: transform .08s ease; }
+  /* Click feedback */
+  .btn:active           { transform: scale(0.94); transition: transform .08s ease !important; }
+  .choice:active:not(:disabled) { transform: scale(0.97); transition: transform .06s ease !important; }
+  .tab                  { transition: color .15s, border-color .15s, transform .12s ease; }
 
-  /* Sezioni archivio + promemoria + backup: entrata soft */
-  .archive-browser, .notif-section { animation: ngFadeInUp .5s ease both; animation-delay: 350ms; }
+  /* Colore punteggio finale */
+  .big-score.score-great { color: var(--green); }
+  .big-score.score-ok    { color: var(--ink); }
+  .big-score.score-bad   { color: var(--red); }
 
-  /* Stat cards: entrata scaglionata */
-  .stat-card { animation: ngFadeInUp .4s ease both; }
-  .stat-card:nth-child(1) { animation-delay: 0ms; }
-  .stat-card:nth-child(2) { animation-delay: 80ms; }
-  .stat-card:nth-child(3) { animation-delay: 160ms; }
-  .stat-card:nth-child(4) { animation-delay: 240ms; }
-
-  /* Group pills: entrata leggera */
-  .group-pill { animation: ngSlideFadeIn .35s ease both; transition: transform .12s ease, background .15s; }
-  .group-pill:hover:not(.active) { transform: translateY(-1px); }
-
-  /* Toast (conferma azioni) */
-  .ng-toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 12px 20px; border-left: 4px solid var(--accent); font-size: 14px; font-family: 'Libre Baskerville', serif; box-shadow: 0 8px 24px var(--shadow); opacity: 0; z-index: 9999; transition: opacity .25s ease, transform .25s ease; pointer-events: none; max-width: 90%; text-align: center; }
-  .ng-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* Confetti (perfect score) */
-  .ng-confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden; }
-  .ng-confetti-piece { position: absolute; top: -14px; width: 10px; height: 14px; opacity: 0; animation: ngConfettiFall linear forwards; }
-
-  /* Rispetta le preferenze utente */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  /* Canvas confetti */
+  #confettiCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 50;
+    display: none;
   }
 </style>
 </head>
@@ -381,6 +419,10 @@
     <line x1="86" y1="38" x2="96" y2="46"/>
   </svg>
 </div>
+
+<!-- Canvas per confetti (finale con punteggio alto) -->
+<canvas id="confettiCanvas"></canvas>
+
 <div class="wrap">
 
   <!-- Masthead -->
@@ -667,18 +709,6 @@
 <script>
 /* =========================================================
    CONFIGURAZIONE
-   =========================================================
-   Le chiamate a Claude Vision sono delegate al backend FastAPI
-   (endpoint /api/extract-headlines) che usa la Emergent LLM Key
-   già configurata in /app/backend/.env. Nessuna chiave esposta
-   nel browser.
-
-   Firebase: classifica condivisa via Firestore. Crea un progetto
-   su https://console.firebase.google.com, attiva Firestore in
-   "test mode" e copia qui sotto i valori del Web App Config.
-
-   GROUPS: dizionario {password: nome_gruppo}. Stessa password
-   = stesso gruppo = stessa classifica condivisa.
 ========================================================= */
 
 const firebaseConfig = {
@@ -689,9 +719,6 @@ const firebaseConfig = {
   messagingSenderId: "911753113078",
   appId:             "1:911753113078:web:098f358c69273158ba6bd7"
 };
-
-/* I gruppi vengono creati dinamicamente dagli utenti.
-   Ogni gruppo ha un codice random condivisibile. Vedi sezione "Login" più giù. */
 
 /* ===== I 10 GIORNALI ===== */
 const NEWSPAPERS = [
@@ -707,9 +734,6 @@ const NEWSPAPERS = [
   { id: "avvenire",   name: "Avvenire",              slug: "avvenire",              clue: "Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
 ];
 
-/* Nota: giornalone.it non ha un archivio storico realmente accessibile,
-   perciò il quiz lavora solo sulle prime pagine di OGGI. */
-
 /* ===== Stato app ===== */
 const state = {
   mode: null,
@@ -717,21 +741,18 @@ const state = {
   questions: [],
   current: 0,
   score: 0,
-  // user: { name: 'Giulia', groups: [{code, name}, ...], activeGroupCode: 'AB12CD' }
   user: null,
 };
 
 const dailyDoneKey = (iso) => `daily-done-${iso}`;
 const dailyDoneToday = () => localStorage.getItem(dailyDoneKey(todayISO()));
 
-/* Persistenza utente: localStorage (resta tra le sessioni). Chiave: quizUser */
 const USER_KEY = 'quizUser';
 function loadUser() {
   let raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
   if (!raw) return null;
   try {
     const u = JSON.parse(raw);
-    // Migrazione formato vecchio: { name, group, groupCode } -> { name, groups: [...], activeGroupCode }
     if (u.groupCode && !u.groups) {
       return { name: u.name, groups: [{ code: u.groupCode, name: u.group || u.groupCode }], activeGroupCode: u.groupCode };
     }
@@ -749,18 +770,15 @@ function saveUser() {
 
 /* ===== Helpers ===== */
 const $ = (id) => document.getElementById(id);
-/* La "giornata" del quiz va dalle 06:00 alle 05:59 della mattina seguente.
-   Prima delle 6 mostriamo ancora la sfida del giorno precedente (i giornali escono fra le 5 e le 6). */
 const todayISO = () => {
   const d = new Date();
   if (d.getHours() < 6) d.setDate(d.getDate() - 1);
-  // Calcoliamo la data localmente (no toISOString che è UTC) per evitare slittamenti
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 };
-const monthKey = (iso) => iso.slice(0,7); // YYYY-MM
+const monthKey = (iso) => iso.slice(0,7);
 const fmtDateIT = (iso) => {
   const [y,m,d] = iso.split('-');
   const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
@@ -778,7 +796,7 @@ const sampleN = (arr, n) => shuffle(arr).slice(0, n);
 
 $('todayDate').textContent = fmtDateIT(todayISO());
 
-/* ===== PWA: registrazione service worker ===== */
+/* ===== PWA ===== */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/api/sw.js', { scope: '/api/' }).catch(err => console.warn('SW reg failed:', err));
@@ -802,7 +820,6 @@ function triggerInstall() {
 }
 window.triggerInstall = triggerInstall;
 
-/* Banner iOS install (mostrato solo a Safari iOS non installato) */
 (function() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -827,7 +844,7 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-/* ===== ARCHIVIO: edizioni precedenti dal DB ===== */
+/* ===== ARCHIVIO ===== */
 async function loadArchive() {
   try {
     const r = await fetch('/api/archive-dates');
@@ -839,11 +856,10 @@ async function loadArchive() {
     grid.innerHTML = '';
     if (!dates.length) { sec.classList.add('hidden'); return; }
     sec.classList.remove('hidden');
-    dates.forEach((d, i) => {
+    dates.forEach(d => {
       const saved = localStorage.getItem('past-score-' + d.date);
       const card = document.createElement('div');
       card.className = 'past-card' + (saved ? ' completed' : '');
-      card.style.setProperty('--i', i);
       card.innerHTML = `
         <div class="date">${fmtDateIT(d.date)}</div>
         <div class="name">${d.papers} giornali</div>
@@ -856,7 +872,7 @@ async function loadArchive() {
 }
 loadArchive();
 
-/* ===== ARCHIVE BROWSER (consultazione informativa) ===== */
+/* ===== ARCHIVE BROWSER ===== */
 document.querySelectorAll('.ab-tab').forEach(t => {
   t.addEventListener('click', () => {
     document.querySelectorAll('.ab-tab').forEach(x => x.classList.remove('active'));
@@ -952,7 +968,6 @@ async function showPaperDetail(np) {
   } catch (e) { cont.innerHTML = `<p style="color:var(--red)">Errore: ${e.message}</p>`; }
 }
 
-/* Lightbox per vedere la prima pagina a schermo intero */
 function openLightbox(url) {
   let lb = document.getElementById('lightbox');
   if (!lb) {
@@ -978,7 +993,7 @@ window.loadArchiveBrowserPapers = loadArchiveBrowserPapers;
 loadArchiveBrowserDates();
 loadArchiveBrowserPapers();
 
-/* ===== NOTIFICHE 8:00 ===== */
+/* ===== NOTIFICHE ===== */
 function urlBase64ToUint8Array(b64) {
   const padding = '='.repeat((4 - b64.length % 4) % 4);
   const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -1110,7 +1125,6 @@ async function startQuiz(mode, dateISO) {
   $('loading').classList.remove('hidden');
 
   try {
-    // Per modalità 'training': scegli una data random dall'archivio (NON oggi)
     if (mode === 'training') {
       const r = await fetch('/api/archive-dates');
       if (!r.ok) throw new Error('Archivio non disponibile.');
@@ -1124,7 +1138,6 @@ async function startQuiz(mode, dateISO) {
       state.dateISO = pickDate;
     }
 
-    // Per modalità 'past' o 'training' uso solo i giornali archiviati per quella data
     let pickedFrom = NEWSPAPERS;
     if (mode === 'past' || mode === 'training') {
       const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
@@ -1160,7 +1173,6 @@ async function startQuiz(mode, dateISO) {
   }
 }
 
-/* Build a single question — pulls from cache if present */
 async function buildQuestion(np, dateISO) {
   const cacheKey = `q3-${dateISO}-${np.id}`;
   const cached = localStorage.getItem(cacheKey);
@@ -1172,7 +1184,6 @@ async function buildQuestion(np, dateISO) {
     extracted = await fetchHeadlines(np.slug, dateISO);
     try { localStorage.setItem(cacheKey, JSON.stringify(extracted)); } catch {}
   }
-  // 4 choices: correct + 3 random wrongs
   const wrongs = sampleN(NEWSPAPERS.filter(n => n.id !== np.id), 3);
   const choices = shuffle([np, ...wrongs]).map(n => ({ id: n.id, name: n.name }));
   return {
@@ -1185,35 +1196,28 @@ async function buildQuestion(np, dateISO) {
   };
 }
 
-/* Fetch headlines (sovratitolo/titolo/sottotitolo) via backend proxy.
-   Backend handles: scaricare immagine da giornalone.it + chiamata Claude Vision via Emergent LLM Key.
-   Retry automatico in caso di 404/502 transitorio (es. backend in restart). */
 async function fetchHeadlines(slug, dateISO) {
   const isToday = dateISO === todayISO();
   const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
   const url = `/api/extract-headlines?${params}`;
-  const delays = [0, 2000, 4000, 8000, 15000]; // 5 tentativi, backoff fino a 15s
+  const delays = [0, 2000, 4000, 8000, 15000];
   let lastErr;
   for (let attempt = 0; attempt < delays.length; attempt++) {
     if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
     try {
       const r = await fetch(url, { cache: 'no-store' });
-      // 404 specifico dal backend (es. edizione non in archivio) = errore reale
       if (r.status === 404) {
         const body = await r.text();
         if (body.includes('archivio') || body.includes('"detail"')) {
           throw new Error(body.slice(0, 160));
         }
-        // 404 dall'ingress (backend giù) = transient
         lastErr = new Error('Server temporaneamente offline');
         continue;
       }
-      // 502/503/504 = backend in restart, retry
       if (r.status === 502 || r.status === 503 || r.status === 504) {
         lastErr = new Error(`Server in ripristino (${r.status})`);
         continue;
       }
-      // 429 = rate limit, mostra subito
       if (r.status === 429) throw new Error('Troppe richieste. Aspetta un minuto e riprova.');
       if (!r.ok) {
         const t = await r.text();
@@ -1221,20 +1225,10 @@ async function fetchHeadlines(slug, dateISO) {
       }
       return await r.json();
     } catch (e) {
-      // Se è un Error sopra (4xx/5xx) lo abbiamo gestito; altrimenti errore di rete
       if (!lastErr || e.message !== lastErr.message) lastErr = e;
     }
   }
   throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
-}
-
-function blobToBase64(blob) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => res(fr.result.split(',')[1]);
-    fr.onerror = rej;
-    fr.readAsDataURL(blob);
-  });
 }
 
 /* ===== RENDER QUESTION ===== */
@@ -1242,37 +1236,34 @@ function renderQuestion() {
   const q = state.questions[state.current];
   $('qProgress').textContent = `Domanda ${state.current + 1} di ${state.questions.length}`;
 
-  // dots
-  const dots = $('dots');
-  dots.innerHTML = '';
-  state.questions.forEach((qq, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'right' : 'wrong');
-    if (i === state.current && qq.given == null) d.classList.add('current');
-    dots.appendChild(d);
-  });
+  // Forza re-animazione della qcard
+  const qcard = document.querySelector('.qcard');
+  if (qcard) {
+    qcard.style.animation = 'none';
+    qcard.offsetHeight; // reflow
+    qcard.style.animation = '';
+  }
 
-  // extracted
+  renderDotsOnly();
+
   $('exSopra').textContent = q.sopra || '';
   $('exSopra').style.display = q.sopra ? '' : 'none';
   $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
   $('exSotto').textContent = q.sotto || '';
   $('exSotto').style.display = q.sotto ? '' : 'none';
 
-  // choices
   const cont = $('choices');
   cont.innerHTML = '';
   q.choices.forEach((c, i) => {
     const b = document.createElement('button');
     b.className = 'choice';
-    b.style.setProperty('--i', i);
     b.textContent = c.name;
+    // Reset animazione per re-trigger
+    b.style.animationDelay = (i * 0.07) + 's';
     b.addEventListener('click', () => answer(c.id, b));
     cont.appendChild(b);
   });
 
-  // dots
   $('nextBtn').style.display = 'none';
 }
 
@@ -1282,17 +1273,16 @@ function answer(givenId, btnEl) {
   q.given = givenId;
   const correct = q.paper.id;
   if (givenId === correct) state.score++;
-  // disable + colour
   document.querySelectorAll('.choice').forEach(b => {
     b.disabled = true;
     const cid = q.choices.find(c => c.name === b.textContent)?.id;
     if (cid === correct) b.classList.add('right');
     else if (cid === givenId) b.classList.add('wrong');
   });
-  // refresh dots
   renderDotsOnly();
   $('nextBtn').style.display = '';
 }
+
 function renderDotsOnly() {
   const dots = $('dots');
   dots.innerHTML = '';
@@ -1321,16 +1311,21 @@ function verdictFor(score) {
 function finishQuiz() {
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
-  // Reset animazioni re-applicando le classi
-  $('finalScreen').querySelectorAll('.big-score,.verdict,table,.row').forEach(el => {
-    el.style.animation = 'none';
-    void el.offsetWidth; // force reflow
-    el.style.animation = '';
-  });
-  animateScoreCountUp($('finalScore'), state.score, 800);
+  $('finalScore').textContent = state.score;
   $('verdict').textContent = verdictFor(state.score);
 
-  // recap
+  // Colore punteggio
+  const bigScore = document.querySelector('.final .big-score');
+  if (bigScore) {
+    bigScore.classList.remove('score-great','score-ok','score-bad');
+    if (state.score >= 4)      bigScore.classList.add('score-great');
+    else if (state.score <= 1) bigScore.classList.add('score-bad');
+    else                       bigScore.classList.add('score-ok');
+  }
+
+  // Lancia confetti per punteggi alti
+  setTimeout(() => launchConfetti(state.score), 300);
+
   let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
   state.questions.forEach((q, i) => {
     const ok = q.given === q.paper.id;
@@ -1340,12 +1335,9 @@ function finishQuiz() {
   html += '</tbody>';
   $('recapTable').innerHTML = html;
 
-  // train again button
   $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
-  // L'allenamento non va in classifica → nascondo "Salva punteggio"
   $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
 
-  // Traccia statistica personale
   trackGameInStats({
     mode: state.mode,
     dateISO: state.dateISO,
@@ -1360,75 +1352,68 @@ function finishQuiz() {
     ts: Date.now(),
   });
 
-  // past completed → save in localStorage e ricarica l'archivio
   if (state.mode === 'past') {
     localStorage.setItem('past-score-' + state.dateISO, state.score);
     loadArchive();
   }
-  // daily completed → mark as done so it can't be replayed today
   if (state.mode === 'daily') {
     localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
     refreshDailyStatus();
-    // Daily appena giocata: l'archivio si è arricchito, ricarico la lista (sarà disponibile da domani)
     loadArchive();
   }
-
-  // Confetti per punteggio pieno 🎉
-  if (state.score === state.questions.length) {
-    setTimeout(() => launchConfetti(), 450);
-  }
-}
-
-/* ===== Utility di animazione ===== */
-function animateScoreCountUp(el, target, duration) {
-  if (!el) return;
-  const start = performance.now();
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / duration);
-    const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-    el.textContent = Math.round(target * eased);
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target;
-  };
-  requestAnimationFrame(step);
-}
-
-function launchConfetti() {
-  const layer = document.createElement('div');
-  layer.className = 'ng-confetti-layer';
-  document.body.appendChild(layer);
-  const colors = ['#b01010', '#246b3a', '#d4a017', '#2b6cb0', '#8e44ad', '#e67e22'];
-  const N = 80;
-  for (let i = 0; i < N; i++) {
-    const p = document.createElement('div');
-    p.className = 'ng-confetti-piece';
-    p.style.left = (Math.random() * 100) + 'vw';
-    p.style.background = colors[i % colors.length];
-    p.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
-    p.style.animationDelay = (Math.random() * 0.35) + 's';
-    p.style.width = (6 + Math.random() * 8) + 'px';
-    p.style.height = (10 + Math.random() * 10) + 'px';
-    p.style.transform = `rotate(${Math.random() * 360}deg)`;
-    p.style.opacity = '1';
-    layer.appendChild(p);
-  }
-  setTimeout(() => layer.remove(), 4000);
-}
-
-function showToast(msg) {
-  let t = document.querySelector('.ng-toast');
-  if (!t) { t = document.createElement('div'); t.className = 'ng-toast'; document.body.appendChild(t); }
-  t.textContent = msg;
-  requestAnimationFrame(() => t.classList.add('show'));
-  clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove('show'), 2400);
 }
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 
 /* =========================================================
+   CONFETTI
+========================================================= */
+function launchConfetti(score) {
+  if (score < 4) return;
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  canvas.style.display = '';
+  const ctx = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const N = score === 5 ? 140 : 75;
+  const palette = ['#b01010','#246b3a','#f5c518','#1a73e8','#ff6d00','#9c27b0','#e91e63','#00bcd4'];
+  const pieces = Array.from({length: N}, () => ({
+    x: Math.random() * canvas.width,
+    y: -30 - Math.random() * canvas.height * 0.4,
+    r: Math.random() * 8 + 3,
+    vy: Math.random() * 3.5 + 1.5,
+    vx: (Math.random() - 0.5) * 2.5,
+    tilt: Math.random() * Math.PI * 2,
+    tiltSpeed: (Math.random() - 0.5) * 0.18,
+    color: palette[Math.floor(Math.random() * palette.length)],
+  }));
+  let frame = 0;
+  const maxFrames = 200;
+  (function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const alpha = Math.max(0, 1 - (frame - 140) / 60);
+    pieces.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx + Math.sin(frame * 0.04 + p.tilt) * 0.5;
+      p.tilt += p.tiltSpeed;
+      ctx.save();
+      ctx.globalAlpha = frame > 140 ? alpha : 1;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.tilt);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.r, p.r * 0.42, 0, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+      ctx.restore();
+    });
+    frame++;
+    if (frame < maxFrames) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  })();
+}
+
+/* =========================================================
    STATISTICHE PERSONALI
-   - Storia partite in localStorage chiave 'stats-history'
-   - Streak giornaliera calcolata sui daily completati
 ========================================================= */
 const STATS_KEY = 'stats-history';
 
@@ -1446,12 +1431,10 @@ function trackGameInStats(entry) {
 }
 
 function computeStreak(history) {
-  // streak = giorni consecutivi (terminanti oggi o ieri) con un daily completato
   const dailyDates = new Set(history.filter(h => h.mode === 'daily').map(h => h.dateISO));
   if (!dailyDates.size) return 0;
   let streak = 0;
   const d = new Date();
-  // Se oggi non ho giocato ma ieri sì, lo streak parte da ieri
   let iso = d.toISOString().slice(0,10);
   if (!dailyDates.has(iso)) {
     d.setDate(d.getDate() - 1);
@@ -1476,7 +1459,6 @@ function renderStats() {
   $('statsEmpty').classList.add('hidden');
   $('statsContent').classList.remove('hidden');
 
-  // Totali
   const total = history.length;
   const sumScore = history.reduce((s, h) => s + h.score, 0);
   const sumTotal = history.reduce((s, h) => s + h.total, 0);
@@ -1489,7 +1471,6 @@ function renderStats() {
   $('stStreak').textContent = streak;
   $('stBestScore').textContent = best;
 
-  // Precisione per giornale
   const perPaper = {};
   history.forEach(h => {
     (h.questions || []).forEach(q => {
@@ -1507,7 +1488,6 @@ function renderStats() {
   html += '</tbody>';
   $('stPaperTable').innerHTML = html;
 
-  // Ultime 10 partite
   const recent = history.slice().reverse().slice(0, 10);
   let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
   recent.forEach(h => {
@@ -1528,7 +1508,7 @@ $('stResetBtn').addEventListener('click', () => {
 });
 
 /* =========================================================
-   CAMBIA NOME (modal)
+   CAMBIA NOME
 ========================================================= */
 function openNameModal() {
   $('nameModalInput').value = state.user?.name || '';
@@ -1558,7 +1538,6 @@ $('nameModalConfirm').addEventListener('click', () => {
   closeNameModal();
 });
 
-/* Save score to leaderboard — apre un modal per scegliere i gruppi target */
 $('saveScoreBtn').addEventListener('click', () => {
   if (!state.user || !state.user.groups?.length) {
     if (confirm('Per salvare il punteggio devi prima entrare in un gruppo (Crea o Unisciti).\nVuoi andare alla scheda Classifica ora?')) {
@@ -1608,7 +1587,6 @@ $('saveModalConfirm').addEventListener('click', async () => {
     const code = ch.dataset.code;
     const grp = state.user.groups.find(g => g.code === code);
     try {
-      // Per daily, segna salvataggio per evitare doppioni
       if (state.mode === 'daily') {
         const flagKey = `daily-saved-${todayISO()}-${code}-${state.user.name}`;
         if (localStorage.getItem(flagKey)) continue;
@@ -1676,9 +1654,8 @@ async function saveLeaderboardEntry(entry) {
   });
 }
 
-/* ===== Codice gruppo: 6 caratteri alfanumerici ===== */
 function genGroupCode() {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I,O,0,1 per leggibilità
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let s = '';
   for (let i = 0; i < 6; i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
   return s;
@@ -1686,7 +1663,6 @@ function genGroupCode() {
 async function createGroup(name, groupName) {
   initFirebase();
   if (!fbReady) throw new Error('Firebase non configurato.');
-  // Genera codice univoco (provo max 5 volte)
   let code;
   for (let i = 0; i < 5; i++) {
     code = genGroupCode();
@@ -1710,7 +1686,6 @@ async function joinGroup(code) {
   return { code, name: snap.data().name };
 }
 
-/* ===== Login / sessione (persistente in localStorage) ===== */
 state.user = loadUser();
 
 function showLBLoggedIn() {
@@ -1725,7 +1700,6 @@ function showLBLogin() {
   $('lbContent').classList.add('hidden');
   $('lbCreated').classList.add('hidden');
   $('lbLogin').classList.remove('hidden');
-  // Pre-compila il nome se già impostato
   if (state.user?.name) {
     $('lbJoinName').value = state.user.name;
     $('lbCreateName').value = state.user.name;
@@ -1771,7 +1745,6 @@ function renderGroupPills() {
   $('lbActiveGroup').textContent = active ? `${active.name} (${active.code})` : '—';
 }
 
-/* Switch tab Crea/Unisciti */
 document.querySelectorAll('.lb-tab').forEach(b => {
   b.addEventListener('click', () => {
     document.querySelectorAll('.lb-tab').forEach(x => x.classList.remove('active'));
@@ -1784,7 +1757,6 @@ document.querySelectorAll('.lb-tab').forEach(b => {
   });
 });
 
-/* Crea gruppo */
 $('lbCreateBtn').addEventListener('click', async () => {
   const name = $('lbCreateName').value.trim().slice(0,24);
   const groupName = $('lbCreateGroup').value.trim().slice(0,32);
@@ -1812,9 +1784,7 @@ $('lbCreateBtn').addEventListener('click', async () => {
     $('lbCreateBtn').textContent = 'Crea il gruppo';
   }
 });
-$('lbCreatedContinueBtn').addEventListener('click', () => {
-  showLBLoggedIn();
-});
+$('lbCreatedContinueBtn').addEventListener('click', () => { showLBLoggedIn(); });
 $('lbCopyCodeBtn').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText($('newGroupCode').textContent);
@@ -1825,7 +1795,6 @@ $('lbCopyCodeBtn').addEventListener('click', async () => {
   }
 });
 
-/* Unisciti */
 $('lbJoinBtn').addEventListener('click', async () => {
   const name = $('lbJoinName').value.trim().slice(0,24);
   const code = $('lbJoinCode').value.trim().toUpperCase().slice(0,8);
@@ -1852,7 +1821,6 @@ $('lbJoinBtn').addEventListener('click', async () => {
   }
 });
 
-/* "Aggiungi un altro gruppo" — riapre il login pannello pertinente */
 $('lbAddJoinBtn').addEventListener('click', () => {
   showLBLogin();
   document.querySelector('.lb-tab[data-lbtab="join"]').click();
@@ -1888,7 +1856,6 @@ async function refreshLeaderboards() {
     $('lbMonthEmpty').style.display = '';
     return;
   }
-  // unsubscribe precedenti listener
   if (_lbDayUnsub)   { _lbDayUnsub();   _lbDayUnsub = null; }
   if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
 
@@ -1910,7 +1877,6 @@ async function refreshLeaderboards() {
 }
 
 function renderDayTable(rows) {
-  // best % per name
   const byName = {};
   rows.forEach(r => {
     if (!byName[r.name] || r.pct > byName[r.name].pct) byName[r.name] = r;
@@ -1929,7 +1895,6 @@ function renderDayTable(rows) {
   });
 }
 function renderMonthTable(rows) {
-  // sum points per name
   const byName = {};
   rows.forEach(r => {
     if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
