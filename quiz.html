@@ -419,9 +419,167 @@
     pointer-events: none; z-index: 50;
     display: none;
   }
+
+  /* ===================================================
+     SPLASH SCREEN
+     =================================================== */
+  #splashScreen {
+    position: fixed;
+    inset: 0;
+    background: #0a0804;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #splashScreen.hide {
+    animation: splashFadeOut .7s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  @keyframes splashFadeOut {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  }
+
+  /* Righe di titoli scorrevoli */
+  .splash-ticker-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    opacity: 0;
+    animation: splashTickerIn .5s .1s ease forwards;
+  }
+  @keyframes splashTickerIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  .splash-row {
+    display: flex;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255,255,255,.07);
+  }
+  .splash-row:last-child { border-bottom: 1px solid rgba(255,255,255,.07); }
+  .splash-row-inner {
+    display: flex;
+    gap: 0;
+    /* velocità diversa per ogni riga, alternate direzioni */
+  }
+  .splash-row:nth-child(odd)  .splash-row-inner { animation: tickerLeft  18s linear infinite; }
+  .splash-row:nth-child(even) .splash-row-inner { animation: tickerRight 22s linear infinite; }
+  @keyframes tickerLeft  { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes tickerRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+  .splash-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 0 32px;
+    flex-shrink: 0;
+  }
+  .splash-item-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: clamp(10px, 1.8vw, 13px);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #b01010;
+    flex-shrink: 0;
+  }
+  .splash-item-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(15px, 2.8vw, 22px);
+    color: rgba(255,255,255,.82);
+    letter-spacing: -.3px;
+  }
+  .splash-item-sep {
+    color: rgba(255,255,255,.2);
+    font-size: 18px;
+    margin: 0 8px;
+  }
+
+  /* Overlay gradiente per sfumare i bordi */
+  .splash-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(10,8,4,.85) 0%, rgba(10,8,4,0) 100%),
+      linear-gradient(to right,  #0a0804 0%, transparent 12%, transparent 88%, #0a0804 100%),
+      linear-gradient(to bottom, #0a0804 0%, transparent 18%, transparent 82%, #0a0804 100%);
+    pointer-events: none;
+  }
+
+  /* Logo centrale */
+  .splash-logo {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    opacity: 0;
+    animation: splashLogoIn .8s .8s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes splashLogoIn {
+    from { opacity: 0; transform: scale(.88) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .splash-logo-brand {
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 11px;
+    color: #b01010;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .splash-logo-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(56px, 14vw, 110px);
+    color: #f5f1e8;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-shadow: 0 2px 40px rgba(176,16,16,.35);
+  }
+  .splash-logo-tagline {
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    font-size: clamp(13px, 2.5vw, 17px);
+    color: rgba(245,241,232,.55);
+    margin-top: 10px;
+    opacity: 0;
+    animation: splashLogoIn .6s 1.3s ease forwards;
+  }
+  /* Lineetta decorativa */
+  .splash-logo-rule {
+    width: 60px;
+    height: 2px;
+    background: #b01010;
+    margin: 14px auto 0;
+    opacity: 0;
+    animation: splashLogoIn .5s 1.6s ease forwards;
+  }
+
 </style>
 </head>
 <body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splashScreen" aria-hidden="true">
+  <div class="splash-ticker-wrap" id="splashTicker"></div>
+  <div class="splash-vignette"></div>
+  <div class="splash-logo">
+    <div class="splash-logo-brand">Quiz dei quotidiani</div>
+    <div class="splash-logo-title">Newsguess</div>
+    <div class="splash-logo-tagline">Il quiz delle prime pagine d'Italia</div>
+    <div class="splash-logo-rule"></div>
+  </div>
+</div>
+
 <div class="bg-decorations" aria-hidden="true">
   <svg class="bg-deco bg-deco-1" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="10" y="30" width="180" height="150" rx="3"/>
@@ -2097,5 +2255,124 @@ function renderMonthTable(rows) {
   });
 }
 </script>
+
+<script>
+/* ===== SPLASH SCREEN JS ===== */
+(function() {
+  // Titoli di fallback (usati subito, prima che l'archivio risponda)
+  const FALLBACK_TITLES = [
+    { name: "Corriere della Sera", title: "Il governo vara la manovra economica" },
+    { name: "La Repubblica",       title: "Crisi climatica: l'Europa risponde" },
+    { name: "La Stampa",           title: "Torino capitale della cultura 2025" },
+    { name: "Il Fatto Quotidiano", title: "Inchiesta sui fondi pubblici dispersi" },
+    { name: "Il Messaggero",       title: "Roma, nuovi investimenti per il metro" },
+    { name: "Il Giornale",         title: "Sicurezza nelle città: il piano del governo" },
+    { name: "Libero",              title: "Fisco, arriva la riforma tanto attesa" },
+    { name: "Il Manifesto",        title: "Diritti al lavoro: la piazza risponde" },
+    { name: "Il Sole 24 Ore",      title: "Borsa in rialzo, spread sotto controllo" },
+    { name: "Avvenire",            title: "Solidarietà: l'Italia che non si arrende" },
+    { name: "Corriere della Sera", title: "Vertice europeo: accordo sull'immigrazione" },
+    { name: "La Repubblica",       title: "Scuola, il ministro annuncia la riforma" },
+    { name: "La Stampa",           title: "Elezioni regionali, la sfida è aperta" },
+    { name: "Il Fatto Quotidiano", title: "Appalti, nuove rivelazioni dall'inchiesta" },
+    { name: "Il Messaggero",       title: "Turismo record: Italia mèta preferita" },
+    { name: "Il Sole 24 Ore",      title: "Inflazione in calo, segnali positivi" },
+    { name: "Avvenire",            title: "Il Papa: pace è possibile, non arrendetevi" },
+    { name: "Il Manifesto",        title: "Sciopero generale, cortei in tutta Italia" },
+    { name: "Libero",              title: "Immigrazione, il nodo delle politiche europee" },
+    { name: "Il Giornale",         title: "Giustizia, la riforma divide il Parlamento" },
+  ];
+
+  const NUM_ROWS = 5;
+  const ticker = document.getElementById('splashTicker');
+  if (!ticker) return;
+
+  // Costruisci le righe con i titoli di fallback
+  function buildRows(items) {
+    ticker.innerHTML = '';
+    // Dividi in NUM_ROWS gruppi
+    const rowSize = Math.ceil(items.length / NUM_ROWS);
+    for (let r = 0; r < NUM_ROWS; r++) {
+      const rowItems = [];
+      for (let i = 0; i < items.length; i++) {
+        if (i % NUM_ROWS === r) rowItems.push(items[i]);
+      }
+      if (!rowItems.length) continue;
+
+      const row = document.createElement('div');
+      row.className = 'splash-row';
+      const inner = document.createElement('div');
+      inner.className = 'splash-row-inner';
+
+      // Duplica per loop infinito
+      for (let rep = 0; rep < 4; rep++) {
+        rowItems.forEach(item => {
+          const el = document.createElement('span');
+          el.className = 'splash-item';
+          el.innerHTML = `<span class="splash-item-name">${item.name}</span><span class="splash-item-title">${item.title}</span><span class="splash-item-sep">·</span>`;
+          inner.appendChild(el);
+        });
+      }
+      row.appendChild(inner);
+      ticker.appendChild(row);
+    }
+  }
+
+  buildRows(FALLBACK_TITLES);
+
+  // Prova a caricare titoli reali dall'archivio (non bloccante)
+  fetch('/api/archive-dates')
+    .then(r => r.ok ? r.json() : null)
+    .then(async data => {
+      if (!data?.dates?.length) return;
+      // Prendi la data più recente con almeno 5 giornali
+      const recent = data.dates.find(d => d.papers >= 5);
+      if (!recent) return;
+      const r2 = await fetch(`/api/archive-papers?date=${recent.date}`);
+      if (!r2.ok) return;
+      const papers = await r2.json();
+      if (!papers.items?.length) return;
+      const realItems = papers.items
+        .filter(it => it.titolo_principale)
+        .map(it => {
+          const NAMES = {
+            'corriere-della-sera': 'Corriere della Sera',
+            'la-repubblica': 'La Repubblica',
+            'la-stampa': 'La Stampa',
+            'il-fatto-quotidiano': 'Il Fatto Quotidiano',
+            'il-messaggero': 'Il Messaggero',
+            'il-giornale': 'Il Giornale',
+            'libero': 'Libero',
+            'il-manifesto': 'Il Manifesto',
+            'il-sole-24-ore': 'Il Sole 24 Ore',
+            'avvenire': 'Avvenire',
+          };
+          return { name: NAMES[it.slug] || it.slug, title: it.titolo_principale };
+        });
+      if (realItems.length >= 3) buildRows([...realItems, ...realItems, ...realItems]);
+    })
+    .catch(() => {}); // silenzioso
+
+  // Rimuovi splash dopo 3.5s
+  const SPLASH_DURATION = 3500;
+  setTimeout(() => {
+    const splash = document.getElementById('splashScreen');
+    if (!splash) return;
+    splash.classList.add('hide');
+    splash.addEventListener('animationend', () => {
+      splash.style.display = 'none';
+    }, { once: true });
+  }, SPLASH_DURATION);
+
+  // Salta splash se l'utente tocca/clicca
+  document.getElementById('splashScreen').addEventListener('click', () => {
+    const splash = document.getElementById('splashScreen');
+    if (!splash) return;
+    splash.classList.add('hide');
+    splash.addEventListener('animationend', () => splash.style.display = 'none', { once: true });
+  });
+})();
+</script>
+
 </body>
 </html>
