@@ -1211,20 +1211,59 @@ async function startQuiz(mode, dateISO) {
       pickedFrom = NEWSPAPERS.filter(n => slugs.has(n.slug));
       if (pickedFrom.length < 4) throw new Error('Edizione incompleta in archivio');
     }
-    const picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
+    // FIX 1: per la sfida giornaliera, se un giornale non è disponibile oggi
+    // lo sostituiamo silenziosamente con un altro dei 10, senza dirlo all'utente.
+    // Per allenamento/archivio usa solo l'archivio già verificato, quindi non serve.
+    let picked;
+    if (mode === 'daily') {
+      // Pesca 5 giornali, ma tieni un pool di riserve per eventuali sostituzioni
+      const shuffled = shuffle([...pickedFrom]);
+      const chosen = [];
+      const reserves = [];
+      shuffled.forEach((np, i) => { if (i < 5) chosen.push(np); else reserves.push(np); });
+      picked = chosen;
 
-    const LOADING_MESSAGES = [
-      "«Sapere è potere.» — Francis Bacon",
-      "«La libertà di stampa è il sale della libertà.» — Voltaire",
-      "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-      "«La saggezza comincia nella meraviglia.» — Socrate",
-      "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-    ];
-    for (let i = 0; i < picked.length; i++) {
-      const np = picked[i];
-      $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
-      const q = await buildQuestion(np, state.dateISO);
-      state.questions.push(q);
+      const LOADING_MESSAGES = [
+        "«Sapere è potere.» — Francis Bacon",
+        "«La libertà di stampa è il sale della libertà.» — Voltaire",
+        "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
+        "«La saggezza comincia nella meraviglia.» — Socrate",
+        "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
+      ];
+      let qi = 0;
+      const toLoad = [...chosen];
+      while (toLoad.length > 0) {
+        const np = toLoad.shift();
+        $('loadingText').textContent = LOADING_MESSAGES[qi % LOADING_MESSAGES.length];
+        try {
+          const q = await buildQuestion(np, state.dateISO);
+          state.questions.push(q);
+          qi++;
+        } catch(e) {
+          if (e.isUnavailable && reserves.length > 0) {
+            // Giornale non ancora online: sostituisci silenziosamente con uno di riserva
+            const replacement = reserves.shift();
+            toLoad.unshift(replacement);
+          } else {
+            throw e;
+          }
+        }
+      }
+    } else {
+      picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
+      const LOADING_MESSAGES = [
+        "«Sapere è potere.» — Francis Bacon",
+        "«La libertà di stampa è il sale della libertà.» — Voltaire",
+        "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
+        "«La saggezza comincia nella meraviglia.» — Socrate",
+        "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
+      ];
+      for (let i = 0; i < picked.length; i++) {
+        const np = picked[i];
+        $('loadingText').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
+        const q = await buildQuestion(np, state.dateISO);
+        state.questions.push(q);
+      }
     }
     $('loading').classList.add('hidden');
     $('quizRunning').classList.remove('hidden');
@@ -1260,6 +1299,11 @@ async function buildQuestion(np, dateISO) {
   };
 }
 
+// Errore speciale: giornale non ancora disponibile oggi (503 unavailable)
+class UnavailableError extends Error {
+  constructor(slug) { super(`unavailable:${slug}`); this.slug = slug; this.isUnavailable = true; }
+}
+
 async function fetchHeadlines(slug, dateISO) {
   const isToday = dateISO === todayISO();
   const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
@@ -1278,7 +1322,15 @@ async function fetchHeadlines(slug, dateISO) {
         lastErr = new Error('Server temporaneamente offline');
         continue;
       }
-      if (r.status === 502 || r.status === 503 || r.status === 504) {
+      // FIX 1: 503 con unavailable=true → giornale non ancora online oggi
+      if (r.status === 503) {
+        let body = {};
+        try { body = await r.json(); } catch {}
+        if (body?.detail?.unavailable) throw new UnavailableError(slug);
+        lastErr = new Error(`Server in ripristino (503)`);
+        continue;
+      }
+      if (r.status === 502 || r.status === 504) {
         lastErr = new Error(`Server in ripristino (${r.status})`);
         continue;
       }
@@ -1289,10 +1341,11 @@ async function fetchHeadlines(slug, dateISO) {
       }
       return await r.json();
     } catch (e) {
+      if (e.isUnavailable) throw e; // propaga subito, non fare retry
       if (!lastErr || e.message !== lastErr.message) lastErr = e;
     }
   }
-  throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
+  throw lastErr || new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
 }
 
 /* ===== RENDER QUESTION ===== */
