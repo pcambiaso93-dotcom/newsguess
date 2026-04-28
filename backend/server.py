@@ -33,7 +33,7 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI()
 
-# Rate limiter: usa l'IP del client (X-Forwarded-For via ingress)
+# Rate limiter
 def _client_ip(request: Request) -> str:
     fwd = request.headers.get("x-forwarded-for")
     if fwd:
@@ -44,11 +44,9 @@ limiter = Limiter(key_func=_client_ip, default_limits=["240/minute"])
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str
@@ -57,14 +55,12 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
 
 @api_router.get("/wakeup")
 async def wakeup():
-    """Endpoint leggero per cron-job.org: tiene sveglia l'app nella finestra delle push 08:00."""
     return {"ok": True, "ts": datetime.utcnow().isoformat()}
 
 @api_router.get("/quiz")
@@ -108,8 +104,6 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 
 @api_router.get("/frontpage")
 async def frontpage(slug: str = Query(...), date: str | None = Query(None)):
-    """Fetch front page image from giornalone.it. slug is e.g. 'corriere-della-sera'.
-    If date (YYYY-MM-DD) is given, fetch from archive path."""
     base = f"https://www.giornalone.it/prima-pagina-{slug}/"
     if date:
         y, m, d = date.split("-")
@@ -134,11 +128,23 @@ async def frontpage(slug: str = Query(...), date: str | None = Query(None)):
         raise HTTPException(502, f"fetch error: {e}")
 
 
+# =====================================================================
+# FIX 2: Prompt migliorato per trascrizione più accurata
+# =====================================================================
 PROMPT_HEADLINES = (
-    "Estrai dalla prima pagina di giornale italiana mostrata: il sovratitolo (occhiello), "
-    "il titolo principale e il sottotitolo dell'articolo principale (l'apertura più grande). "
-    "Restituisci SOLO un JSON valido con queste chiavi esatte: "
-    '{"sopratitolo": "..." | null, "titolo_principale": "...", "sottotitolo": "..." | null}. '
+    "Sei un assistente che trascrive ESATTAMENTE il testo visibile sulle prime pagine di giornali italiani.\n\n"
+    "Estrai dalla prima pagina mostrata:\n"
+    "- sovratitolo (occhiello): la riga piccola sopra il titolo principale, se presente\n"
+    "- titolo principale: il titolo più grande della notizia di apertura\n"
+    "- sottotitolo: la riga sotto il titolo principale, se presente\n\n"
+    "REGOLE IMPORTANTI:\n"
+    "1. Copia il testo LETTERALMENTE, esattamente come appare nell'immagine\n"
+    "2. NON correggere, NON interpretare, NON riformulare\n"
+    "3. Rispetta maiuscole, minuscole e punteggiatura originali\n"
+    "4. Per nomi propri, sigle, acronimi: copia esattamente (es. 'von der Leyen', 'MIT', 'M5S')\n"
+    "5. Se una parola è difficile da leggere, trascrivi quello che vedi senza inventare\n\n"
+    "Restituisci SOLO un JSON valido con queste chiavi esatte:\n"
+    '{"sopratitolo": "..." | null, "titolo_principale": "...", "sottotitolo": "..." | null}\n'
     "Se sovratitolo o sottotitolo non esistono, usa null. Niente testo extra, solo il JSON."
 )
 
@@ -160,20 +166,34 @@ def _fetch_frontpage_bytes(slug: str, date: str | None):
     return img.content, img.headers.get("content-type", "image/webp").split(";")[0].strip()
 
 def _quiz_today() -> str:
-    """La giornata del quiz va dalle 06:00 alle 05:59 di Roma (CET/CEST).
-    Prima delle 6, mostriamo ancora la sfida del giorno precedente."""
-    rome = datetime.now(timezone.utc) + timedelta(hours=2)  # CEST = UTC+2; CET = UTC+1, accettiamo l'approssimazione
+    rome = datetime.now(timezone.utc) + timedelta(hours=2)
     if rome.hour < 6:
         rome = rome - timedelta(days=1)
     return rome.strftime("%Y-%m-%d")
 
+async def _try_fetch_frontpage_today(slug: str):
+    """Tenta di scaricare la prima pagina di OGGI.
+    Restituisce (bytes, content_type) oppure None se non ancora disponibile."""
+    try:
+        img_bytes, ct = _fetch_frontpage_bytes(slug, None)  # None = oggi
+        return img_bytes, ct
+    except Exception as e:
+        logger.info(f"[UNAVAILABLE] {slug} non disponibile oggi: {e}")
+        return None
+
+
 @api_router.get("/extract-headlines")
 @limiter.limit("30/minute")
 async def extract_headlines(request: Request, slug: str = Query(...), date: str | None = Query(None)):
-    """Fetch front page from giornalone.it and ask Claude to extract sovratitolo/titolo/sottotitolo.
-    Caches extracted headlines in MongoDB so the archive grows over time."""
+    """
+    Fetch front page from giornalone.it e chiede a Claude di estrarre sovratitolo/titolo/sottotitolo.
+    FIX 1: Se la prima pagina di oggi non è disponibile, usa silenziosamente l'archivio di ieri.
+    FIX 2: Prompt migliorato per trascrizione più accurata.
+    """
     today = _quiz_today()
     eff_date = date or today
+
+    # Controlla cache MongoDB
     cache_key = {"slug": slug, "date": eff_date}
     cached = await db.headlines_archive.find_one(cache_key, {"_id": 0})
     if cached:
@@ -184,10 +204,23 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
             "from_archive": True,
         }
 
+    # Se è una data passata non in archivio → errore 404
     if eff_date != today:
         raise HTTPException(404, f"Edizione del {eff_date} per {slug} non in archivio")
 
-    img_bytes, _ct = _fetch_frontpage_bytes(slug, None)  # always fetch today
+    # FIX 1: Prova a scaricare oggi.
+    # Se non disponibile → 503 con unavailable=true.
+    # Il frontend intercetta questo codice e sostituisce il giornale
+    # con un altro dei 10 disponibili, senza dirlo all'utente.
+    fetch_result = await _try_fetch_frontpage_today(slug)
+    if fetch_result is None:
+        logger.warning(f"[UNAVAILABLE] {slug}: prima pagina di oggi non ancora online, il frontend sostituirà con altro giornale")
+        raise HTTPException(503, detail={"unavailable": True, "slug": slug,
+            "message": f"Prima pagina di {slug} non ancora disponibile oggi."})
+
+    img_bytes, _ct = fetch_result
+
+    # Ridimensiona immagine per ottimizzare la chiamata a Claude
     try:
         from PIL import Image
         from io import BytesIO
@@ -211,7 +244,7 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
     chat = LlmChat(
         api_key=api_key,
         session_id=f"headlines-{slug}-{eff_date}-{uuid.uuid4().hex[:6]}",
-        system_message="Sei un assistente che estrae titoli da prime pagine di giornali italiani."
+        system_message="Sei un assistente che trascrive esattamente il testo visibile sulle prime pagine di giornali italiani. Non interpretare, non correggere: copia letteralmente."
     ).with_model("anthropic", "claude-sonnet-4-5-20250929")
 
     msg = UserMessage(text=PROMPT_HEADLINES, file_contents=[ImageContent(image_base64=b64)])
@@ -239,7 +272,6 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
     }
     try:
         await db.headlines_archive.update_one(cache_key, {"$set": record}, upsert=True)
-        # Salva anche l'immagine in archivio (collection separata, ~80KB l'una)
         from bson.binary import Binary
         await db.headline_images.update_one(
             cache_key,
@@ -259,8 +291,6 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
 
 @api_router.get("/archive-dates")
 async def archive_dates():
-    """Restituisce le date per cui l'archivio ha ALMENO un giornale, ordinate dalla più recente.
-    La data di OGGI (sfida giornaliera in corso) è esclusa per non rivelare le risposte."""
     today = _quiz_today()
     pipeline = [
         {"$match": {"date": {"$ne": today}}},
@@ -275,8 +305,6 @@ async def archive_dates():
 
 @api_router.get("/archive-papers")
 async def archive_papers(date: str = Query(...)):
-    """Restituisce i giornali archiviati in una specifica data, con i titoli (per consultazione).
-    Per la data di OGGI restituisce un elenco vuoto (non sveliamo le sfide del giorno)."""
     today = _quiz_today()
     if date == today:
         return {"date": date, "slugs": [], "items": []}
@@ -287,7 +315,6 @@ async def archive_papers(date: str = Query(...)):
 
 @api_router.get("/archive-paper-dates")
 async def archive_paper_dates(slug: str = Query(...)):
-    """Restituisce le date archiviate per un singolo giornale (escluso oggi), con titolo principale."""
     today = _quiz_today()
     cur = db.headlines_archive.find(
         {"slug": slug, "date": {"$ne": today}},
@@ -298,7 +325,6 @@ async def archive_paper_dates(slug: str = Query(...)):
 
 @api_router.get("/archive-image")
 async def archive_image(slug: str = Query(...), date: str = Query(...)):
-    """Serve l'immagine archiviata di una prima pagina (jpg). Esclude oggi (anti-spoiler)."""
     today = _quiz_today()
     if date == today:
         raise HTTPException(404, "Immagine non disponibile per la data corrente")
@@ -313,8 +339,6 @@ async def archive_image(slug: str = Query(...), date: str = Query(...)):
 @api_router.get("/backup.zip")
 @limiter.limit("3/hour")
 async def backup_zip(request: Request):
-    """Esporta l'intero archivio (titoli + immagini) come ZIP scaricabile.
-    Pensato per backup manuale periodico (es. settimanale)."""
     import io as _io
     import zipfile as _zf
     buf = _io.BytesIO()
@@ -345,11 +369,10 @@ async def backup_zip(request: Request):
     })
 
 
-# ============= WEB PUSH NOTIFICATIONS (promemoria 8:00) =============
+# ============= WEB PUSH NOTIFICATIONS =============
 VAPID_FILE = STATIC_DIR / "vapid.json"
 _vapid = None
 def _load_vapid():
-    """Carica VAPID keys: prima da env (per deploy come Fly.io), poi da file (per dev locale)."""
     global _vapid
     if _vapid is not None:
         return _vapid
@@ -371,8 +394,8 @@ async def push_vapid_key():
     return {"publicKey": v["public"]}
 
 class PushSubscribePayload(BaseModel):
-    subscription: dict  # {endpoint, keys: {p256dh, auth}}
-    tzOffsetMinutes: int  # offset rispetto a UTC, come da Date.getTimezoneOffset() (positivo a ovest)
+    subscription: dict
+    tzOffsetMinutes: int
     hour: int = 8
 
 @api_router.post("/push-subscribe")
@@ -423,15 +446,11 @@ async def _send_push(sub_doc):
         )
     except WebPushException as e:
         logger.warning(f"push failed for {sub_doc['endpoint'][:60]}…: {e}")
-        # 410 Gone = sottoscrizione scaduta, rimuoviamola
         if "410" in str(e) or "404" in str(e):
             await db.push_subs.delete_one({"endpoint": sub_doc["endpoint"]})
 
 async def _scheduled_check():
-    """Eseguito ogni minuto: invia notifica agli utenti per cui è 'hour:00' nel loro fuso orario,
-    e che non hanno già ricevuto la notifica oggi."""
     now_utc = datetime.now(timezone.utc)
-    today_str = now_utc.strftime("%Y-%m-%d")
     cur = db.push_subs.find({"active": True})
     async for sub in cur:
         try:
@@ -465,7 +484,6 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
-# Include the router in the main app
 app.include_router(api_router)
 
 app.add_middleware(
@@ -476,7 +494,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
