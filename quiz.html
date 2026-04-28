@@ -2852,17 +2852,42 @@ function showConfirmExit(onYes) {
 }
 
 window.addEventListener('popstate', (e) => {
-  if (!$('nameModal').classList.contains('open')) {
-    if (!$('saveModal').classList.contains('open')) {
-      if (isQuizInProgress()) {
-        NG_HISTORY.push('quiz-running');
-        showConfirmExit(() => {
-          resetToMenu();
-          history.back();
-        });
-      }
-    }
+  // 1) Se c'è un modale aperto → chiudilo senza uscire
+  if (!$('nameModal').classList.contains('hidden')) {
+    closeNameModal();
+    return;
   }
+  if (!$('saveModal').classList.contains('hidden')) {
+    closeSaveModal();
+    return;
+  }
+  if (!$('confirmExit').classList.contains('hidden')) {
+    closeModal('confirmExit');
+    return;
+  }
+  
+  // 2) Se la sidebar è aperta (mobile) → chiudila
+  if ($('sidebar').classList.contains('open')) {
+    $('sidebar').classList.remove('open');
+    $('sidebarBackdrop').classList.remove('open');
+    return;
+  }
+  
+  // 3) Se c'è un quiz daily in corso → chiedi conferma PRIMA di uscire
+  if (isQuizInProgress()) {
+    // Ripristina lo stato della navigazione così il prossimo back non esce
+    NG_HISTORY.push('quiz-running');
+    showConfirmExit(() => {
+      // Utente ha confermato uscita: resetta il quiz
+      resetToMenu();
+      // Ora esce davvero (questo back non ritraggerà il popstate)
+      history.back();
+    });
+    return;
+  }
+  
+  // 4) Altrimenti: navigazione normale (torna indietro nella storia)
+  // Non fare nulla di speciale - il browser gestisce il back normalmente
 });
 
 NG_HISTORY.push('home');
