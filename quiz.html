@@ -423,6 +423,14 @@
     letter-spacing: -1px;
     line-height: 1.1;
     margin-bottom: 6px;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    user-select: none;
+  }
+
+  .masthead-title:hover {
+    color: var(--accent-primary);
+    transform: scale(1.02);
   }
 
   .masthead-subtitle {
@@ -1797,9 +1805,22 @@ function updateThemeButtons(theme) {
 const savedTheme = localStorage.getItem(themeKey) || 'auto';
 setTheme(savedTheme);
 
-document.querySelectorAll('.theme-btn').forEach(b => {
-  b.addEventListener('click', () => setTheme(b.dataset.theme));
-});
+const themeToggleContainer = document.querySelector('.theme-toggle');
+if (themeToggleContainer) {
+  themeToggleContainer.addEventListener('click', (e) => {
+    const btn = e.target.closest('.theme-btn');
+    if (btn && btn.dataset.theme) {
+      setTheme(btn.dataset.theme);
+    }
+  });
+} else {
+  // Fallback: direct attachment
+  setTimeout(() => {
+    document.querySelectorAll('.theme-btn').forEach(b => {
+      b.addEventListener('click', () => setTheme(b.dataset.theme));
+    });
+  }, 100);
+}
 
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
@@ -1822,39 +1843,57 @@ function openPage(pageName) {
   if (pageName === 'stats') renderStats();
 }
 
-// Nav items click
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const page = item.dataset.page;
-    openPage(page);
+// Nav items click - usa event delegation
+const sidebarNav = document.querySelector('.sidebar-nav');
+if (sidebarNav) {
+  sidebarNav.addEventListener('click', (e) => {
+    const navItem = e.target.closest('.nav-item');
+    if (navItem) {
+      const page = navItem.dataset.page;
+      if (page) openPage(page);
+    }
   });
-});
+}
 
-// Logo "Newsguess" torna a home (quiz page, mostra modePicker)
-document.querySelector('.header-title').addEventListener('click', () => {
-  openPage('quiz');
-  $('modePicker').classList.remove('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.add('hidden');
-  $('loading').classList.add('hidden');
-});
+// Logo "Newsguess" GRANDE (masthead) torna a home - con deferred binding
+setTimeout(() => {
+  const masthead = document.querySelector('.masthead-title');
+  if (masthead) {
+    masthead.addEventListener('click', () => {
+      openPage('quiz');
+      $('modePicker').classList.remove('hidden');
+      $('errorBox').classList.add('hidden');
+      $('quizRunning').classList.add('hidden');
+      $('finalScreen').classList.add('hidden');
+      $('loading').classList.add('hidden');
+    });
+  }
+}, 100);
 
 /* ===== SIDEBAR TOGGLE ===== */
-$('menuToggle').addEventListener('click', () => {
-  $('sidebar').classList.toggle('open');
-  $('sidebarBackdrop').classList.toggle('open');
-});
+const menuToggle = $('menuToggle');
+if (menuToggle) {
+  menuToggle.addEventListener('click', () => {
+    $('sidebar').classList.toggle('open');
+    $('sidebarBackdrop').classList.toggle('open');
+  });
+}
 
-$('sidebarClose').addEventListener('click', () => {
-  $('sidebar').classList.remove('open');
-  $('sidebarBackdrop').classList.remove('open');
-});
+const sidebarClose = $('sidebarClose');
+if (sidebarClose) {
+  sidebarClose.addEventListener('click', () => {
+    $('sidebar').classList.remove('open');
+    $('sidebarBackdrop').classList.remove('open');
+  });
+}
 
-$('sidebarBackdrop').addEventListener('click', () => {
-  $('sidebar').classList.remove('open');
-  $('sidebarBackdrop').classList.remove('open');
-});
+const sidebarBackdrop = $('sidebarBackdrop');
+if (sidebarBackdrop) {
+  sidebarBackdrop.addEventListener('click', () => {
+    $('sidebar').classList.remove('open');
+    $('sidebarBackdrop').classList.remove('open');
+  });
+}
 
 /* ===== MODALI ===== */
 function openModal(modalId) {
