@@ -1,6 +1,3 @@
-Source URL: https://raw.githubusercontent.com/pcambiaso93-dotcom/newsguess/main/quiz.html
-Title: quiz.html
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -23,13 +20,13 @@ Title: quiz.html
 <style>
   :root {
     /* Light theme */
-    --bg-primary: #f9f8f5;
-    --bg-secondary: #f0ebe2;
-    --bg-tertiary: #e8e2d5;
-    --text-primary: #1a1410;
-    --text-secondary: #524a3f;
-    --text-tertiary: #8b7f72;
-    --border-color: #d4cfc5;
+    --bg-primary: #f6f1e7;
+    --bg-secondary: #fdfaf3;
+    --bg-tertiary: #efe7d9;
+    --text-primary: #1c1712;
+    --text-secondary: #4e4538;
+    --text-tertiary: #7a6f61;
+    --border-color: #d8cdbb;
     --accent-primary: #0f3460;
     --accent-secondary: #2b6a96;
     --success: #2d7a4a;
@@ -42,15 +39,15 @@ Title: quiz.html
   }
 
   [data-theme="dark"] {
-    --bg-primary: #0f0e0a;
-    --bg-secondary: #1a1612;
-    --bg-tertiary: #24201a;
-    --text-primary: #f5f0e8;
-    --text-secondary: #d4cfc5;
-    --text-tertiary: #a8a299;
-    --border-color: #3a362f;
-    --accent-primary: #4a9dd9;
-    --accent-secondary: #6bb8f0;
+    --bg-primary: #101319;
+    --bg-secondary: #171c24;
+    --bg-tertiary: #212834;
+    --text-primary: #f2eee6;
+    --text-secondary: #d3c9bc;
+    --text-tertiary: #9f9688;
+    --border-color: #313949;
+    --accent-primary: #5da9e8;
+    --accent-secondary: #7dc1f2;
     --success: #4ab366;
     --error: #ff6b6f;
     --warning: #f5b546;
@@ -90,16 +87,16 @@ Title: quiz.html
 
   .app-sidebar {
     position: fixed;
-    right: 0;
+    left: 0;
     top: 0;
     width: 280px;
     height: 100vh;
     background: var(--bg-secondary);
-    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     z-index: 1000;
-    transform: translateX(100%);
+    transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-md);
     overflow-y: auto;
@@ -196,7 +193,7 @@ Title: quiz.html
     color: var(--text-secondary);
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
-    border-right: 3px solid transparent;
+    border-left: 3px solid transparent;
     font-size: 15px;
     min-height: 44px;
   }
@@ -209,7 +206,7 @@ Title: quiz.html
   .nav-item.active {
     background-color: var(--bg-tertiary);
     color: var(--accent-primary);
-    border-right-color: var(--accent-primary);
+    border-left-color: var(--accent-primary);
     font-weight: 600;
   }
 
@@ -278,13 +275,13 @@ Title: quiz.html
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin-right: 0;
-    transition: margin-right 0.3s;
+    margin-left: 0;
+    transition: margin-left 0.3s;
   }
 
   @media (min-width: 769px) {
     .app-main {
-      margin-right: 280px;
+      margin-left: 280px;
     }
 
     .app-sidebar {
@@ -365,8 +362,8 @@ Title: quiz.html
   }
 
   .header-brand-mark {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 8px;
     object-fit: cover;
     border: 1px solid var(--border-color);
@@ -1404,8 +1401,42 @@ Title: quiz.html
     }
 
     .app-main {
-      margin-right: 0;
+      margin-left: 0;
     }
+  }
+
+  body.compact-ui .card,
+  body.compact-ui .question-card,
+  body.compact-ui .stat-card {
+    padding: 14px;
+  }
+
+  body.flat-ui .card,
+  body.flat-ui .question-card,
+  body.flat-ui .stat-card {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  body.flat-ui .card:hover,
+  body.flat-ui .stat-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .settings-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border-color);
   }
 </style>
 </head>
@@ -1738,7 +1769,8 @@ Title: quiz.html
       <!-- PAGE: BADGE -->
       <div class="page" id="page-badge">
         <h2>Badge & Risultati</h2>
-        <p>Presto: badge e risultati speciali.</p>
+        <p>I badge si sbloccano automaticamente mentre giochi.</p>
+        <div class="card-grid" id="badgeGrid"></div>
       </div>
 
       <!-- PAGE: SETTINGS -->
@@ -1750,6 +1782,23 @@ Title: quiz.html
             <button class="theme-btn active" data-theme="light">Chiaro</button>
             <button class="theme-btn" data-theme="auto">Default</button>
             <button class="theme-btn" data-theme="dark">Scuro</button>
+          </div>
+        </div>
+        <div class="card">
+          <p class="small-caps">Interfaccia</p>
+          <div class="settings-list">
+            <label class="settings-row" for="setCompactUi">
+              <span>Modalità compatta</span>
+              <input id="setCompactUi" type="checkbox" />
+            </label>
+            <label class="settings-row" for="setFlatUi">
+              <span>Riduci animazioni/effetti</span>
+              <input id="setFlatUi" type="checkbox" />
+            </label>
+            <label class="settings-row" for="setConfirmExitDaily">
+              <span>Conferma uscita dal daily</span>
+              <input id="setConfirmExitDaily" type="checkbox" checked />
+            </label>
           </div>
         </div>
       </div>
@@ -1976,6 +2025,49 @@ document.querySelectorAll('.theme-toggle').forEach((themeToggleContainer) => {
   });
 });
 
+/* ===== UI SETTINGS ===== */
+const UI_SETTINGS_KEY = 'ng-ui-settings';
+const uiDefaults = {
+  compactUi: false,
+  flatUi: false,
+  confirmExitDaily: true
+};
+
+function loadUiSettings() {
+  try {
+    return { ...uiDefaults, ...(JSON.parse(localStorage.getItem(UI_SETTINGS_KEY) || '{}')) };
+  } catch {
+    return { ...uiDefaults };
+  }
+}
+
+function saveUiSettings(s) {
+  localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(s));
+}
+
+function applyUiSettings() {
+  const s = loadUiSettings();
+  document.body.classList.toggle('compact-ui', !!s.compactUi);
+  document.body.classList.toggle('flat-ui', !!s.flatUi);
+  if ($('setCompactUi')) $('setCompactUi').checked = !!s.compactUi;
+  if ($('setFlatUi')) $('setFlatUi').checked = !!s.flatUi;
+  if ($('setConfirmExitDaily')) $('setConfirmExitDaily').checked = !!s.confirmExitDaily;
+}
+
+['setCompactUi', 'setFlatUi', 'setConfirmExitDaily'].forEach((id) => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('change', () => {
+    const s = loadUiSettings();
+    s.compactUi = !!$('setCompactUi')?.checked;
+    s.flatUi = !!$('setFlatUi')?.checked;
+    s.confirmExitDaily = !!$('setConfirmExitDaily')?.checked;
+    saveUiSettings(s);
+    applyUiSettings();
+  });
+});
+applyUiSettings();
+
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
   // Nascondi tutte le pagine
@@ -1998,6 +2090,7 @@ function openPage(pageName) {
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
   if (pageName === 'stats') renderStats();
+  if (pageName === 'badge') renderBadges();
 }
 
 // Nav items click - usa event delegation
@@ -2563,10 +2656,17 @@ $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 $('shareResultBtn').addEventListener('click', async () => {
   const text = `NEWSGUESS ${state.score}:${state.questions.length - state.score} · ${verdictFor(state.score)}.`;
   if (navigator.share) {
-    try { await navigator.share({ title: 'NEWSGUESS', text }); return; } catch {}
+    try {
+      await navigator.share({ title: 'NEWSGUESS', text });
+      localStorage.setItem(SHARE_BADGE_KEY, '1');
+      if (document.querySelector('#page-badge.active')) renderBadges();
+      return;
+    } catch {}
   }
   try {
     await navigator.clipboard.writeText(text);
+    localStorage.setItem(SHARE_BADGE_KEY, '1');
+    if (document.querySelector('#page-badge.active')) renderBadges();
     showToast('Risultato copiato negli appunti');
   } catch {
     showToast(text);
@@ -2588,6 +2688,7 @@ window.resetToMenu = resetToMenu;
 
 /* ===== STATS ===== */
 const STATS_KEY = 'stats-history';
+const SHARE_BADGE_KEY = 'ng-shared-once';
 
 function loadStatsHistory() {
   try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); }
@@ -2672,6 +2773,68 @@ function renderStats() {
   });
   html2 += '</tbody>';
   $('stRecentTable').innerHTML = html2;
+}
+
+function collectBadgeStats(history) {
+  const totalGames = history.length;
+  const best = history.reduce((m, h) => Math.max(m, h.score || 0), 0);
+  const streak = computeStreak(history);
+  const hasBlackout = history.some(h => (h.total || 5) >= 5 && h.score === 0);
+  const hasCronista = history.some(h => h.score >= 3);
+  const hasCaporedattore = history.some(h => h.score >= 4);
+  const hasDirettore = history.some(h => h.score >= 5);
+  const hasShared = localStorage.getItem(SHARE_BADGE_KEY) === '1';
+  const perPaperCorrect = {};
+  history.forEach(h => {
+    (h.questions || []).forEach(q => {
+      if (!q.paperId) return;
+      if (!perPaperCorrect[q.paperId]) perPaperCorrect[q.paperId] = 0;
+      if (q.ok) perPaperCorrect[q.paperId] += 1;
+    });
+  });
+  return { totalGames, best, streak, hasBlackout, hasCronista, hasCaporedattore, hasDirettore, hasShared, perPaperCorrect };
+}
+
+function renderBadges() {
+  const grid = $('badgeGrid');
+  if (!grid) return;
+  const history = loadStatsHistory();
+  const st = collectBadgeStats(history);
+  const badges = [
+    { id: 'blackout', name: '💀 Blackout', icon: 'skull', ok: st.hasBlackout, desc: 'Fai 0/5', quote: '“La redazione ti ha chiesto di consegnare il tesserino.”' },
+    { id: 'cronista', name: '📝 Cronista', icon: 'notebook-pen', ok: st.hasCronista, desc: 'Fai almeno 3/5', quote: '“Non sei ancora in prima pagina, ma almeno ti fanno entrare in redazione.”' },
+    { id: 'caporedattore', name: '🧠 Caporedattore', icon: 'brain', ok: st.hasCaporedattore, desc: 'Fai almeno 4/5', quote: '“Il direttore ti guarda come se avessi appena salvato l’edizione.”' },
+    { id: 'direttore', name: '👑 Direttore', icon: 'crown', ok: st.hasDirettore, desc: 'Fai 5/5', quote: '“La redazione ti applaude, i tipografi ti offrono il caffè, il giornale è tuo.”' },
+    { id: 'abbonato', name: '📅 Abbonato', icon: 'calendar-check-2', ok: st.streak >= 5, desc: 'Gioca 5 giorni consecutivi', quote: '“Ti vedono così spesso che ti hanno fatto il badge del personale.”' },
+    { id: 'fedelissimo', name: '🔥 Fedelissimo', icon: 'flame', ok: st.streak >= 10, desc: 'Gioca 10 giorni consecutivi', quote: '“La tua presenza è più costante delle tirature del lunedì.”' },
+    { id: 'storico', name: '🏛️ Storico', icon: 'landmark', ok: st.streak >= 30, desc: 'Gioca 30 giorni consecutivi', quote: '“Hai sbloccato il livello ‘giornalista che non va mai in ferie’.”' },
+    { id: 'portavoce', name: '📣 Portavoce', icon: 'megaphone', ok: st.hasShared, desc: 'Condividi il risultato almeno una volta', quote: '“Hai urlato la notizia più forte del megafono di un comizio.”' }
+  ];
+  const paperBadges = [
+    { id: 'fatto', name: '📰 Il Fatto', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina Il Fatto Quotidiano', quote: '“Hai colto il tono polemico al primo sguardo.”' },
+    { id: 'sole', name: '🌞 Il Sole', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina Il Sole 24 Ore', quote: '“Hai capito la prima pagina senza un commercialista accanto.”' },
+    { id: 'avvenire', name: '⛪ Avvenire', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina Avvenire', quote: '“La tua intuizione è stata benedetta.”' },
+    { id: 'messaggero', name: '🏛️ Messaggero', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina Il Messaggero', quote: '“Hai decifrato Roma prima ancora del traffico.”' },
+    { id: 'corriere', name: '🗞️ Corriere', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina Corriere della Sera', quote: '“Hai riconosciuto il Corriere come un vero milanese DOC.”' },
+    { id: 'stampa', name: '📰 La Stampa', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina La Stampa', quote: '“Hai sentito l’odore di Torino anche senza la Mole.”' },
+    { id: 'libero', name: '📢 Libero', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina Libero', quote: '“Hai percepito la polemica prima ancora di leggere il titolo.”' },
+    { id: 'manifesto', name: '✊ Manifesto', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina Il Manifesto', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
+    { id: 'giornale', name: '🦁 Il Giornale', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina Il Giornale', quote: '“Hai riconosciuto il ruggito già dal font.”' },
+    { id: 'repubblica', name: '🇮🇹 Repubblica', icon: 'land-plot', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina La Repubblica', quote: '“Hai individuato Repubblica con la sicurezza di un editorialista.”' }
+  ];
+  const allBadges = [...badges, ...paperBadges];
+  grid.innerHTML = allBadges.map(b => `
+    <div class="card card-small" style="opacity:${b.ok ? '1' : '0.58'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <i data-lucide="${b.icon}" style="width:20px;height:20px;"></i>
+        <strong>${b.name}</strong>
+      </div>
+      ${b.ok ? `<p style="margin:0"><strong>${b.desc}</strong></p>
+      <p style="margin:8px 0 0; font-style: italic; color: var(--text-secondary);">${b.quote}</p>` : ''}
+      <p class="small-caps" style="margin-top:8px">${b.ok ? 'Sbloccato' : 'Bloccato'}</p>
+    </div>
+  `).join('');
+  createLucideIcons();
 }
 
 $('stResetBtn').addEventListener('click', () => {
@@ -3193,6 +3356,12 @@ window.addEventListener('popstate', (e) => {
   
   // 3) Se c'è un quiz daily in corso → chiedi conferma PRIMA di uscire
   if (isQuizInProgress()) {
+    const shouldConfirm = loadUiSettings().confirmExitDaily !== false;
+    if (!shouldConfirm) {
+      resetToMenu();
+      history.back();
+      return;
+    }
     // Ripristina lo stato della navigazione così il prossimo back non esce
     NG_HISTORY.push('quiz-running');
     showConfirmExit(() => {
