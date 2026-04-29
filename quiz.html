@@ -286,13 +286,122 @@
     }
   }
 
-  /* ===== MASTHEAD con hamburger integrato ===== */
+  /* ===== HEADER ===== */
+  .app-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-primary);
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    transition: background-color 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+  }
+
+  .header-title:hover {
+    color: var(--accent-primary);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-action-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 8px;
+    border-radius: var(--radius);
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .header-action-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
+  /* ===== CONTENT AREA ===== */
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page {
+    display: none;
+    animation: pageIn 0.3s ease;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  @keyframes pageIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== MASTHEAD (HEADER EDITORIALE) ===== */
   .masthead {
     text-align: center;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border-color);
-    position: relative;
   }
 
   .masthead-tag {
@@ -302,63 +411,21 @@
     text-transform: uppercase;
     color: var(--accent-primary);
     font-weight: 700;
-    margin-bottom: 6px;
-  }
-
-  /* Riga con hamburger + titolo centrato */
-  .masthead-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    position: relative;
-    margin-bottom: 4px;
-  }
-
-  .hamburger-btn {
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 8px;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    transition: background-color 0.2s, color 0.2s;
-    flex-shrink: 0;
-  }
-
-  .hamburger-btn:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-  }
-
-  /* Su desktop nascondi l'hamburger */
-  @media (min-width: 769px) {
-    .hamburger-btn {
-      display: none;
-    }
-    .masthead-title-row {
-      justify-content: center;
-    }
+    margin-bottom: 8px;
   }
 
   .masthead-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(36px, 9vw, 60px);
+    font-size: clamp(32px, 8vw, 56px);
     font-weight: 900;
     font-style: italic;
     color: var(--text-primary);
     letter-spacing: -1px;
     line-height: 1.1;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: color 0.2s, transform 0.2s;
     user-select: none;
-    margin: 0;
   }
 
   .masthead-title:hover {
@@ -371,7 +438,7 @@
     font-size: 14px;
     font-style: italic;
     color: var(--text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .masthead-meta {
@@ -388,170 +455,6 @@
   .masthead-meta .accent {
     color: var(--accent-primary);
     font-weight: 700;
-  }
-
-  /* ===== COMMENTO EDITORIALE - stile ritaglio di giornale ===== */
-  .result-editorial {
-    max-width: 520px;
-    margin: 0 auto 28px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-top: 4px solid var(--accent-primary);
-    border-radius: 0 0 var(--radius) var(--radius);
-    padding: 18px 20px 16px;
-    text-align: left;
-    position: relative;
-  }
-
-  .editorial-byline {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin-bottom: 8px;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .editorial-headline {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-size: clamp(16px, 3.5vw, 20px);
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin-bottom: 10px;
-  }
-
-  .editorial-body {
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    line-height: 1.65;
-    color: var(--text-secondary);
-    border-top: 1px solid var(--border-color);
-    padding-top: 10px;
-  }
-
-  .editorial-body p {
-    margin: 0 0 6px;
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  .editorial-body p:last-child { margin-bottom: 0; }
-
-  /* ===== BADGE ===== */
-  .badges-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 14px;
-    margin-top: 20px;
-  }
-
-  .badge-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 18px 14px;
-    text-align: center;
-    transition: box-shadow 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .badge-card.unlocked {
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-sm);
-  }
-
-  .badge-card.unlocked:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-md);
-  }
-
-  .badge-card.locked {
-    opacity: 0.45;
-    filter: grayscale(1);
-  }
-
-  .badge-icon {
-    font-size: 36px;
-    line-height: 1;
-    margin-bottom: 10px;
-    display: block;
-  }
-
-  .badge-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 5px;
-    line-height: 1.3;
-  }
-
-  .badge-desc {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    line-height: 1.4;
-  }
-
-  .badge-date {
-    font-size: 10px;
-    color: var(--accent-primary);
-    font-weight: 600;
-    margin-top: 6px;
-    letter-spacing: 0.5px;
-  }
-
-  .badge-lock {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 12px;
-    opacity: 0.4;
-  }
-
-  .badge-new {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: var(--accent-primary);
-    color: #fff;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-transform: uppercase;
-  }
-
-  @media (max-width: 480px) {
-    .badges-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  /* ===== CONTENT AREA ===== */
-  .app-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    max-width: 680px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .page {
-    display: none;
-    animation: pageIn 0.3s ease;
-  }
-
-  .page.active {
-    display: block;
-  }
-
-  @keyframes pageIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ===== TYPOGRAPHY ===== */
@@ -1455,16 +1358,24 @@
 
   <!-- MAIN CONTENT -->
   <div class="app-main">
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Apri menu">☰</button>
+        <div class="header-title">Newsguess</div>
+      </div>
+
+      <div class="header-actions">
+        <button class="header-action-btn" id="installBtn" title="Installa app" style="display: none;">📲</button>
+      </div>
+    </header>
+
     <!-- CONTENT -->
     <div class="app-content">
-      <!-- MASTHEAD con hamburger integrato -->
+      <!-- MASTHEAD -->
       <div class="masthead">
         <div class="masthead-tag">Est. 2019 · Quiz dei quotidiani</div>
-        <div class="masthead-title-row">
-          <button class="hamburger-btn" id="menuToggle" aria-label="Apri menu">☰</button>
-          <h1 class="masthead-title" id="mastheadTitle">Newsguess</h1>
-          <button class="header-action-btn" id="installBtn" title="Installa app" style="display:none;">📲</button>
-        </div>
+        <h1 class="masthead-title">Newsguess</h1>
         <p class="masthead-subtitle">Il quiz delle prime pagine d'Italia</p>
         <div class="masthead-meta">
           <span id="todayDate">—</span>
@@ -1541,15 +1452,13 @@
             <p class="small-caps">Risultato</p>
             <div class="result-score"><span id="finalScore">0</span><span style="opacity: 0.3; font-size: 0.4em;">/5</span></div>
             <div class="result-verdict" id="verdict">—</div>
-            <div class="result-editorial" id="editorialComment"></div>
 
             <table class="data-table" id="recapTable"></table>
 
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-              <button class="btn" id="saveScoreBtn">💾 Salva punteggio</button>
-              <button class="btn btn-outline" id="shareResultBtn">📤 Condividi</button>
+              <button class="btn" id="saveScoreBtn">Salva punteggio</button>
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
-              <button class="btn btn-outline" onclick="resetToMenu()">← Menù</button>
+              <button class="btn btn-outline" onclick="resetToMenu()">Menù principale</button>
             </div>
           </div>
         </div>
@@ -1710,8 +1619,7 @@
       <!-- PAGE: BADGES -->
       <div class="page" id="page-badges">
         <h2>Badge & Risultati</h2>
-        <p style="color: var(--text-secondary);">Sblocca i badge giocando ogni giorno, completando sfide e perfezionando la tecnica.</p>
-        <div class="badges-grid" id="badgesGrid"></div>
+        <p>Presto: badge e risultati speciali.</p>
       </div>
     </div>
   </div>
@@ -1935,47 +1843,57 @@ function openPage(pageName) {
   if (pageName === 'stats') renderStats();
 }
 
-// Nav items click - usa event delegation sulla sidebar
+// Nav items click - usa event delegation
 const sidebarNav = document.querySelector('.sidebar-nav');
 if (sidebarNav) {
   sidebarNav.addEventListener('click', (e) => {
     const navItem = e.target.closest('.nav-item');
-    if (navItem && navItem.dataset.page) openPage(navItem.dataset.page);
+    if (navItem) {
+      const page = navItem.dataset.page;
+      if (page) openPage(page);
+    }
   });
 }
 
+// Logo "Newsguess" GRANDE (masthead) torna a home - con deferred binding
+setTimeout(() => {
+  const masthead = document.querySelector('.masthead-title');
+  if (masthead) {
+    masthead.addEventListener('click', () => {
+      openPage('quiz');
+      $('modePicker').classList.remove('hidden');
+      $('errorBox').classList.add('hidden');
+      $('quizRunning').classList.add('hidden');
+      $('finalScreen').classList.add('hidden');
+      $('loading').classList.add('hidden');
+    });
+  }
+}, 100);
+
 /* ===== SIDEBAR TOGGLE ===== */
-document.addEventListener('click', (e) => {
-  // Hamburger apre/chiude sidebar
-  if (e.target.closest('#menuToggle')) {
-    const isOpen = $('sidebar').classList.toggle('open');
-    $('sidebarBackdrop').classList.toggle('open', isOpen);
-    if (isOpen) NG_HISTORY.push('sidebar-open');
-    return;
-  }
-  // Chiudi con X interna
-  if (e.target.closest('#sidebarClose')) {
+const menuToggle = $('menuToggle');
+if (menuToggle) {
+  menuToggle.addEventListener('click', () => {
+    $('sidebar').classList.toggle('open');
+    $('sidebarBackdrop').classList.toggle('open');
+  });
+}
+
+const sidebarClose = $('sidebarClose');
+if (sidebarClose) {
+  sidebarClose.addEventListener('click', () => {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    return;
-  }
-  // Chiudi cliccando backdrop
-  if (e.target.id === 'sidebarBackdrop') {
+  });
+}
+
+const sidebarBackdrop = $('sidebarBackdrop');
+if (sidebarBackdrop) {
+  sidebarBackdrop.addEventListener('click', () => {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    return;
-  }
-  // Titolo grande → home
-  if (e.target.closest('#mastheadTitle')) {
-    openPage('quiz');
-    $('modePicker').classList.remove('hidden');
-    $('errorBox').classList.add('hidden');
-    $('quizRunning').classList.add('hidden');
-    $('finalScreen').classList.add('hidden');
-    $('loading').classList.add('hidden');
-    return;
-  }
-});
+  });
+}
 
 /* ===== MODALI ===== */
 function openModal(modalId) {
@@ -2062,12 +1980,11 @@ loadArchive();
 /* ===== ARCHIVE BROWSER ===== */
 document.querySelectorAll('[data-abtab]').forEach(t => {
   t.addEventListener('click', () => {
-    const tab = t.dataset.abtab;
     document.querySelectorAll('[data-abtab]').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
-    $('ab-pane-dates').classList.toggle('active', tab === 'dates');
-    $('ab-pane-papers').classList.toggle('active', tab === 'papers');
-    if (tab === 'papers' && !$('abPapersList').children.length) loadArchiveBrowserPapers();
+    const tab = t.dataset.abtab;
+    $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
+    $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
   });
 });
 
@@ -2400,183 +2317,16 @@ $('nextBtn').addEventListener('click', () => {
   }
 });
 
-/* =========================================================
-   ARTICOLI SATIRICI — stile ritaglio di giornale
-   Ogni score ha 3 varianti casuali. Formato: { hl, body[] }
-========================================================= */
-const ARTICLES = [
-  /* 0/5 */
-  [
-    { hl: "TRAGEDIA ALL'EDICOLA: LETTORE NON RICONOSCE NEMMENO UN GIORNALE",
-      body: ["Cinque prime pagine, zero risposte esatte. Una prestazione che ha lasciato attoniti anche i colleghi più compassionevoli della redazione.", "Fonti vicine all'interessato riferiscono di una dieta mediatica composta esclusivamente da notifiche push e meme su WhatsApp.", "La direzione ha disposto un abbonamento d'ufficio al Corriere della Sera. Partenza: domani mattina, ore 6."] },
-    { hl: "ZERO SU CINQUE: IL MISTERO CHE SCUOTE IL MONDO DEL GIORNALISMO",
-      body: ["Gli esperti parlano di un caso senza precedenti nella storia del quiz editoriale italiano.", "«Non avevo mai visto un punteggio del genere», ha dichiarato il nostro responsabile statistiche, visibilmente commosso.", "Si consiglia di passare davanti a un'edicola almeno una volta a settimana. Anche solo per guardare i titoli dalla vetrina."] },
-    { hl: "INDAGINE ESCLUSIVA: MA QUESTI GIORNALI LI HA MAI VISTI?",
-      body: ["Un punteggio che apre interrogativi profondi sul rapporto tra cittadino e informazione cartacea.", "Il soggetto ha risposto con sicurezza a tutte e cinque le domande. Peccato che tutte fossero sbagliate.", "La redazione augura una pronta guarigione. E una visita settimanale all'edicola sotto casa."] },
-  ],
-  /* 1/5 */
-  [
-    { hl: "UN PUNTO STRAPPATO ALLE FAUCI DEL DISASTRO",
-      body: ["Con coraggio degno di miglior causa, il lettore ha salvato una risposta dal naufragio totale.", "Quattro errori su cinque restano, tuttavia, una statistica che desta preoccupazione nelle alte sfere della redazione.", "Il progresso è lento, ma esiste. Come il quotidiano sotto la porta di casa: arriva, anche se spesso non lo si legge."] },
-    { hl: "UN ACUTO IN UN CONCERTO STONATO",
-      body: ["Una sola risposta giusta su cinque, ma con tale convinzione da sembrare quasi competenza.", "I restanti quattro errori sono stati commessi con eguale, ammirevole sicurezza. È una qualità, in fondo.", "La redazione suggerisce di iniziare da Il Manifesto: riconoscibile dal colore rosso e dall'umore."] },
-    { hl: "CRONACA: EDICOLA SFIDA LETTORE, LETTORE PERDE (QUASI) TUTTO",
-      body: ["Il punteggio di uno su cinque riflette una conoscenza della stampa italiana ancora in fase embrionale.", "Ciononostante, quell'unico punto brilla come un titolo di prima pagina in un'edicola deserta.", "Con costanza giornaliera e un buon caffè accanto, il futuro appare meno fosco del presente."] },
-  ],
-  /* 2/5 */
-  [
-    { hl: "DUE PUNTI: LA MEDIOCRITÀ HA UN NOME, E OGGI È IL TUO",
-      body: ["Non un disastro, non un trionfo. Due risposte esatte su cinque: una performance che definire «sufficiente» sarebbe un eufemismo.", "Il lettore dimostra una conoscenza selettiva della stampa: ottima per alcuni giornali, inesistente per altri.", "La redazione ci vede del potenziale. Nascosto, ma presente, come la quarta pagina di un quotidiano locale."] },
-    { hl: "METÀ TORTA MANGIATA, METÀ LASCIATA AI COLLEGHI",
-      body: ["Due su cinque è il risultato del lettore a metà del percorso verso l'illuminazione editoriale.", "Fonti interne segnalano che entrambe le risposte esatte sono state date con esitazione. Quelle sbagliate, con grande certezza.", "Il consiglio della settimana: sfogliare un giornale diverso ogni mattina. Anche solo il titolone in copertina."] },
-    { hl: "NOTIZIA: LETTORE SUPERA IL 33%. FESTEGGIAMENTI PREMATURI",
-      body: ["Con il 40% di precisione, il soggetto entra nella fascia dei «lettori occasionali con potenziale».", "Le due risposte esatte comprendono almeno un giornale che chiunque riconoscerebbe a colori invertiti.", "La strada per la caporedazione è lunga, ma oggi è stato fatto un piccolo, onesto passo."] },
-  ],
-  /* 3/5 */
-  [
-    { hl: "TRE SU CINQUE: IL LETTORE CHE NON SI VERGOGNA DI SÉ STESSO",
-      body: ["Un punteggio onesto, solido, privo di fronzoli. Come un buon corsivo di seconda pagina.", "Tre testate indovinate correttamente: un risultato che permette di guardare l'edicolante dritto negli occhi.", "I due errori restanti sono una ferita aperta. La redazione consiglia di elaborarli durante la pausa caffè."] },
-    { hl: "CLASSIFICA LECTORUM: TERZO POSTO SU CINQUE, ONOREVOLE SCONFITTA",
-      body: ["Né eroe né vittima: il lettore di oggi si colloca in quella zona grigia che i giornalisti chiamano «notizia di spalla».", "Tre risposte indovinate testimoniano una frequentazione reale, seppur discontinua, dell'edicola nazionale.", "Con un po' più di impegno quotidiano, questo lettore potrebbe aspirare alla quarta pagina. Magari alla terza."] },
-    { hl: "BUONA PRESTAZIONE, CON RISERVA: IL GIORNALISMO APPROVA A METÀ",
-      body: ["Tre su cinque è il punteggio del lettore che sfoglia i giornali ma non sempre li finisce.", "Le due mancanze sono imputabili, secondo la redazione, a testate «dal carattere grafico subdolo».", "Il verdetto finale: promosso con riserva. La riserva si scioglie con una settimana di allenamento."] },
-  ],
-  /* 4/5 */
-  [
-    { hl: "QUASI PERFETTO: UN SOLO GIORNALE SFUGGE ALLA PRESA FERREA DEL LETTORE",
-      body: ["Quattro risposte esatte su cinque: una prestazione da caporedattore con qualche anno di esperienza.", "L'unico errore è ciò che separa il bravo dal grande. Oggi, purtroppo, siete ancora «bravi».", "La redazione applaude, ma con quella riserva tipica di chi sa che la perfezione è a un passo."] },
-    { hl: "UN REFUSO IN UNA PRIMA PAGINA ALTRIMENTI IMPECCABILE",
-      body: ["Come il tipografo che sbaglia una lettera su mille, il lettore ha inciampato su una sola testata.", "Quattro su cinque garantiscono un posto fisso in redazione. Il quinto punto vale la firma in prima pagina.", "«Chi non sbaglia non titola» dice un vecchio adagio delle redazioni. Oggi vale anche per voi."] },
-    { hl: "ECCELLENZA SFIORATA: IL DIRETTORE TRATTIENE IL RESPIRO",
-      body: ["Quattro risposte perfette, una scivolata finale. Il direttore ha abbassato la matita rossa, per stavolta.", "La testata mancata verrà analizzata in riunione di redazione. O almeno, così ha promesso il caporedattore.", "Il prossimo cinque su cinque è alla portata. La redazione scommette su di voi — con discrezione."] },
-  ],
-  /* 5/5 */
-  [
-    { hl: "PUNTEGGIO PIENO: IL DIRETTORE SI CONGRATULA CON LACRIME AGLI OCCHI",
-      body: ["Cinque su cinque. Non succedeva da quando l'inviato speciale tornò da Mosca con il Pulitzer in tasca.", "Il lettore ha identificato ogni testata con la precisione di un linotipista in pensione che ha visto tutto.", "La redazione ha già preparato la tessera stampa. Firma qui, per favore. Benvenuto nella famiglia."] },
-    { hl: "NOTIZIA DELL'ANNO: LETTORE CONOSCE TUTTI I GIORNALI ITALIANI",
-      body: ["Un punteggio perfetto che lascia senza parole anche il critico più incallito della nostra redazione.", "Cinque testate, cinque risposte giuste, zero esitazioni. Come leggere l'ora su un orologio analogico.", "Questo è il tipo di lettore che i giornalisti sognano. Curioso, informato, e probabilmente abbonato a tre quotidiani."] },
-    { hl: "EDITORIALE STRAORDINARIO: NASCE UNA STELLA DEL GIORNALISMO QUIZ",
-      body: ["In anni di carriera, il nostro redattore capo dice di non aver mai visto un punteggio così con tale apparente facilità.", "Cinque su cinque: un risultato che merita una rettifica positiva in prima pagina, cosa rarissima nel mestiere.", "Il giornalismo italiano saluta un nuovo campione. L'edicola di via XX Settembre ha già messo da parte la copia."] },
-  ],
-];
-
-function buildArticleHtml(score) {
-  const pool = ARTICLES[Math.min(score, 5)];
-  const art  = pool[Math.floor(Math.random() * pool.length)];
-  const now  = new Date();
-  const byline = `Redazione Newsguess · ${now.toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'})}`;
-  return `<div class="editorial-byline">${byline}</div>
-    <div class="editorial-headline">${art.hl}</div>
-    <div class="editorial-body">${art.body.map(p => `<p>${p}</p>`).join('')}</div>`;
-}
-
-/* =========================================================
-   BADGE SYSTEM
-========================================================= */
-const BADGES_KEY = 'ng-badges';
-
-const BADGE_DEFS = [
-  { id:'first-game',     icon:'📰', name:'Prima Prima Pagina',  desc:'Gioca la tua prima partita',
-    check: h => h.length >= 1 },
-  { id:'perfect',        icon:'🏆', name:'Direttore Emerito',   desc:'Ottieni 5/5 in una partita',
-    check: h => h.some(g => g.score === g.total && g.total === 5) },
-  { id:'perfect3',       icon:'🥇', name:"Terza Pagina d'Oro",  desc:'Ottieni 5/5 per 3 volte',
-    check: h => h.filter(g => g.score === g.total && g.total === 5).length >= 3 },
-  { id:'streak3',        icon:'🔥', name:'Tre Volte Grazie',    desc:'3 giorni consecutivi di daily',
-    check: h => computeStreak(h) >= 3 },
-  { id:'streak7',        icon:'📅', name:'Abbonato Fedele',     desc:'7 giorni consecutivi di daily',
-    check: h => computeStreak(h) >= 7 },
-  { id:'streak30',       icon:'🗞️', name:'Edicola Aperta',      desc:'30 giorni consecutivi di daily',
-    check: h => computeStreak(h) >= 30 },
-  { id:'games10',        icon:'✍️', name:'Redattore Junior',    desc:'10 partite giocate in totale',
-    check: h => h.length >= 10 },
-  { id:'games50',        icon:'🎩', name:'Vecchia Guardia',     desc:'50 partite giocate in totale',
-    check: h => h.length >= 50 },
-  { id:'training5',      icon:'🏋️', name:'Praticante',          desc:'5 allenamenti liberi completati',
-    check: h => h.filter(g => g.mode === 'training').length >= 5 },
-  { id:'archive-player', icon:'📚', name:'Archivista',          desc:"Gioca un'edizione dall'archivio",
-    check: h => h.some(g => g.mode === 'past') },
-  { id:'all-papers',     icon:'🌐', name:'Tuttologi',           desc:'Indovina tutti e 10 i giornali almeno una volta',
-    check: h => { const s = new Set(); h.forEach(g => (g.questions||[]).filter(q=>q.ok).forEach(q=>s.add(q.paperId))); return s.size >= 10; } },
-  { id:'sole-fan',       icon:'🐟', name:'Salmone Dorato',      desc:'Indovina Il Sole 24 Ore 5 volte',
-    check: h => { let n=0; h.forEach(g=>(g.questions||[]).forEach(q=>{if(q.ok&&q.paperId==='sole')n++;})); return n>=5; } },
-  { id:'manifesto-fan',  icon:'✊', name:'Rosso Shocking',      desc:'Indovina Il Manifesto 5 volte',
-    check: h => { let n=0; h.forEach(g=>(g.questions||[]).forEach(q=>{if(q.ok&&q.paperId==='manifesto')n++;})); return n>=5; } },
-  { id:'no-miss',        icon:'✨', name:'Refuso Zero',         desc:'3 daily di fila con 5/5',
-    check: h => { const d=h.filter(g=>g.mode==='daily').slice(-3); return d.length>=3&&d.every(g=>g.score===g.total); } },
-];
-
-function loadBadges() {
-  try { return JSON.parse(localStorage.getItem(BADGES_KEY) || '{}'); }
-  catch { return {}; }
-}
-function saveBadges(obj) {
-  try { localStorage.setItem(BADGES_KEY, JSON.stringify(obj)); } catch {}
-}
-
-function checkAndUnlockBadges() {
-  const history = loadStatsHistory();
-  const earned  = loadBadges();
-  const newOnes = [];
-  BADGE_DEFS.forEach(b => {
-    if (!earned[b.id] && b.check(history)) {
-      earned[b.id] = { ts: Date.now() };
-      newOnes.push(b);
-    }
-  });
-  if (newOnes.length) saveBadges(earned);
-  return newOnes;
-}
-
-function renderBadgesPage() {
-  const grid = $('badgesGrid');
-  if (!grid) return;
-  const earned = loadBadges();
-  grid.innerHTML = '';
-  BADGE_DEFS.forEach(b => {
-    const isUnlocked = !!earned[b.id];
-    const card = document.createElement('div');
-    card.className = 'badge-card ' + (isUnlocked ? 'unlocked' : 'locked');
-    const isNew = isUnlocked && earned[b.id].ts && (Date.now() - earned[b.id].ts < 86400000);
-    const dateStr = isUnlocked && earned[b.id].ts
-      ? new Date(earned[b.id].ts).toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'})
-      : '';
-    card.innerHTML = `
-      ${isNew ? '<div class="badge-new">Nuovo!</div>' : ''}
-      ${!isUnlocked ? '<div class="badge-lock">🔒</div>' : ''}
-      <span class="badge-icon">${b.icon}</span>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-desc">${b.desc}</div>
-      ${isUnlocked ? `<div class="badge-date">🔓 ${dateStr}</div>` : ''}
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function announceBadges(newBadges) {
-  if (!newBadges.length) return;
-  setTimeout(() => {
-    newBadges.forEach((b, i) => {
-      setTimeout(() => showToast(`${b.icon} Badge sbloccato: ${b.name}!`), i * 2800);
-    });
-  }, 1400);
-}
-
-/* Aggancia renderBadgesPage alla navigazione */
-const _openPageOrig = typeof openPage === 'function' ? openPage : null;
-function openPage(pageName) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const pageEl = $(`page-${pageName}`);
-  if (pageEl) pageEl.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageName));
-  if (window.innerWidth < 769) { $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open'); }
-  if (pageName === 'leaderboard') refreshLeaderboards();
-  if (pageName === 'stats') renderStats();
-  if (pageName === 'badges') renderBadgesPage();
-}
-
 /* ===== FINAL SCREEN ===== */
+function verdictFor(score) {
+  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
+}
+
+function finishQuiz() {
+  $('quizRunning').classList.add('hidden');
+  $('finalScreen').classList.remove('hidden');
+  animateScoreCountUp($('finalScore'), state.score, 800);
+  $('verdict').textContent = verdictFor(state.score);
 
   let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
   state.questions.forEach((q, i) => {
@@ -2650,26 +2400,6 @@ function launchConfetti() {
 }
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
-
-/* ===== CONDIVISIONE RISULTATI ===== */
-$('shareResultBtn').addEventListener('click', async () => {
-  const score = state.score;
-  const total = state.questions.length;
-  const verdict = verdictFor(score);
-  const emoji = ['😶','🙁','😐','🙂','😊','🏆'][score];
-  const dots = state.questions.map(q =>
-    q.given === q.paper.id ? '🟢' : '🔴'
-  ).join('');
-  const text = `Newsguess ${fmtDateIT(todayISO())}\n${emoji} ${score}/${total} — ${verdict}\n${dots}\nnewsguess.it`;
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: 'Newsguess', text });
-    } else {
-      await navigator.clipboard.writeText(text);
-      showToast('Risultato copiato negli appunti!');
-    }
-  } catch {}
-});
 
 function resetToMenu() {
   $('loading').classList.add('hidden');
@@ -3020,11 +2750,11 @@ function renderGroupPills() {
 
 document.querySelectorAll('[data-lbtab]').forEach(b => {
   b.addEventListener('click', () => {
-    const t = b.dataset.lbtab;
     document.querySelectorAll('[data-lbtab]').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    $('lbPane-join').classList.toggle('active', t === 'join');
-    $('lbPane-create').classList.toggle('active', t === 'create');
+    const t = b.dataset.lbtab;
+    $('lbPane-join').classList.toggle('hidden', t !== 'join');
+    $('lbPane-create').classList.toggle('hidden', t !== 'create');
     $('lbJoinErr').style.display = 'none';
     $('lbCreateErr').style.display = 'none';
   });
@@ -3218,28 +2948,42 @@ function showConfirmExit(onYes) {
 }
 
 window.addEventListener('popstate', (e) => {
-  // 1) Se c'è un modale aperto → chiudilo, resta nell'app
-  const openModal = document.querySelector('.modal-overlay.open');
-  if (openModal) {
-    openModal.classList.remove('open');
+  // 1) Se c'è un modale aperto → chiudilo senza uscire
+  if (!$('nameModal').classList.contains('hidden')) {
+    closeNameModal();
     return;
   }
-  // 2) Sidebar aperta su mobile → chiudila
+  if (!$('saveModal').classList.contains('hidden')) {
+    closeSaveModal();
+    return;
+  }
+  if (!$('confirmExit').classList.contains('hidden')) {
+    closeModal('confirmExit');
+    return;
+  }
+  
+  // 2) Se la sidebar è aperta (mobile) → chiudila
   if ($('sidebar').classList.contains('open')) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    NG_HISTORY.push('home');
     return;
   }
-  // 3) Quiz daily in corso → chiedi conferma
+  
+  // 3) Se c'è un quiz daily in corso → chiedi conferma PRIMA di uscire
   if (isQuizInProgress()) {
+    // Ripristina lo stato della navigazione così il prossimo back non esce
     NG_HISTORY.push('quiz-running');
     showConfirmExit(() => {
+      // Utente ha confermato uscita: resetta il quiz
       resetToMenu();
+      // Ora esce davvero (questo back non ritraggerà il popstate)
       history.back();
     });
     return;
   }
+  
+  // 4) Altrimenti: navigazione normale (torna indietro nella storia)
+  // Non fare nulla di speciale - il browser gestisce il back normalmente
 });
 
 NG_HISTORY.push('home');
