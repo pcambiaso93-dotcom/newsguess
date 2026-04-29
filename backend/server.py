@@ -73,9 +73,7 @@ async def serve_quiz():
 
 STATIC_DIR = ROOT_DIR.parent / "static"
 
-@api_router.get("/manifest.json")
-async def serve_manifest():
-    return FileResponse(STATIC_DIR / "manifest.json", media_type="application/manifest+json")
+# La route /api/manifest.json è definita più sotto (versione embedded, override del file statico)
 
 @api_router.get("/sw.js")
 async def serve_sw():
@@ -110,6 +108,35 @@ async def serve_icons_update():
     if not p.exists():
         return Response(status_code=404)
     return FileResponse(p, media_type="application/zip", filename="newsguess-icons.zip")
+
+@api_router.get("/manifest.json")
+async def serve_manifest():
+    """Manifest PWA servito direttamente dal codice (override del file su disco)."""
+    import json as _json
+    manifest = {
+        "name": "Newsguess",
+        "short_name": "Newsguess",
+        "description": "Il quiz delle prime pagine d'Italia",
+        "start_url": "/api/quiz",
+        "scope": "/api/",
+        "display": "standalone",
+        "orientation": "portrait",
+        "background_color": "#f5f1e8",
+        "theme_color": "#b01010",
+        "lang": "it-IT",
+        "categories": ["games", "news", "entertainment"],
+        "icons": [
+            {"src": "/api/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "/api/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "/api/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+            {"src": "/api/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any"}
+        ]
+    }
+    return Response(
+        content=_json.dumps(manifest, ensure_ascii=False, indent=2),
+        media_type="application/manifest+json",
+        headers={"Cache-Control": "public, max-age=3600"}
+    )
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
