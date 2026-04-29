@@ -2111,6 +2111,21 @@
   </div>
 </div>
 
+<!-- ANDROID INSTALL MODAL -->
+<div class="modal-overlay" id="androidInstallModal">
+  <div class="modal">
+    <h2>Installa su Android</h2>
+    <p>Se non vedi il prompt automatico:</p>
+    <p>1) Tocca i tre puntini (⋮) in alto a destra in Chrome</p>
+    <p>2) Seleziona <strong>"Installa app"</strong> o <strong>"Aggiungi a schermata Home"</strong></p>
+    <p>3) Conferma con <strong>"Installa"</strong></p>
+    <p style="font-size:13px; color:var(--text-secondary); margin-top:12px">Se l'app è già installata sul telefono, non vedrai più questa opzione.</p>
+    <div class="modal-row">
+      <button class="btn" id="androidInstallModalClose">Ho capito</button>
+    </div>
+  </div>
+</div>
+
 <!-- RENAME GROUP MODAL -->
 <div class="modal-overlay" id="renameGroupModal">
   <div class="modal">
@@ -2322,6 +2337,7 @@ applyUiSettings();
 
 if ($('iosInstallHelpBtn')) $('iosInstallHelpBtn').addEventListener('click', () => openModal('iosInstallModal'));
 if ($('iosInstallModalClose')) $('iosInstallModalClose').addEventListener('click', () => closeModal('iosInstallModal'));
+if ($('androidInstallModalClose')) $('androidInstallModalClose').addEventListener('click', () => closeModal('androidInstallModal'));
 
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
@@ -2447,6 +2463,7 @@ if ('serviceWorker' in navigator) {
 
 let _deferredInstall = null;
 const isIosDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroidDevice = () => /Android/i.test(navigator.userAgent);
 const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -2459,18 +2476,31 @@ function triggerInstall() {
     _deferredInstall.prompt();
     _deferredInstall.userChoice.finally(() => {
       _deferredInstall = null;
-      $('installBtn').style.display = 'none';
+      // Non nascondo il bottone subito così se l'utente cancella ha ancora la possibilità
+      if (isStandalone()) $('installBtn').style.display = 'none';
     });
     return;
   }
   if (isIosDevice() && !isStandalone()) {
     openModal('iosInstallModal');
+    return;
+  }
+  if (isAndroidDevice() && !isStandalone()) {
+    openModal('androidInstallModal');
+    return;
+  }
+  // Desktop (Chrome): istruzioni generiche
+  if (!isStandalone()) {
+    showToast('Per installare: menu del browser → "Installa app" o "Aggiungi a schermata Home"');
   }
 }
 
 $('installBtn').addEventListener('click', triggerInstall);
 window.triggerInstall = triggerInstall;
-if (isIosDevice() && !isStandalone()) $('installBtn').style.display = '';
+// Mostra il bottone "Installa" su iOS e Android quando NON è già installato come PWA
+if (!isStandalone() && (isIosDevice() || isAndroidDevice())) {
+  $('installBtn').style.display = '';
+}
 
 /* ===== ARCHIVIO ===== */
 async function loadArchive() {
