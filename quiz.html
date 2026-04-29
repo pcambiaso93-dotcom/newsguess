@@ -1,2998 +1,1291 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Newsguess · il quiz delle prime pagine d'Italia</title>
-<meta name="description" content="Newsguess: indovina di che giornale italiano è la prima pagina. Sfida giornaliera, classifiche di gruppo." />
-<meta name="theme-color" content="#0f3460" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Newsguess" />
-<link rel="manifest" href="/api/manifest.json" />
-<link rel="icon" href="/api/icon-192.png" type="image/png" />
-<link rel="apple-touch-icon" href="/api/apple-touch-icon.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" />
+  <meta charset="UTF-8" />
+  <title>Newsguess – Quiz dei quotidiani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<style>
-  :root {
-    /* Light theme */
-    --bg-primary: #f9f8f5;
-    --bg-secondary: #f0ebe2;
-    --bg-tertiary: #e8e2d5;
-    --text-primary: #1a1410;
-    --text-secondary: #524a3f;
-    --text-tertiary: #8b7f72;
-    --border-color: #d4cfc5;
-    --accent-primary: #0f3460;
-    --accent-secondary: #2b6a96;
-    --success: #2d7a4a;
-    --error: #c1424a;
-    --warning: #d9a836;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-    --radius: 8px;
-  }
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png" />
 
-  [data-theme="dark"] {
-    --bg-primary: #0f0e0a;
-    --bg-secondary: #1a1612;
-    --bg-tertiary: #24201a;
-    --text-primary: #f5f0e8;
-    --text-secondary: #d4cfc5;
-    --text-tertiary: #a8a299;
-    --border-color: #3a362f;
-    --accent-primary: #4a9dd9;
-    --accent-secondary: #6bb8f0;
-    --success: #4ab366;
-    --error: #ff6b6f;
-    --warning: #f5b546;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-  }
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="manifest.json" />
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  /* ===== LAYOUT PRINCIPALE ===== */
-  .app-root {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .app-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 280px;
-    height: 100vh;
-    background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-md);
-    overflow-y: auto;
-  }
-
-  .app-sidebar.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-header {
-    padding: 24px 20px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .sidebar-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .sidebar-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 4px;
-    display: none;
-    transition: color 0.2s;
-  }
-
-  .sidebar-close:hover {
-    color: var(--text-primary);
-  }
-
-  @media (max-width: 768px) {
-    .sidebar-close {
-      display: block;
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --bg-elevated: #ffffff;
+      --bg-elevated-soft: #f8f4ec;
+      --text: #1f2933;
+      --text-muted: #6b7280;
+      --accent: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.08);
+      --border: #e0d7c8;
+      --danger: #b91c1c;
+      --success: #15803d;
+      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --transition-fast: 0.18s ease-out;
+      --transition-med: 0.25s ease-out;
     }
 
-    .app-sidebar {
+    [data-theme="dark"] {
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --bg-elevated-soft: #020617;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #60a5fa;
+      --accent-soft: rgba(96, 165, 250, 0.12);
+      --border: #1f2937;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1100px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    /* LOGO */
+    .app-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.2s ease-out;
+    }
+
+    .app-logo:hover {
+      transform: scale(1.06);
+    }
+
+    /* MASTHEAD */
+    .masthead {
+      background: var(--bg-elevated-soft);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .masthead-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .masthead-title {
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .masthead-title:hover {
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* MENU TOGGLE */
+    .menu-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .menu-toggle span,
+    .menu-toggle span::before,
+    .menu-toggle span::after {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 999px;
+      position: relative;
+      transition: transform var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .menu-toggle span::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+    }
+
+    .menu-toggle span::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+    }
+
+    .menu-toggle.open span {
+      background: transparent;
+    }
+
+    .menu-toggle.open span::before {
+      transform: rotate(45deg);
+      top: 0;
+    }
+
+    .menu-toggle.open span::after {
+      transform: rotate(-45deg);
+      bottom: 0;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
       width: 260px;
       max-width: 85vw;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: 12px;
+      position: fixed;
+      top: 12px;
+      bottom: 12px;
+      left: 12px;
+      transform: translateX(-110%);
+      transition: transform var(--transition-med);
+      z-index: 40;
     }
 
-    .app-sidebar.open ~ .sidebar-backdrop {
-      display: block;
-    }
-
-    .nav-item {
-      padding: 14px 20px;
-      min-height: 48px;
-    }
-
-    .sidebar-header {
-      padding: 20px 16px;
-    }
-
-    .theme-toggle {
-      min-height: 44px;
-    }
-
-    .theme-btn {
-      min-height: 44px;
-      font-size: 14px;
-    }
-  }
-
-  .sidebar-nav {
-    flex: 1;
-    padding: 16px 0;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    border-left: 3px solid transparent;
-    font-size: 15px;
-    min-height: 44px;
-  }
-
-  .nav-item:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-  }
-
-  .nav-item.active {
-    background-color: var(--bg-tertiary);
-    color: var(--accent-primary);
-    border-left-color: var(--accent-primary);
-    font-weight: 600;
-  }
-
-  .nav-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .theme-toggle {
-    display: flex;
-    gap: 6px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius);
-    padding: 6px;
-    min-height: 44px;
-  }
-
-  .theme-btn {
-    flex: 1;
-    padding: 8px 10px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 4px;
-    color: var(--text-secondary);
-    transition: background-color 0.2s, color 0.2s;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .theme-btn.active {
-    background: var(--bg-secondary);
-    color: var(--accent-primary);
-  }
-
-  .sidebar-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-  }
-
-  .sidebar-backdrop.open {
-    display: block;
-  }
-
-  /* ===== MAIN CONTENT ===== */
-  .app-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    margin-left: 0;
-    transition: margin-left 0.3s;
-  }
-
-  @media (min-width: 769px) {
-    .app-main {
-      margin-left: 280px;
-    }
-
-    .app-sidebar {
+    .sidebar.open {
       transform: translateX(0);
     }
 
-    .sidebar-close {
-      display: none !important;
+    .nav-item {
+      padding: 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background var(--transition-fast);
     }
 
-    .sidebar-backdrop {
-      display: none !important;
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
     }
-  }
 
-  /* ===== HEADER ===== */
-  .app-header {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
+    /* OVERLAY */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-med);
+      z-index: 30;
+    }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
 
-  .menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-primary);
-    padding: 8px;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    transition: background-color 0.2s;
-  }
+    /* PAGINE */
+    .page {
+      display: none;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      padding: 14px;
+      box-shadow: var(--shadow-soft);
+    }
 
-  .menu-toggle:hover {
-    background-color: var(--bg-tertiary);
-  }
-
-  @media (max-width: 768px) {
-    .menu-toggle {
+    .page.active {
       display: block;
     }
-  }
 
-  .header-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: color 0.2s;
-    user-select: none;
-  }
-
-  .header-title:hover {
-    color: var(--accent-primary);
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .header-action-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 8px;
-    border-radius: var(--radius);
-    transition: background-color 0.2s, color 0.2s;
-  }
-
-  .header-action-btn:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-  }
-
-  /* ===== CONTENT AREA ===== */
-  .app-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .page {
-    display: none;
-    animation: pageIn 0.3s ease;
-  }
-
-  .page.active {
-    display: block;
-  }
-
-  @keyframes pageIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ===== MASTHEAD (HEADER EDITORIALE) ===== */
-  .masthead {
-    text-align: center;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .masthead-tag {
-    font-family: 'Playfair Display', serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent-primary);
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .masthead-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 8vw, 56px);
-    font-weight: 900;
-    font-style: italic;
-    color: var(--text-primary);
-    letter-spacing: -1px;
-    line-height: 1.1;
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: color 0.2s, transform 0.2s;
-    user-select: none;
-  }
-
-  .masthead-title:hover {
-    color: var(--accent-primary);
-    transform: scale(1.02);
-  }
-
-  .masthead-subtitle {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 14px;
-    font-style: italic;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
-  }
-
-  .masthead-meta {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    flex-wrap: wrap;
-  }
-
-  .masthead-meta .accent {
-    color: var(--accent-primary);
-    font-weight: 700;
-  }
-
-  /* ===== TYPOGRAPHY ===== */
-  h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--text-primary);
-  }
-
-  h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-  }
-
-  h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--text-primary);
-  }
-
-  p {
-    line-height: 1.7;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
-  }
-
-  .small-caps {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  /* ===== BUTTONS ===== */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    background: var(--accent-primary);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
-    letter-spacing: 0.5px;
-    min-height: 44px;
-  }
-
-  .btn:hover {
-    background-color: var(--accent-secondary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .btn:active {
-    transform: scale(0.96);
-  }
-
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--accent-primary);
-    border: 1px solid var(--border-color);
-  }
-
-  .btn-outline:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--accent-secondary);
-  }
-
-  .btn-success {
-    background: var(--success);
-  }
-
-  .btn-success:hover {
-    background-color: #1f5837;
-  }
-
-  .btn-error {
-    background: var(--error);
-  }
-
-  .btn-error:hover {
-    background-color: #a83035;
-  }
-
-  /* ===== CARDS & SECTIONS ===== */
-  .card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-    transition: box-shadow 0.2s, transform 0.2s;
-  }
-
-  .card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .card-small {
-    padding: 16px;
-  }
-
-  /* ===== MODE PICKER ===== */
-  .mode-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-    margin: 24px 0;
-  }
-
-  .mode-card {
-    background: var(--bg-secondary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .mode-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .mode-card:hover:not(.completed) {
-    border-color: var(--accent-primary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  .mode-card:hover:not(.completed)::before {
-    opacity: 0.05;
-  }
-
-  .mode-card.completed {
-    opacity: 0.6;
-    cursor: default;
-  }
-
-  .mode-card-content {
-    position: relative;
-    z-index: 1;
-  }
-
-  .mode-card h3 {
-    margin-bottom: 8px;
-    font-size: 20px;
-  }
-
-  .mode-card p {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin: 0;
-  }
-
-  .mode-status {
-    display: inline-block;
-    margin-top: 8px;
-    font-family: 'Playfair Display', serif;
-    font-size: 12px;
-    color: var(--accent-primary);
-    font-weight: 700;
-    font-style: italic;
-  }
-
-  /* ===== QUESTION CARD ===== */
-  .question-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 28px;
-    margin-bottom: 20px;
-  }
-
-  .question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .question-progress {
-    font-size: 13px;
-    color: var(--text-tertiary);
-    font-weight: 600;
-  }
-
-  .progress-dots {
-    display: flex;
-    gap: 6px;
-  }
-
-  .progress-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--border-color);
-    border: 1.5px solid var(--border-color);
-    transition: all 0.3s;
-  }
-
-  .progress-dot.correct {
-    background: var(--success);
-    border-color: var(--success);
-  }
-
-  .progress-dot.incorrect {
-    background: var(--error);
-    border-color: var(--error);
-  }
-
-  .progress-dot.current {
-    animation: dotPulse 1.5s ease-in-out infinite;
-    border-color: var(--accent-primary);
-  }
-
-  @keyframes dotPulse {
-    0%, 100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.3);
-    }
-  }
-
-  .extracted-headline {
-    margin-bottom: 20px;
-  }
-
-  .headline-tag {
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent-primary);
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
-  .headline-title {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(24px, 5vw, 40px);
-    font-weight: 900;
-    line-height: 1.1;
-    margin-bottom: 12px;
-    color: var(--text-primary);
-  }
-
-  .headline-subtitle {
-    font-size: 16px;
-    font-style: italic;
-    color: var(--text-secondary);
-    line-height: 1.5;
-  }
-
-  /* ===== CHOICES ===== */
-  .choices-container {
-    display: grid;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .choice-btn {
-    padding: 14px 18px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    color: var(--text-primary);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-
-  .choice-btn:hover:not(:disabled) {
-    background: var(--bg-tertiary);
-    border-color: var(--accent-primary);
-    transform: translateX(4px);
-  }
-
-  .choice-btn:disabled {
-    cursor: default;
-  }
-
-  .choice-btn.correct {
-    background: var(--success);
-    color: #fff;
-    border-color: var(--success);
-    animation: correctFlash 0.6s ease;
-  }
-
-  .choice-btn.incorrect {
-    background: var(--error);
-    color: #fff;
-    border-color: var(--error);
-    animation: incorrectShake 0.5s ease;
-  }
-
-  @keyframes correctFlash {
-    0% {
-      box-shadow: 0 0 0 0 rgba(45, 122, 74, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 0 12px rgba(45, 122, 74, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(45, 122, 74, 0);
-    }
-  }
-
-  @keyframes incorrectShake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-3px); }
-    80% { transform: translateX(3px); }
-  }
-
-  /* ===== STATS GRID ===== */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin: 20px 0;
-  }
-
-  .stat-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 18px;
-    text-align: center;
-    transition: box-shadow 0.2s;
-  }
-
-  .stat-card:hover {
-    box-shadow: var(--shadow-md);
-  }
-
-  .stat-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 900;
-    color: var(--accent-primary);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-
-  .stat-label {
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    font-weight: 600;
-  }
-
-  /* ===== MODAL ===== */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 16px;
-    animation: fadeIn 0.2s ease;
-  }
-
-  .modal-overlay.open {
-    display: flex;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .modal {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 24px;
-    max-width: 460px;
-    width: 100%;
-    box-shadow: var(--shadow-lg);
-    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes modalSlideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-20px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  .modal h2 {
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
-
-  .modal p {
-    margin-bottom: 16px;
-  }
-
-  .modal-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    justify-content: flex-end;
-  }
-
-  .modal-input {
-    width: 100%;
-    padding: 12px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 14px;
-    margin-bottom: 8px;
-    transition: border-color 0.2s;
-    min-height: 44px;
-  }
-
-  .modal-input:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
-  }
-
-  .modal-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-    letter-spacing: 0.5px;
-  }
-
-  .modal-error {
-    color: var(--error);
-    font-size: 13px;
-    margin: 8px 0;
-    display: none;
-  }
-
-  .modal-error.show {
-    display: block;
-  }
-
-  /* ===== TABLES ===== */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0;
-  }
-
-  .data-table thead {
-    background: var(--bg-tertiary);
-  }
-
-  .data-table th {
-    padding: 12px 8px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-  }
-
-  .data-table td {
-    padding: 12px 8px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 14px;
-  }
-
-  .data-table tr:hover {
-    background: var(--bg-tertiary);
-  }
-
-  .data-table tr.highlight {
-    background: rgba(15, 52, 96, 0.08);
-  }
-
-  .table-success {
-    color: var(--success);
-    font-weight: 600;
-  }
-
-  .table-error {
-    color: var(--error);
-    font-weight: 600;
-  }
-
-  .table-medal {
-    font-size: 18px;
-    margin-right: 6px;
-  }
-
-  /* ===== FORM ELEMENTS ===== */
-  .form-group {
-    margin-bottom: 16px;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    letter-spacing: 0.5px;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 14px;
-    transition: border-color 0.2s;
-  }
-
-  .form-group input:focus,
-  .form-group textarea:focus {
-    outline: none;
-    border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
-  }
-
-  /* ===== TABS ===== */
-  .tabs-container {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
-  }
-
-  .tab-btn {
-    padding: 12px 16px;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--text-secondary);
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .tab-btn:hover {
-    color: var(--text-primary);
-  }
-
-  .tab-btn.active {
-    color: var(--accent-primary);
-    border-bottom-color: var(--accent-primary);
-  }
-
-  .tab-content {
-    display: none;
-  }
-
-  .tab-content.active {
-    display: block;
-  }
-
-  /* ===== GROUP PILLS ===== */
-  .pills-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 12px 0;
-  }
-
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .pill:hover {
-    background: var(--border-color);
-    color: var(--text-primary);
-  }
-
-  .pill.active {
-    background: var(--accent-primary);
-    color: #fff;
-    border-color: var(--accent-primary);
-  }
-
-  .pill-close {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.6;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .pill-close:hover {
-    opacity: 1;
-  }
-
-  /* ===== SECTIONS ===== */
-  .section {
-    margin-bottom: 32px;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-  }
-
-  .divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 24px 0;
-  }
-
-  /* ===== FINAL SCREEN ===== */
-  .result-container {
-    text-align: center;
-    padding: 40px 20px;
-  }
-
-  .result-score {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(64px, 15vw, 120px);
-    font-weight: 900;
-    color: var(--accent-primary);
-    line-height: 1;
-    margin: 20px 0;
-    animation: scoreCountUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  @keyframes scoreCountUp {
-    from {
-      opacity: 0;
-      transform: scale(0.5) rotate(-6deg);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) rotate(0);
-    }
-  }
-
-  .result-verdict {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 24px;
-    color: var(--accent-primary);
-    margin: 16px 0 24px;
-  }
-
-  /* ===== UTILITIES ===== */
-  .hidden {
-    display: none !important;
-  }
-
-  .text-center {
-    text-align: center;
-  }
-
-  .mt-2 {
-    margin-top: 16px;
-  }
-
-  .mt-4 {
-    margin-top: 24px;
-  }
-
-  .mb-2 {
-    margin-bottom: 16px;
-  }
-
-  .mb-4 {
-    margin-bottom: 24px;
-  }
-
-  .flex {
-    display: flex;
-  }
-
-  .flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .gap-2 {
-    gap: 16px;
-  }
-
-  /* ===== SPINNER ===== */
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--accent-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 40px auto;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  /* ===== TOAST ===== */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--text-primary);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-size: 14px;
-    z-index: 3000;
-    transition: transform 0.3s ease;
-    box-shadow: var(--shadow-lg);
-  }
-
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* ===== RESPONSIVE ===== */
-  @media (max-width: 640px) {
-    .app-content {
-      padding: 16px;
-    }
-
-    .card-grid {
+    /* BADGE */
+    .badge-grid {
+      display: grid;
       grid-template-columns: 1fr;
+      gap: 8px;
     }
 
-    .mode-grid {
-      grid-template-columns: 1fr;
+    .badge-card {
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-elevated-soft);
+      padding: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-height: 60px;
     }
 
-    .stats-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .modal {
-      padding: 20px;
-    }
-
-    .masthead {
-      margin-bottom: 20px;
-    }
-
-    .header-title {
+    .badge-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 18px;
+      color: var(--accent);
     }
 
-    h1 {
-      font-size: 24px;
+    .badge-card.locked {
+      opacity: 0.4;
+      filter: grayscale(1);
     }
 
-    h2 {
-      font-size: 20px;
-    }
-
-    h3 {
-      font-size: 18px;
-    }
-  }
-
-  /* ===== ANIMATIONS ===== */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.001ms !important;
-    }
-  }
-
-  /* ===== PRINT ===== */
-  @media print {
-    .app-sidebar,
-    .app-header,
-    .header-actions {
-      display: none;
-    }
-
-    .app-main {
-      margin-left: 0;
-    }
-  }
-</style>
+  </style>
 </head>
 <body>
+<div class="app-shell">
 
-<div class="app-root">
-  <!-- SIDEBAR -->
-  <aside class="app-sidebar" id="sidebar">
+  <!-- OVERLAY -->
+  <div id="overlay" class="overlay"></div>
+
+  <!-- SIDEBAR / DRAWER -->
+  <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-title">Menu</div>
-      <button class="sidebar-close" id="sidebarClose" aria-label="Chiudi menu">×</button>
+      <span class="sidebar-title">Menu</span>
+      <button id="sidebarClose" class="sidebar-close">✕</button>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-item active" data-page="quiz">
-        <div class="nav-icon">🎮</div>
-        <div>Quiz</div>
-      </div>
-      <div class="nav-item" data-page="leaderboard">
-        <div class="nav-icon">🏆</div>
-        <div>Classifica</div>
-      </div>
-      <div class="nav-item" data-page="stats">
-        <div class="nav-icon">📊</div>
-        <div>Statistiche</div>
-      </div>
-      <div class="nav-item" data-page="archive">
-        <div class="nav-icon">📂</div>
-        <div>Archivio</div>
-      </div>
-      <div class="nav-item" data-page="badges">
-        <div class="nav-icon">🎖️</div>
-        <div>Badge</div>
-      </div>
-    </nav>
+    <div class="nav-section-label">Gioco</div>
+    <ul class="nav-list">
+      <li class="nav-item" data-page="page-home">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">🏠</div>
+          <span>Home</span>
+        </div>
+      </li>
+      <li class="nav-item" data-page="page-archive">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">🗂️</div>
+          <span>Archivio</span>
+        </div>
+      </li>
+      <li class="nav-item" data-page="page-stats">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">📊</div>
+          <span>Statistiche</span>
+        </div>
+      </li>
+      <li class="nav-item" data-page="page-advanced-stats">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">📈</div>
+          <span>Statistiche avanzate</span>
+        </div>
+      </li>
+      <li class="nav-item" data-page="page-badges">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">🏅</div>
+          <span>Badge</span>
+        </div>
+      </li>
+      <li class="nav-item" data-page="page-group">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">👥</div>
+          <span>Classifica gruppo</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="nav-section-label">Impostazioni</div>
+    <ul class="nav-list">
+      <li class="nav-item" data-page="page-settings">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">⚙️</div>
+          <span>Impostazioni</span>
+        </div>
+      </li>
+      <li class="nav-item" id="renameGroupBtn">
+        <div class="nav-item-label">
+          <div class="nav-item-icon">✏️</div>
+          <span>Rinomina gruppo</span>
+        </div>
+      </li>
+    </ul>
 
     <div class="sidebar-footer">
-      <div class="theme-toggle">
-        <button class="theme-btn active" data-theme="light">☀️</button>
-        <button class="theme-btn" data-theme="auto">🔄</button>
-        <button class="theme-btn" data-theme="dark">🌙</button>
-      </div>
+      Newsguess © 2026
     </div>
   </aside>
 
-  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-
-  <!-- MAIN CONTENT -->
-  <div class="app-main">
-    <!-- HEADER -->
-    <header class="app-header">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle" aria-label="Apri menu">☰</button>
-        <div class="header-title">Newsguess</div>
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="masthead-main-row">
+      <div class="masthead-title-wrap">
+        <div id="menuToggle" class="menu-toggle">
+          <span></span>
+        </div>
+        <img src="logo.png" class="app-logo" id="homeLogo" alt="Newsguess" />
+        <div class="masthead-title" id="mastheadTitle">Newsguess</div>
       </div>
-
-      <div class="header-actions">
-        <button class="header-action-btn" id="installBtn" title="Installa app" style="display: none;">📲</button>
-      </div>
-    </header>
-
-    <!-- CONTENT -->
-    <div class="app-content">
-      <!-- MASTHEAD -->
-      <div class="masthead">
-        <div class="masthead-tag">Est. 2019 · Quiz dei quotidiani</div>
-        <h1 class="masthead-title">Newsguess</h1>
-        <p class="masthead-subtitle">Il quiz delle prime pagine d'Italia</p>
-        <div class="masthead-meta">
-          <span id="todayDate">—</span>
-          <span class="accent">Edizione del lettore</span>
-        </div>
-      </div>
-
-      <!-- PAGE: QUIZ -->
-      <div class="page active" id="page-quiz">
-        <div id="modePicker" class="section">
-          <p class="small-caps">Scegli la modalità</p>
-          <div class="mode-grid">
-            <div class="mode-card" data-mode="daily">
-              <div class="mode-card-content">
-                <h3>Livello del giorno</h3>
-                <p>5 domande con le prime pagine di oggi.</p>
-                <div class="mode-status" id="dailyStatus"></div>
-              </div>
-            </div>
-            <div class="mode-card" data-mode="training">
-              <div class="mode-card-content">
-                <h3>Allenamento libero</h3>
-                <p>5 domande casuali da un'edizione passata. Non conta in classifica.</p>
-              </div>
-            </div>
-          </div>
-
-          <div id="archiveSection" class="section hidden">
-            <p class="small-caps">Edizioni precedenti</p>
-            <div class="card-grid" id="pastGrid"></div>
-          </div>
-        </div>
-
-        <!-- LOADING -->
-        <div id="loading" class="hidden" style="text-align: center;">
-          <div class="spinner"></div>
-          <p class="small-caps">Caricamento…</p>
-        </div>
-
-        <!-- ERROR -->
-        <div id="errorBox" class="card hidden" style="background: rgba(193, 66, 74, 0.1); border-color: var(--error);">
-          <h3 style="color: var(--error);">Errore di caricamento</h3>
-          <p id="errorMsg"></p>
-          <button class="btn btn-outline" onclick="resetToMenu()">Torna al menù</button>
-        </div>
-
-        <!-- QUIZ RUNNING -->
-        <div id="quizRunning" class="hidden">
-          <div class="question-header">
-            <div class="question-progress" id="qProgress">Domanda 1 di 5</div>
-            <div class="progress-dots" id="dots"></div>
-          </div>
-
-          <div class="question-card">
-            <div class="extracted-headline">
-              <div class="headline-tag" id="exSopra"></div>
-              <div class="headline-title" id="exTitolo"></div>
-              <div class="headline-subtitle" id="exSotto"></div>
-            </div>
-
-            <p class="small-caps">Da quale giornale proviene?</p>
-
-            <div class="choices-container" id="choices"></div>
-
-            <div style="text-align: right;">
-              <button class="btn" id="nextBtn" style="display: none;">Prossima domanda →</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- FINAL SCREEN -->
-        <div id="finalScreen" class="hidden">
-          <div class="result-container">
-            <p class="small-caps">Risultato</p>
-            <div class="result-score"><span id="finalScore">0</span><span style="opacity: 0.3; font-size: 0.4em;">/5</span></div>
-            <div class="result-verdict" id="verdict">—</div>
-
-            <table class="data-table" id="recapTable"></table>
-
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-              <button class="btn" id="saveScoreBtn">Salva punteggio</button>
-              <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
-              <button class="btn btn-outline" onclick="resetToMenu()">Menù principale</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE: LEADERBOARD -->
-      <div class="page" id="page-leaderboard">
-        <div id="lbLogin" class="section">
-          <h2>Sfida con gli amici</h2>
-          <p>Crea un gruppo e condividi il codice con i tuoi amici, oppure unisciti a un gruppo esistente.</p>
-
-          <div class="tabs-container">
-            <button class="tab-btn active" data-lbtab="join">Unisciti</button>
-            <button class="tab-btn" data-lbtab="create">Crea gruppo</button>
-          </div>
-
-          <!-- JOIN TAB -->
-          <div class="tab-content active" id="lbPane-join">
-            <div class="form-group">
-              <label for="lbJoinName">Il tuo nome</label>
-              <input class="modal-input" id="lbJoinName" type="text" maxlength="24" placeholder="Es. Giulia" />
-            </div>
-            <div class="form-group">
-              <label for="lbJoinCode">Codice del gruppo</label>
-              <input class="modal-input" id="lbJoinCode" type="text" maxlength="8" placeholder="Es. AB12CD" style="text-transform: uppercase; letter-spacing: 2px;" />
-            </div>
-            <button class="btn" id="lbJoinBtn">Entra nel gruppo</button>
-            <p id="lbJoinErr" style="color: var(--error); margin-top: 10px; display: none;"></p>
-          </div>
-
-          <!-- CREATE TAB -->
-          <div class="tab-content" id="lbPane-create">
-            <div class="form-group">
-              <label for="lbCreateName">Il tuo nome</label>
-              <input class="modal-input" id="lbCreateName" type="text" maxlength="24" placeholder="Es. Giulia" />
-            </div>
-            <div class="form-group">
-              <label for="lbCreateGroup">Nome del gruppo</label>
-              <input class="modal-input" id="lbCreateGroup" type="text" maxlength="32" placeholder="Es. Amici di Carlo" />
-            </div>
-            <button class="btn" id="lbCreateBtn">Crea il gruppo</button>
-            <p id="lbCreateErr" style="color: var(--error); margin-top: 10px; display: none;"></p>
-          </div>
-        </div>
-
-        <!-- GROUP CREATED -->
-        <div id="lbCreated" class="section hidden">
-          <h2>Gruppo creato! 🎉</h2>
-          <p>Condividi questo codice con i tuoi amici.</p>
-          <div style="background: var(--bg-tertiary); border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 24px; text-align: center; margin: 20px 0; font-family: 'Playfair Display', serif;">
-            <div style="font-size: 40px; font-weight: 900; letter-spacing: 8px; color: var(--accent-primary);" id="newGroupCode">—</div>
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-outline" id="lbCopyCodeBtn">Copia codice</button>
-            <button class="btn" id="lbCreatedContinueBtn">Vai alla classifica</button>
-          </div>
-        </div>
-
-        <!-- LOGGED IN -->
-        <div id="lbContent" class="hidden">
-          <div class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-tertiary); border-radius: var(--radius);">
-              <div style="font-family: 'Playfair Display', serif; font-weight: 700;">Ciao <span id="lbWho">—</span> <button class="btn" style="background: none; color: var(--text-primary); border: none; cursor: pointer; padding: 4px 8px;" id="lbEditNameBtn" title="Cambia nome">✏️</button></div>
-              <button class="btn btn-outline" id="lbLogoutBtn">Esci</button>
-            </div>
-          </div>
-
-          <div class="section">
-            <p class="small-caps">I tuoi gruppi</p>
-            <div class="pills-container" id="groupPills"></div>
-            <div style="display: flex; gap: 10px; margin-top: 16px;">
-              <button class="btn btn-outline" id="lbAddJoinBtn">+ Unisciti a un altro</button>
-              <button class="btn btn-outline" id="lbAddCreateBtn">+ Crea nuovo</button>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2>Classifica del giorno · <span id="lbActiveGroup" style="font-family: 'Playfair Display', serif; color: var(--accent-primary);">—</span></h2>
-            <p class="small-caps" id="lbDayDate">—</p>
-            <table class="data-table" id="lbDayTable"><thead><tr><th></th><th>Nome</th><th>Precisione</th><th>Punti</th></tr></thead><tbody></tbody></table>
-            <p id="lbDayEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio oggi.</p>
-          </div>
-
-          <div class="section">
-            <h2>Classifica mensile</h2>
-            <p class="small-caps" id="lbMonthLabel">—</p>
-            <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
-            <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE: STATS -->
-      <div class="page" id="page-stats">
-        <div id="statsEmpty" class="section hidden" style="text-align: center;">
-          <p style="font-size: 18px; font-style: italic;">Non hai ancora giocato a Newsguess.</p>
-          <p>Gioca la tua prima partita per iniziare a tracciare le statistiche.</p>
-        </div>
-
-        <div id="statsContent" class="hidden">
-          <div class="section">
-            <h2>Le tue statistiche</h2>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-value" id="stTotalGames">0</div>
-                <div class="stat-label">Partite giocate</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value" id="stAvgScore">0</div>
-                <div class="stat-label">Media punteggio</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value" id="stStreak">0</div>
-                <div class="stat-label">Streak giornaliera</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value" id="stBestScore">0</div>
-                <div class="stat-label">Punteggio massimo</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2>Precisione per giornale</h2>
-            <table class="data-table" id="stPaperTable"><thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody></tbody></table>
-          </div>
-
-          <div class="section">
-            <h2>Ultime partite</h2>
-            <table class="data-table" id="stRecentTable"><thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody></tbody></table>
-          </div>
-
-          <div style="text-align: center; margin-top: 24px;">
-            <button class="btn btn-outline" id="stResetBtn">Azzera statistiche</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE: ARCHIVE -->
-      <div class="page" id="page-archive">
-        <h2>Archivio storico</h2>
-        <p>Consulta le edizioni passate archivia te.</p>
-
-        <div class="tabs-container">
-          <button class="tab-btn active" data-abtab="dates">Per data</button>
-          <button class="tab-btn" data-abtab="papers">Per giornale</button>
-        </div>
-
-        <div class="tab-content active" id="ab-pane-dates">
-          <div id="abDatesList"></div>
-        </div>
-
-        <div class="tab-content" id="ab-pane-papers">
-          <div id="abPapersList"></div>
-        </div>
-      </div>
-
-      <!-- PAGE: BADGES -->
-      <div class="page" id="page-badges">
-        <h2>Badge & Risultati</h2>
-        <p>Presto: badge e risultati speciali.</p>
+      <div class="masthead-right">
+        <div class="masthead-subtitle">EST. 2019 – quiz dei quotidiani</div>
+        <div class="masthead-date" id="mastheadDate"></div>
       </div>
     </div>
+  </header>
+
+  <!-- CONTENUTO PRINCIPALE -->
+  <main class="content">
+
+    <!-- PAGINA HOME -->
+    <section id="page-home" class="page active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Gioca</div>
+          <div class="page-subtitle">Scegli la modalità</div>
+        </div>
+      </div>
+
+      <div class="mode-picker">
+        <div class="mode-chip" data-mode="daily">
+          <div class="mode-chip-title">Daily</div>
+          <div class="mode-chip-desc">Una partita al giorno</div>
+        </div>
+        <div class="mode-chip" data-mode="training">
+          <div class="mode-chip-title">Allenamento</div>
+          <div class="mode-chip-desc">Gioca quanto vuoi</div>
+        </div>
+      </div>
+
+      <div id="quizContainer" class="quiz-card" style="display:none;">
+        <div id="quizImage" class="quiz-image">Caricamento…</div>
+        <div id="quizOptions" class="quiz-options"></div>
+
+        <div class="quiz-footer">
+          <button id="btnNext" class="btn btn-primary">Avanti</button>
+          <div id="quizMeta" class="quiz-meta"></div>
+        </div>
+      </div>
+
+      <div id="quizResult" class="quiz-card" style="display:none;">
+        <div class="page-title">Risultato</div>
+        <div id="resultScore" class="stat-value"></div>
+        <div id="resultComment" class="page-subtitle"></div>
+
+        <button id="btnShare" class="btn btn-primary">Condividi</button>
+        <button id="btnRestart" class="btn btn-ghost">Torna alla home</button>
+      </div>
+    </section>
+
+    <!-- PAGINA ARCHIVIO -->
+    <section id="page-archive" class="page">
+      <div class="page-header">
+        <div class="page-title">Archivio</div>
+      </div>
+      <div id="archiveList">Caricamento…</div>
+    </section>
+
+    <!-- PAGINA STATISTICHE -->
+    <section id="page-stats" class="page">
+      <div class="page-header">
+        <div class="page-title">Statistiche</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Precisione</div>
+          </div>
+          <div id="statAccuracy" class="stat-value">–</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-title">Partite giocate</div>
+          </div>
+          <div id="statGames" class="stat-value">–</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGINA STATISTICHE AVANZATE -->
+    <section id="page-advanced-stats" class="page">
+      <div class="page-header">
+        <div class="page-title">Statistiche avanzate</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-title">Precisione per giornale</div>
+        <div id="chartNewspapers" class="chart">
+          <div class="chart-bars" id="chartBars"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGINA BADGE -->
+    <section id="page-badges" class="page">
+      <div class="page-header">
+        <div class="page-title">Badge</div>
+      </div>
+
+      <div id="badgeGrid" class="badge-grid"></div>
+    </section>
+
+    <!-- PAGINA GRUPPO -->
+    <section id="page-group" class="page">
+      <div class="page-header">
+        <div class="page-title">Classifica gruppo</div>
+      </div>
+      <div id="groupLeaderboard">Caricamento…</div>
+    </section>
+
+    <!-- PAGINA IMPOSTAZIONI -->
+    <section id="page-settings" class="page">
+      <div class="page-header">
+        <div class="page-title">Impostazioni</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-title">Tema</div>
+        <button id="themeLight" class="btn btn-ghost">Chiaro</button>
+        <button id="themeDark" class="btn btn-ghost">Scuro</button>
+        <button id="themeSystem" class="btn btn-ghost">Sistema</button>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-title">Reset locale</div>
+        <button id="resetLocal" class="btn btn-primary">Reset</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL RINOMINA GRUPPO -->
+<div id="modalRenameGroup" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Rinomina gruppo</h3>
+    <input id="renameGroupInput" type="text" placeholder="Nuovo nome" />
+    <button id="renameGroupConfirm" class="btn btn-primary">Conferma</button>
+    <button id="renameGroupCancel" class="btn btn-ghost">Annulla</button>
   </div>
 </div>
 
-<!-- MODALS -->
-
-<!-- CHANGE NAME MODAL -->
-<div class="modal-overlay" id="nameModal">
-  <div class="modal">
-    <h2>Cambia nome</h2>
-    <p>Il tuo nuovo nome apparirà nelle classifiche da ora in poi.</p>
-    <div class="form-group">
-      <label for="nameModalInput">Nuovo nome</label>
-      <input class="modal-input" id="nameModalInput" type="text" maxlength="24" placeholder="Es. Giulia" />
-    </div>
-    <p class="modal-error" id="nameModalErr"></p>
-    <div class="modal-row">
-      <button class="btn btn-outline" id="nameModalCancel">Annulla</button>
-      <button class="btn" id="nameModalConfirm">Salva</button>
-    </div>
+<!-- MODAL USCITA QUIZ -->
+<div id="modalExitQuiz" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Uscire dal quiz?</h3>
+    <button id="exitQuizYes" class="btn btn-primary">Sì</button>
+    <button id="exitQuizNo" class="btn btn-ghost">No</button>
   </div>
 </div>
 
-<!-- SAVE SCORE MODAL -->
-<div class="modal-overlay" id="saveModal">
-  <div class="modal">
-    <h2>Salva punteggio</h2>
-    <p>Scegli in quali gruppi salvare il tuo punteggio (<strong id="saveModalScore">0/5</strong>):</p>
-    <div id="saveModalGroups"></div>
-    <p class="modal-error" id="saveModalErr"></p>
-    <div class="modal-row">
-      <button class="btn btn-outline" id="saveModalCancel">Annulla</button>
-      <button class="btn" id="saveModalConfirm">Salva</button>
-    </div>
+<!-- MODAL BADGE -->
+<div id="modalBadge" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Nuovo badge!</h3>
+    <div id="modalBadgeName"></div>
+    <button id="modalBadgeClose" class="btn btn-primary">OK</button>
   </div>
 </div>
-
-<!-- CONFIRM EXIT MODAL -->
-<div class="modal-overlay" id="confirmExit">
-  <div class="modal" style="max-width: 340px;">
-    <h2>Vuoi davvero uscire?</h2>
-    <p>Stai giocando il Livello del giorno. Se esci adesso perderai i progressi della partita.</p>
-    <div class="modal-row">
-      <button class="btn btn-outline" id="confirmExitNo">Annulla</button>
-      <button class="btn btn-error" id="confirmExitYes">Esci</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
 <script>
-/* =========================================================
-   CONFIGURAZIONE & STATE
-   =========================================================
-   Preservo 100% della logica originale - solo adattamenti DOM
-========================================================= */
-
-const firebaseConfig = {
-  apiKey:            "AIzaSyCMqbGeZjwwExSE3s6RqXSU9czD0gTvn_Y",
-  authDomain:        "giornali-4cdfe.firebaseapp.com",
-  projectId:         "giornali-4cdfe",
-  storageBucket:     "giornali-4cdfe.firebasestorage.app",
-  messagingSenderId: "911753113078",
-  appId:             "1:911753113078:web:098f358c69273158ba6bd7"
+/* ============================================================
+   STATE MANAGER
+============================================================ */
+const State = {
+  currentPage: "page-home",
+  quizActive: false,
+  modalOpen: null,
+  theme: localStorage.getItem("theme") || "system",
 };
 
+/* ============================================================
+   HELPERS
+============================================================ */
+function $(id) {
+  return document.getElementById(id);
+}
+
+function show(el) {
+  if (typeof el === "string") el = $(el);
+  if (el) el.style.display = "";
+}
+
+function hide(el) {
+  if (typeof el === "string") el = $(el);
+  if (el) el.style.display = "none";
+}
+
+function setActivePage(pageId) {
+  // nascondi tutte le pagine
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+
+  // mostra quella richiesta
+  $(pageId).classList.add("active");
+
+  // aggiorna stato
+  State.currentPage = pageId;
+
+  // aggiorna sidebar
+  document.querySelectorAll(".nav-item").forEach(item => {
+    const target = item.getAttribute("data-page");
+    if (target === pageId) item.classList.add("active");
+    else item.classList.remove("active");
+  });
+}
+
+function setDate() {
+  const now = new Date();
+  const formatted = now.toLocaleDateString("it-IT", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  $("mastheadDate").textContent = formatted;
+}
+
+/* ============================================================
+   SIDEBAR / DRAWER
+============================================================ */
+const sidebar = $("sidebar");
+const overlay = $("overlay");
+const menuToggle = $("menuToggle");
+const sidebarClose = $("sidebarClose");
+
+function openSidebar() {
+  sidebar.classList.add("open");
+  overlay.classList.add("visible");
+  menuToggle.classList.add("open");
+}
+
+function closeSidebar() {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("visible");
+  menuToggle.classList.remove("open");
+}
+
+menuToggle.addEventListener("click", () => {
+  if (sidebar.classList.contains("open")) closeSidebar();
+  else openSidebar();
+});
+
+sidebarClose.addEventListener("click", closeSidebar);
+overlay.addEventListener("click", closeSidebar);
+
+/* ============================================================
+   NAVIGAZIONE
+============================================================ */
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.addEventListener("click", () => {
+    const page = item.getAttribute("data-page");
+    if (page) {
+      closeSidebar();
+      setActivePage(page);
+    }
+  });
+});
+
+// logo → home
+$("homeLogo").addEventListener("click", () => {
+  setActivePage("page-home");
+});
+
+// titolo → home
+$("mastheadTitle").addEventListener("click", () => {
+  setActivePage("page-home");
+});
+
+/* ============================================================
+   BACK HANDLING
+============================================================ */
+function handleBack() {
+  // 1) chiudi modale
+  if (State.modalOpen) {
+    closeModal(State.modalOpen);
+    return;
+  }
+
+  // 2) chiudi sidebar
+  if (sidebar.classList.contains("open")) {
+    closeSidebar();
+    return;
+  }
+
+  // 3) se quiz attivo → chiedi conferma
+  if (State.quizActive) {
+    openModal("modalExitQuiz");
+    return;
+  }
+
+  // 4) altrimenti torna alla home
+  if (State.currentPage !== "page-home") {
+    setActivePage("page-home");
+    return;
+  }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") handleBack();
+});
+
+/* ============================================================
+   MODALI
+============================================================ */
+function openModal(id) {
+  const modal = $(id);
+  if (!modal) return;
+  modal.style.display = "flex";
+  State.modalOpen = id;
+}
+
+function closeModal(id) {
+  const modal = $(id);
+  if (!modal) return;
+  modal.style.display = "none";
+  State.modalOpen = null;
+}
+
+$("modalBadgeClose").addEventListener("click", () => closeModal("modalBadge"));
+$("renameGroupCancel").addEventListener("click", () => closeModal("modalRenameGroup"));
+$("exitQuizNo").addEventListener("click", () => closeModal("modalExitQuiz"));
+
+/* ============================================================
+   THEME SYSTEM
+============================================================ */
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.documentElement.setAttribute("data-theme", "light");
+  } else if (theme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+applyTheme(State.theme);
+
+$("themeLight").addEventListener("click", () => {
+  State.theme = "light";
+  localStorage.setItem("theme", "light");
+  applyTheme("light");
+});
+
+$("themeDark").addEventListener("click", () => {
+  State.theme = "dark";
+  localStorage.setItem("theme", "dark");
+  applyTheme("dark");
+});
+
+$("themeSystem").addEventListener("click", () => {
+  State.theme = "system";
+  localStorage.setItem("theme", "system");
+  applyTheme("system");
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+setDate();
+setActivePage("page-home");
+</script>
+<script>
+/* ============================================================
+   QUIZ DATA (placeholder — da sostituire con Firestore)
+============================================================ */
 const NEWSPAPERS = [
-  { id: "corriere",   name: "Corriere della Sera",   slug: "corriere-della-sera",   clue: "Quotidiano milanese fondato nel 1876, considerato giornale di riferimento del centro-Italia." },
-  { id: "repubblica", name: "La Repubblica",         slug: "la-repubblica",         clue: "Fondato da Eugenio Scalfari nel 1976, formato tabloid, area progressista." },
-  { id: "stampa",     name: "La Stampa",             slug: "la-stampa",             clue: "Quotidiano torinese di proprietà GEDI, storicamente legato a FIAT." },
-  { id: "fatto",      name: "Il Fatto Quotidiano",   slug: "il-fatto-quotidiano",   clue: "Nato nel 2009, taglio inchiestistico, fondato da Padellaro e Travaglio." },
-  { id: "messaggero", name: "Il Messaggero",         slug: "il-messaggero",         clue: "Storico quotidiano romano, fondato nel 1878." },
-  { id: "giornale",   name: "Il Giornale",           slug: "il-giornale",           clue: "Fondato da Indro Montanelli nel 1974, oggi area centrodestra." },
-  { id: "libero",     name: "Libero",                slug: "libero",                clue: "Quotidiano nato nel 2000, titoli forti e provocatori, area conservatrice." },
-  { id: "manifesto",  name: "Il Manifesto",          slug: "il-manifesto",          clue: "Cooperativa di giornalisti dal 1969, sottotitolo \"quotidiano comunista\"." },
-  { id: "sole",       name: "Il Sole 24 Ore",        slug: "il-sole-24-ore",        clue: "Carta color salmone, di proprietà di Confindustria, focus economico-finanziario." },
-  { id: "avvenire",   name: "Avvenire",              slug: "avvenire",              clue: "Quotidiano di ispirazione cattolica, edito dalla CEI dal 1968." }
+  "Il Fatto Quotidiano",
+  "Il Sole 24 Ore",
+  "Avvenire",
+  "Il Messaggero",
+  "Corriere della Sera",
+  "La Stampa",
+  "Libero",
+  "Il Manifesto",
+  "Il Giornale",
+  "La Repubblica"
 ];
 
-const state = {
+/* ============================================================
+   QUIZ STATE
+============================================================ */
+let quiz = {
   mode: null,
-  dateISO: null,
-  questions: [],
-  current: 0,
+  index: 0,
   score: 0,
-  user: null,
+  questions: [],
+  answered: false,
 };
 
-const dailyDoneKey = (iso) => `daily-done-${iso}`;
-const dailyDoneToday = () => localStorage.getItem(dailyDoneKey(todayISO()));
-
-const USER_KEY = 'quizUser';
-function loadUser() {
-  let raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
-  if (!raw) return null;
-  try {
-    const u = JSON.parse(raw);
-    if (u.groupCode && !u.groups) {
-      return { name: u.name, groups: [{ code: u.groupCode, name: u.group || u.groupCode }], activeGroupCode: u.groupCode };
-    }
-    if (u.groups && Array.isArray(u.groups)) {
-      if (!u.activeGroupCode && u.groups[0]) u.activeGroupCode = u.groups[0].code;
-      return u;
-    }
-    return null;
-  } catch { return null; }
-}
-function saveUser() {
-  if (state.user) localStorage.setItem(USER_KEY, JSON.stringify(state.user));
-  else { localStorage.removeItem(USER_KEY); sessionStorage.removeItem(USER_KEY); }
+/* ============================================================
+   GENERA UNA PARTITA (placeholder)
+============================================================ */
+function generateQuizQuestions() {
+  return Array.from({ length: 5 }).map(() => ({
+    image: "https://placehold.co/600x800?text=Prima+Pagina",
+    correct: NEWSPAPERS[Math.floor(Math.random() * NEWSPAPERS.length)],
+    options: shuffle([
+      ...NEWSPAPERS.sort(() => Math.random() - 0.5).slice(0, 3),
+      NEWSPAPERS[Math.floor(Math.random() * NEWSPAPERS.length)]
+    ])
+  }));
 }
 
-/* Helpers */
-const $ = (id) => document.getElementById(id);
-
-const todayISO = () => {
-  const d = new Date();
-  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-};
-
-const monthKey = (iso) => iso.slice(0,7);
-
-const fmtDateIT = (iso) => {
-  const [y,m,d] = iso.split('-');
-  const months = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
-  return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
-};
-
-const shuffle = (arr) => {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-};
-
-const sampleN = (arr, n) => shuffle(arr).slice(0, n);
-
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-function showToast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove('show'), 2400);
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
 }
 
-$('todayDate').textContent = fmtDateIT(todayISO());
-
-/* ===== TEMA (LIGHT/DARK/AUTO) ===== */
-const themeKey = 'ng-theme';
-
-function setTheme(theme) {
-  if (theme === 'auto') {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  } else {
-    document.documentElement.setAttribute('data-theme', theme);
-  }
-  localStorage.setItem(themeKey, theme);
-  updateThemeButtons(theme);
-}
-
-function updateThemeButtons(theme) {
-  document.querySelectorAll('.theme-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.theme === theme);
-  });
-}
-
-const savedTheme = localStorage.getItem(themeKey) || 'auto';
-setTheme(savedTheme);
-
-const themeToggleContainer = document.querySelector('.theme-toggle');
-if (themeToggleContainer) {
-  themeToggleContainer.addEventListener('click', (e) => {
-    const btn = e.target.closest('.theme-btn');
-    if (btn && btn.dataset.theme) {
-      setTheme(btn.dataset.theme);
-    }
-  });
-} else {
-  // Fallback: direct attachment
-  setTimeout(() => {
-    document.querySelectorAll('.theme-btn').forEach(b => {
-      b.addEventListener('click', () => setTheme(b.dataset.theme));
-    });
-  }, 100);
-}
-
-/* ===== NAVIGAZIONE PAGINE ===== */
-function openPage(pageName) {
-  // Nascondi tutte le pagine
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  // Mostra pagina selezionata
-  const pageEl = $(`page-${pageName}`);
-  if (pageEl) pageEl.classList.add('active');
-  // Aggiorna nav
-  document.querySelectorAll('.nav-item').forEach(n => {
-    n.classList.toggle('active', n.dataset.page === pageName);
-  });
-  // Chiudi sidebar su mobile
-  if (window.innerWidth < 769) {
-    $('sidebar').classList.remove('open');
-    $('sidebarBackdrop').classList.remove('open');
-  }
-  // Carica dati se necessario
-  if (pageName === 'leaderboard') refreshLeaderboards();
-  if (pageName === 'stats') renderStats();
-}
-
-// Nav items click - usa event delegation
-const sidebarNav = document.querySelector('.sidebar-nav');
-if (sidebarNav) {
-  sidebarNav.addEventListener('click', (e) => {
-    const navItem = e.target.closest('.nav-item');
-    if (navItem) {
-      const page = navItem.dataset.page;
-      if (page) openPage(page);
-    }
-  });
-}
-
-// Logo "Newsguess" GRANDE (masthead) torna a home - con deferred binding
-setTimeout(() => {
-  const masthead = document.querySelector('.masthead-title');
-  if (masthead) {
-    masthead.addEventListener('click', () => {
-      openPage('quiz');
-      $('modePicker').classList.remove('hidden');
-      $('errorBox').classList.add('hidden');
-      $('quizRunning').classList.add('hidden');
-      $('finalScreen').classList.add('hidden');
-      $('loading').classList.add('hidden');
-    });
-  }
-}, 100);
-
-/* ===== SIDEBAR TOGGLE ===== */
-const menuToggle = $('menuToggle');
-if (menuToggle) {
-  menuToggle.addEventListener('click', () => {
-    $('sidebar').classList.toggle('open');
-    $('sidebarBackdrop').classList.toggle('open');
-  });
-}
-
-const sidebarClose = $('sidebarClose');
-if (sidebarClose) {
-  sidebarClose.addEventListener('click', () => {
-    $('sidebar').classList.remove('open');
-    $('sidebarBackdrop').classList.remove('open');
-  });
-}
-
-const sidebarBackdrop = $('sidebarBackdrop');
-if (sidebarBackdrop) {
-  sidebarBackdrop.addEventListener('click', () => {
-    $('sidebar').classList.remove('open');
-    $('sidebarBackdrop').classList.remove('open');
-  });
-}
-
-/* ===== MODALI ===== */
-function openModal(modalId) {
-  $(modalId).classList.add('open');
-}
-
-function closeModal(modalId) {
-  $(modalId).classList.remove('open');
-}
-
-// Chiudi modali con ESC
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.open').forEach(m => {
-      m.classList.remove('open');
-    });
-  }
-});
-
-// Chiudi cliccando backdrop
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-      overlay.classList.remove('open');
-    }
-  });
-});
-
-/* ===== PWA ===== */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/api/sw.js', { scope: '/api/' }).catch(err => console.warn('SW reg failed:', err));
-  });
-}
-
-let _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  _deferredInstall = e;
-  $('installBtn').style.display = '';
-});
-
-function triggerInstall() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.finally(() => {
-    _deferredInstall = null;
-    $('installBtn').style.display = 'none';
-  });
-}
-
-$('installBtn').addEventListener('click', triggerInstall);
-window.triggerInstall = triggerInstall;
-
-/* ===== ARCHIVIO ===== */
-async function loadArchive() {
-  try {
-    const r = await fetch('/api/archive-dates');
-    if (!r.ok) return;
-    const data = await r.json();
-    const dates = (data.dates || []).filter(d => d.papers >= 5).slice(0, 12);
-    const sec = $('archiveSection');
-    const grid = $('pastGrid');
-    grid.innerHTML = '';
-    if (!dates.length) { sec.classList.add('hidden'); return; }
-    sec.classList.remove('hidden');
-    dates.forEach((d, i) => {
-      const saved = localStorage.getItem('past-score-' + d.date);
-      const card = document.createElement('div');
-      card.className = 'card card-small';
-      if (saved) card.style.opacity = '0.7';
-      card.innerHTML = `
-        <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 22px; margin-bottom: 8px;">${fmtDateIT(d.date)}</div>
-        <div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali</div>
-        ${saved ? `<div style="font-weight: 700; color: var(--accent-primary); margin-top: 8px;">${saved}/5 ✓</div>` : ''}
-      `;
-      card.addEventListener('click', () => startQuiz('past', d.date));
-      grid.appendChild(card);
-    });
-  } catch (e) { console.warn('archive load failed', e); }
-}
-loadArchive();
-
-/* ===== ARCHIVE BROWSER ===== */
-document.querySelectorAll('[data-abtab]').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('[data-abtab]').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    const tab = t.dataset.abtab;
-    $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
-    $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
-  });
-});
-
-async function loadArchiveBrowserDates() {
-  try {
-    const r = await fetch('/api/archive-dates');
-    const data = await r.json();
-    const dates = data.dates || [];
-    const cont = $('abDatesList');
-    if (!dates.length) { cont.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic">Archivio ancora vuoto.</p>'; return; }
-    cont.innerHTML = '';
-    dates.forEach(d => {
-      const item = document.createElement('div');
-      item.className = 'card card-small';
-      item.style.cursor = 'pointer';
-      item.innerHTML = `<h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3><div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali archiviati</div>`;
-      item.addEventListener('click', () => showDateDetail(d.date));
-      cont.appendChild(item);
-    });
-  } catch (e) { console.warn(e); }
-}
-
-async function showDateDetail(date) {
-  const cont = $('abDatesList');
-  cont.innerHTML = `<div><button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserDates()">← Indietro</button><h3 style="margin-top: 16px;">${fmtDateIT(date)}</h3><p>Caricamento…</p></div>`;
-  try {
-    const r = await fetch(`/api/archive-papers?date=${date}`);
-    const data = await r.json();
-    let html = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserDates()">← Indietro</button><h3 style="margin-top: 16px;">${fmtDateIT(date)}</h3>`;
-    if (!data.items?.length) {
-      html += '<p style="color:var(--text-tertiary);font-style:italic">Nessun titolo per questa data.</p>';
-    } else {
-      data.items.forEach(it => {
-        const np = NEWSPAPERS.find(n => n.slug === it.slug);
-        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(it.slug)}&date=${date}`;
-        html += `<div class="card card-small" style="cursor: pointer;" onclick="openLightbox('${imgUrl}')">
-          <div style="font-weight: 700; margin-bottom: 8px;">${escapeHtml(np?.name || it.slug)}</div>
-          ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
-          <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
-          ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-        </div>`;
-      });
-    }
-    cont.innerHTML = html;
-  } catch (e) { cont.innerHTML = `<p style="color:var(--error)">Errore: ${e.message}</p>`; }
-}
-
-function loadArchiveBrowserPapers() {
-  const cont = $('abPapersList');
-  cont.innerHTML = '';
-  NEWSPAPERS.forEach(np => {
-    const item = document.createElement('div');
-    item.className = 'card card-small';
-    item.style.cursor = 'pointer';
-    item.innerHTML = `<h3 style="margin: 0 0 6px; font-size: 18px;">${np.name}</h3>`;
-    item.addEventListener('click', () => showPaperDetail(np));
-    cont.appendChild(item);
-  });
-}
-
-async function showPaperDetail(np) {
-  const cont = $('abPapersList');
-  cont.innerHTML = `<div><button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${np.name}</h3><p>Caricamento…</p></div>`;
-  try {
-    const r = await fetch(`/api/archive-paper-dates?slug=${np.slug}`);
-    const data = await r.json();
-    let html = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${np.name}</h3>`;
-    if (!data.items?.length) {
-      html += '<p style="color:var(--text-tertiary);font-style:italic">Nessuna edizione archiviata.</p>';
-    } else {
-      data.items.forEach(it => {
-        const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
-        html += `<div class="card card-small" style="cursor: pointer;" onclick="openLightbox('${imgUrl}')">
-          <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
-          ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
-          <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
-          ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-        </div>`;
-      });
-    }
-    cont.innerHTML = html;
-  } catch (e) { cont.innerHTML = `<p style="color:var(--error)">Errore: ${e.message}</p>`; }
-}
-
-function openLightbox(url) {
-  let lb = document.getElementById('lightbox');
-  if (!lb) {
-    lb = document.createElement('div');
-    lb.id = 'lightbox';
-    lb.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 3000; padding: 20px;';
-    lb.innerHTML = '<img alt="Prima pagina" style="max-width: 100%; max-height: 100%; object-fit: contain;" />';
-    lb.addEventListener('click', closeLightbox);
-    document.body.appendChild(lb);
-  }
-  lb.querySelector('img').src = url;
-  lb.style.display = 'flex';
-}
-
-function closeLightbox() {
-  const lb = document.getElementById('lightbox');
-  if (lb) lb.style.display = 'none';
-}
-
-window.openLightbox = openLightbox;
-window.closeLightbox = closeLightbox;
-window.loadArchiveBrowserDates = loadArchiveBrowserDates;
-window.loadArchiveBrowserPapers = loadArchiveBrowserPapers;
-
-loadArchiveBrowserDates();
-loadArchiveBrowserPapers();
-
-/* ===== MODE PICKER ===== */
-document.querySelectorAll('.mode-card').forEach(c => {
-  c.addEventListener('click', () => {
-    const mode = c.dataset.mode;
-    if (mode === 'daily' && dailyDoneToday()) {
-      const done = JSON.parse(dailyDoneToday());
-      alert(`Hai già giocato la sfida del giorno (${done.score}/5).\nPer la classifica vale solo il primo tentativo. Torna domani per una nuova sfida!`);
-      return;
-    }
+/* ============================================================
+   AVVIO MODALITÀ
+============================================================ */
+document.querySelectorAll(".mode-chip").forEach(chip => {
+  chip.addEventListener("click", () => {
+    const mode = chip.getAttribute("data-mode");
     startQuiz(mode);
   });
 });
 
-function refreshDailyStatus() {
-  const card = document.querySelector('[data-mode="daily"]');
-  const status = $('dailyStatus');
-  const done = dailyDoneToday();
-  if (done) {
-    card.classList.add('completed');
-    status.textContent = 'Sfida giornaliera già disputata';
-  } else {
-    card.classList.remove('completed');
-    status.textContent = '';
-  }
-}
-refreshDailyStatus();
+function startQuiz(mode) {
+  quiz.mode = mode;
+  quiz.index = 0;
+  quiz.score = 0;
+  quiz.questions = generateQuizQuestions();
+  quiz.answered = false;
 
-/* ===== QUIZ FLOW ===== */
-async function startQuiz(mode, dateISO) {
-  state.mode = mode;
-  state.questions = [];
-  state.current = 0;
-  state.score = 0;
+  State.quizActive = true;
 
-  if (mode === 'daily')    state.dateISO = todayISO();
-  if (mode === 'past')     state.dateISO = dateISO;
+  hide("quizResult");
+  show("quizContainer");
 
-  $('modePicker').classList.add('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.add('hidden');
-  $('loading').classList.remove('hidden');
-
-  try {
-    if (mode === 'training') {
-      const r = await fetch('/api/archive-dates');
-      if (!r.ok) throw new Error('Archivio non disponibile.');
-      const data = await r.json();
-      const today = todayISO();
-      const eligibleDates = (data.dates || []).filter(d => d.papers >= 4 && d.date !== today);
-      if (!eligibleDates.length) {
-        throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno.');
-      }
-      const pickDate = eligibleDates[Math.floor(Math.random() * eligibleDates.length)].date;
-      state.dateISO = pickDate;
-    }
-
-    let pickedFrom = NEWSPAPERS;
-    if (mode === 'past' || mode === 'training') {
-      const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
-      if (!r.ok) throw new Error('Archivio non disponibile per questa data');
-      const data = await r.json();
-      const slugs = new Set(data.slugs || []);
-      pickedFrom = NEWSPAPERS.filter(n => slugs.has(n.slug));
-      if (pickedFrom.length < 4) throw new Error('Edizione incompleta in archivio');
-    }
-    const picked = sampleN(pickedFrom, Math.min(5, pickedFrom.length));
-
-    const LOADING_MESSAGES = [
-      "«Sapere è potere.» — Francis Bacon",
-      "«La libertà di stampa è il sale della libertà.» — Voltaire",
-      "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-      "«La saggezza comincia nella meraviglia.» — Socrate",
-      "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-    ];
-    for (let i = 0; i < picked.length; i++) {
-      const np = picked[i];
-      $('loading').querySelector('p').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
-      const q = await buildQuestion(np, state.dateISO);
-      state.questions.push(q);
-    }
-    $('loading').classList.add('hidden');
-    $('quizRunning').classList.remove('hidden');
-    renderQuestion();
-  } catch (e) {
-    console.error(e);
-    $('loading').classList.add('hidden');
-    $('errorBox').classList.remove('hidden');
-    $('errorMsg').textContent = e.message || 'Errore sconosciuto.';
-  }
+  loadQuestion();
 }
 
-async function buildQuestion(np, dateISO) {
-  const cacheKey = `q3-${dateISO}-${np.id}`;
-  const cached = localStorage.getItem(cacheKey);
-  let extracted;
-  if (cached) {
-    try { extracted = JSON.parse(cached); } catch { extracted = null; }
-  }
-  if (!extracted) {
-    extracted = await fetchHeadlines(np.slug, dateISO);
-    try { localStorage.setItem(cacheKey, JSON.stringify(extracted)); } catch {}
-  }
-  const wrongs = sampleN(NEWSPAPERS.filter(n => n.id !== np.id), 3);
-  const choices = shuffle([np, ...wrongs]).map(n => ({ id: n.id, name: n.name }));
-  return {
-    paper: np,
-    sopra: extracted.sopratitolo || null,
-    titolo: extracted.titolo_principale || '',
-    sotto: extracted.sottotitolo || null,
-    choices,
-    given: null,
-  };
-}
+/* ============================================================
+   CARICA DOMANDA
+============================================================ */
+function loadQuestion() {
+  const q = quiz.questions[quiz.index];
 
-async function fetchHeadlines(slug, dateISO) {
-  const isToday = dateISO === todayISO();
-  const params = isToday ? `slug=${encodeURIComponent(slug)}` : `slug=${encodeURIComponent(slug)}&date=${dateISO}`;
-  const url = `/api/extract-headlines?${params}`;
-  const delays = [0, 2000, 4000, 8000, 15000];
-  let lastErr;
-  for (let attempt = 0; attempt < delays.length; attempt++) {
-    if (delays[attempt] > 0) await new Promise(r => setTimeout(r, delays[attempt]));
-    try {
-      const r = await fetch(url, { cache: 'no-store' });
-      if (r.status === 404) {
-        const body = await r.text();
-        if (body.includes('archivio') || body.includes('"detail"')) {
-          throw new Error(body.slice(0, 160));
-        }
-        lastErr = new Error('Server temporaneamente offline');
-        continue;
-      }
-      if (r.status === 502 || r.status === 503 || r.status === 504) {
-        lastErr = new Error(`Server in ripristino (${r.status})`);
-        continue;
-      }
-      if (r.status === 429) throw new Error('Troppe richieste. Aspetta un minuto e riprova.');
-      if (!r.ok) {
-        const t = await r.text();
-        throw new Error(`Errore ${r.status}: ${t.slice(0,160)}`);
-      }
-      return await r.json();
-    } catch (e) {
-      if (!lastErr || e.message !== lastErr.message) lastErr = e;
-    }
-  }
-  throw new Error('Il server è temporaneamente offline. Riprova fra qualche minuto.');
-}
+  $("quizImage").innerHTML = `<img src="${q.image}" style="width:100%;border-radius:12px;" />`;
 
-/* ===== RENDER QUESTION ===== */
-function renderQuestion() {
-  const q = state.questions[state.current];
-  $('qProgress').textContent = `Domanda ${state.current + 1} di ${state.questions.length}`;
-
-  const dots = $('dots');
-  dots.innerHTML = '';
-  state.questions.forEach((qq, i) => {
-    const d = document.createElement('div');
-    d.className = 'progress-dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
-    if (i === state.current && qq.given == null) d.classList.add('current');
-    dots.appendChild(d);
+  $("quizOptions").innerHTML = "";
+  q.options.forEach(opt => {
+    const div = document.createElement("div");
+    div.className = "quiz-option";
+    div.innerHTML = `<div class="quiz-option-label">${opt}</div>`;
+    div.addEventListener("click", () => selectOption(opt));
+    $("quizOptions").appendChild(div);
   });
 
-  $('exSopra').textContent = q.sopra || '';
-  $('exSopra').style.display = q.sopra ? '' : 'none';
-  $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
-  $('exSotto').textContent = q.sotto || '';
-  $('exSotto').style.display = q.sotto ? '' : 'none';
-
-  const cont = $('choices');
-  cont.innerHTML = '';
-  q.choices.forEach((c, i) => {
-    const b = document.createElement('button');
-    b.className = 'choice-btn';
-    b.textContent = c.name;
-    b.addEventListener('click', () => answer(c.id, b));
-    cont.appendChild(b);
-  });
-
-  $('nextBtn').style.display = 'none';
+  $("quizMeta").textContent = `Domanda ${quiz.index + 1} di 5`;
 }
 
-function answer(givenId, btnEl) {
-  const q = state.questions[state.current];
-  if (q.given) return;
-  q.given = givenId;
-  const correct = q.paper.id;
-  if (givenId === correct) state.score++;
-  document.querySelectorAll('.choice-btn').forEach(b => {
-    b.disabled = true;
-    const cid = q.choices.find(c => c.name === b.textContent)?.id;
-    if (cid === correct) b.classList.add('correct');
-    else if (cid === givenId) b.classList.add('incorrect');
+/* ============================================================
+   SELEZIONE RISPOSTA
+============================================================ */
+function selectOption(selected) {
+  if (quiz.answered) return;
+  quiz.answered = true;
+
+  const q = quiz.questions[quiz.index];
+
+  document.querySelectorAll(".quiz-option").forEach(opt => {
+    const label = opt.querySelector(".quiz-option-label").textContent;
+
+    if (label === q.correct) {
+      opt.classList.add("correct");
+    } else if (label === selected) {
+      opt.classList.add("wrong");
+    }
   });
-  renderDotsOnly();
-  $('nextBtn').style.display = '';
+
+  if (selected === q.correct) quiz.score++;
 }
 
-function renderDotsOnly() {
-  const dots = $('dots');
-  dots.innerHTML = '';
-  state.questions.forEach((qq, i) => {
-    const d = document.createElement('div');
-    d.className = 'progress-dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
-    if (i === state.current && qq.given == null) d.classList.add('current');
-    dots.appendChild(d);
-  });
-}
+/* ============================================================
+   AVANTI
+============================================================ */
+$("btnNext").addEventListener("click", () => {
+  if (!quiz.answered) return;
 
-$('nextBtn').addEventListener('click', () => {
-  if (state.current < state.questions.length - 1) {
-    state.current++;
-    renderQuestion();
-  } else {
+  quiz.index++;
+  quiz.answered = false;
+
+  if (quiz.index >= quiz.questions.length) {
     finishQuiz();
+  } else {
+    loadQuestion();
   }
 });
 
-/* ===== FINAL SCREEN ===== */
-function verdictFor(score) {
-  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
-}
-
+/* ============================================================
+   FINE QUIZ
+============================================================ */
 function finishQuiz() {
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.remove('hidden');
-  animateScoreCountUp($('finalScore'), state.score, 800);
-  $('verdict').textContent = verdictFor(state.score);
+  State.quizActive = false;
 
-  let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
-  state.questions.forEach((q, i) => {
-    const ok = q.given === q.paper.id;
-    const givenName = q.choices.find(c => c.id === q.given)?.name || '—';
-    html += `<tr ${ok ? 'class="highlight"' : ''}><td>${i+1}</td><td><em>${q.paper.name}</em></td><td>${givenName}</td><td class="${ok ? 'table-success' : 'table-error'}">${ok ? '✓' : '✗'}</td></tr>`;
-  });
-  html += '</tbody>';
-  $('recapTable').innerHTML = html;
+  hide("quizContainer");
+  show("quizResult");
 
-  $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
-  $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
+  $("resultScore").textContent = `${quiz.score}/5`;
 
-  trackGameInStats({
-    mode: state.mode,
-    dateISO: state.dateISO,
-    score: state.score,
-    total: state.questions.length,
-    questions: state.questions.map(q => ({
-      paperId: q.paper.id,
-      paperSlug: q.paper.slug,
-      paperName: q.paper.name,
-      ok: q.given === q.paper.id,
-    })),
-    ts: Date.now(),
-  });
+  const comment = generateJournalisticComment(quiz.score);
+  $("resultComment").innerHTML = comment;
 
-  if (state.mode === 'past') {
-    localStorage.setItem('past-score-' + state.dateISO, state.score);
-    loadArchive();
-  }
-  if (state.mode === 'daily') {
-    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
-    refreshDailyStatus();
-    loadArchive();
-  }
-
-  if (state.score === state.questions.length) {
-    setTimeout(() => launchConfetti(), 450);
-  }
+  checkAndUnlockBadges();
+  announceBadges();
 }
 
-function animateScoreCountUp(el, target, duration) {
-  if (!el) return;
-  const start = performance.now();
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / duration);
-    const eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = Math.round(target * eased);
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target;
+/* ============================================================
+   COMMENTO GIORNALISTICO (NUOVA VERSIONE)
+============================================================ */
+function generateJournalisticComment(score) {
+  const titles = [
+    "Edizione Straordinaria",
+    "Prima Pagina",
+    "La Redazione Si Interroga",
+    "Il Caso Del Giorno",
+    "Editoriale d’Autore",
+    "Ultim’ora dalla Redazione"
+  ];
+
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  const lines = {
+    0: [
+      "Un disastro editoriale.",
+      "La redazione chiede spiegazioni.",
+      "Nemmeno il titolo ti ha aiutato.",
+      "I tipografi stanno ridendo forte.",
+      "Il direttore ha lasciato la stanza."
+    ],
+    1: [
+      "Una timida apertura.",
+      "Qualcosa si muove in redazione.",
+      "C’è margine di miglioramento.",
+      "Il correttore di bozze scuote la testa.",
+      "La prima pagina non è ancora pronta."
+    ],
+    2: [
+      "Un risultato da cronaca locale.",
+      "La redazione apprezza lo sforzo.",
+      "Si intravede del potenziale.",
+      "Il caporedattore ti osserva con curiosità.",
+      "La tipografia ha acceso le macchine."
+    ],
+    3: [
+      "Buona performance.",
+      "La redazione ti osserva con interesse.",
+      "Stai prendendo il ritmo.",
+      "Il direttore annuisce soddisfatto.",
+      "La pagina tre è tutta tua."
+    ],
+    4: [
+      "Quasi perfetto.",
+      "La redazione applaude.",
+      "Un risultato da prima pagina.",
+      "Il caporedattore ti stringe la mano.",
+      "La tipografia è in fermento."
+    ],
+    5: [
+      "Perfetto.",
+      "La redazione è in festa.",
+      "Un trionfo editoriale.",
+      "Il direttore ti vuole in riunione.",
+      "La prima pagina è già storia."
+    ]
   };
-  requestAnimationFrame(step);
+
+  // scegli 3 frasi casuali tra le 5 disponibili
+  const chosen = shuffle([...lines[score]]).slice(0, 3);
+
+  return `
+    <strong>${pick(titles)}</strong><br>
+    ${chosen.join("<br>")}
+  `;
 }
 
-function launchConfetti() {
-  const layer = document.createElement('div');
-  layer.style.cssText = 'position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden;';
-  document.body.appendChild(layer);
-  const colors = ['#c1424a', '#2d7a4a', '#d9a836', '#2b6a96', '#8e44ad', '#e67e22'];
-  const N = 80;
-  for (let i = 0; i < N; i++) {
-    const p = document.createElement('div');
-    p.style.cssText = `position: absolute; left: ${Math.random() * 100}vw; top: -14px; width: ${6 + Math.random() * 8}px; height: ${10 + Math.random() * 10}px; background: ${colors[i % colors.length]}; opacity: 1; animation: confettiFall ${1.8 + Math.random() * 1.4}s linear forwards; animation-delay: ${Math.random() * 0.35}s;`;
-    layer.appendChild(p);
-  }
-  const style = document.createElement('style');
-  style.textContent = `@keyframes confettiFall { from { transform: translateY(-100vh) rotate(0deg); opacity: 1; } to { transform: translateY(110vh) rotate(720deg); opacity: 0.5; } }`;
-  document.head.appendChild(style);
-  setTimeout(() => layer.remove(), 4000);
-}
+/* ============================================================
+   CONDIVISIONE
+============================================================ */
+$("btnShare").addEventListener("click", async () => {
+  const text = `Ho fatto ${quiz.score}/5 su Newsguess!`;
 
-$('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
-
-function resetToMenu() {
-  $('loading').classList.add('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.add('hidden');
-  $('modePicker').classList.remove('hidden');
-  $('saveScoreBtn').textContent = 'Salva punteggio';
-  $('saveScoreBtn').disabled = false;
-  $('saveScoreBtn').style.display = '';
-}
-
-window.resetToMenu = resetToMenu;
-
-/* ===== STATS ===== */
-const STATS_KEY = 'stats-history';
-
-function loadStatsHistory() {
-  try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); }
-  catch { return []; }
-}
-
-function saveStatsHistory(arr) {
-  try { localStorage.setItem(STATS_KEY, JSON.stringify(arr.slice(-500))); } catch {}
-}
-
-function trackGameInStats(entry) {
-  const arr = loadStatsHistory();
-  arr.push(entry);
-  saveStatsHistory(arr);
-}
-
-function computeStreak(history) {
-  const dailyDates = new Set(history.filter(h => h.mode === 'daily').map(h => h.dateISO));
-  if (!dailyDates.size) return 0;
-  let streak = 0;
-  const d = new Date();
-  let iso = d.toISOString().slice(0,10);
-  if (!dailyDates.has(iso)) {
-    d.setDate(d.getDate() - 1);
-    iso = d.toISOString().slice(0,10);
-    if (!dailyDates.has(iso)) return 0;
-  }
-  while (dailyDates.has(iso)) {
-    streak++;
-    d.setDate(d.getDate() - 1);
-    iso = d.toISOString().slice(0,10);
-  }
-  return streak;
-}
-
-function renderStats() {
-  const history = loadStatsHistory();
-  if (!history.length) {
-    $('statsEmpty').classList.remove('hidden');
-    $('statsContent').classList.add('hidden');
-    return;
-  }
-  $('statsEmpty').classList.add('hidden');
-  $('statsContent').classList.remove('hidden');
-
-  const total = history.length;
-  const sumScore = history.reduce((s, h) => s + h.score, 0);
-  const sumTotal = history.reduce((s, h) => s + h.total, 0);
-  const avg = sumTotal ? (sumScore / sumTotal * 5) : 0;
-  const best = history.reduce((m, h) => Math.max(m, h.score), 0);
-  const streak = computeStreak(history);
-
-  $('stTotalGames').textContent = total;
-  $('stAvgScore').textContent = avg.toFixed(1);
-  $('stStreak').textContent = streak;
-  $('stBestScore').textContent = best;
-
-  const perPaper = {};
-  history.forEach(h => {
-    (h.questions || []).forEach(q => {
-      if (!perPaper[q.paperId]) perPaper[q.paperId] = { name: q.paperName, slug: q.paperSlug, ok: 0, tot: 0 };
-      perPaper[q.paperId].tot += 1;
-      if (q.ok) perPaper[q.paperId].ok += 1;
-    });
-  });
-  const rows = Object.values(perPaper).sort((a,b) => (b.ok/b.tot) - (a.ok/a.tot));
-  let html = '<thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody>';
-  rows.forEach(r => {
-    const pct = r.tot ? Math.round(r.ok / r.tot * 100) : 0;
-    html += `<tr><td><em>${escapeHtml(r.name)}</em></td><td><strong>${pct}%</strong></td><td>${r.ok}/${r.tot}</td></tr>`;
-  });
-  html += '</tbody>';
-  $('stPaperTable').innerHTML = html;
-
-  const recent = history.slice().reverse().slice(0, 10);
-  let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
-  recent.forEach(h => {
-    const dt = new Date(h.ts);
-    const when = dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + ' ' + dt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const modeName = h.mode === 'daily' ? 'Giorno' : (h.mode === 'training' ? 'Allenamento' : 'Archivio');
-    html2 += `<tr><td>${when}</td><td>${modeName}</td><td><strong>${h.score}/${h.total}</strong></td></tr>`;
-  });
-  html2 += '</tbody>';
-  $('stRecentTable').innerHTML = html2;
-}
-
-$('stResetBtn').addEventListener('click', () => {
-  if (confirm('Sei sicuro di voler azzerare tutte le statistiche? Questa azione non può essere annullata.')) {
-    localStorage.removeItem(STATS_KEY);
-    renderStats();
+  if (navigator.share) {
+    await navigator.share({ text });
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert("Copiato negli appunti!");
   }
 });
 
-/* ===== CHANGE NAME ===== */
-function openNameModal() {
-  $('nameModalInput').value = state.user?.name || '';
-  $('nameModalErr').classList.remove('show');
-  openModal('nameModal');
-  setTimeout(() => $('nameModalInput').focus(), 50);
-}
-
-function closeNameModal() {
-  closeModal('nameModal');
-}
-
-$('lbEditNameBtn').addEventListener('click', openNameModal);
-$('nameModalCancel').addEventListener('click', closeNameModal);
-$('nameModalConfirm').addEventListener('click', () => {
-  const newName = $('nameModalInput').value.trim();
-  const err = $('nameModalErr');
-  err.classList.remove('show');
-  if (!newName) {
-    err.textContent = 'Inserisci un nome.';
-    err.classList.add('show');
-    return;
-  }
-  if (newName.length > 24) {
-    err.textContent = 'Il nome è troppo lungo (max 24 caratteri).';
-    err.classList.add('show');
-    return;
-  }
-  if (!state.user) state.user = { name: newName, groups: [], activeGroupCode: null };
-  else state.user.name = newName;
-  saveUser();
-  $('lbWho').textContent = newName;
-  closeNameModal();
-  showToast('Nome aggiornato');
+/* ============================================================
+   RESET
+============================================================ */
+$("btnRestart").addEventListener("click", () => {
+  hide("quizResult");
+  setActivePage("page-home");
 });
-
-/* ===== SAVE SCORE ===== */
-$('saveScoreBtn').addEventListener('click', () => {
-  if (!state.user || !state.user.groups?.length) {
-    if (confirm('Per salvare il punteggio devi prima entrare in un gruppo.\nVuoi andare alla scheda Classifica ora?')) {
-      openPage('leaderboard');
-    }
-    return;
-  }
-  openSaveModal();
-});
-
-function openSaveModal() {
-  const cont = $('saveModalGroups');
-  cont.innerHTML = '';
-  $('saveModalScore').textContent = `${state.score}/${state.questions.length}`;
-  $('saveModalErr').classList.remove('show');
-  state.user.groups.forEach((g, i) => {
-    const isDailyAlreadySaved = state.mode === 'daily' && !!localStorage.getItem(`daily-saved-${todayISO()}-${g.code}-${state.user.name}`);
-    const id = `chk-${g.code}`;
-    const row = document.createElement('div');
-    row.style.cssText = 'display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-color);';
-    row.innerHTML = `
-      <input type="checkbox" id="${id}" data-code="${g.code}" ${isDailyAlreadySaved ? 'disabled' : 'checked'} style="width: 18px; height: 18px; cursor: pointer;" />
-      <label for="${id}" style="flex: 1; cursor: pointer;">
-        <div style="font-family: 'Playfair Display', serif; font-weight: 700;">${escapeHtml(g.name)}</div>
-        <div style="font-size: 12px; color: var(--text-tertiary); letter-spacing: 1px;">${g.code}</div>
-        ${isDailyAlreadySaved ? '<div style="font-size: 11px; color: var(--text-tertiary); font-style: italic;">Sfida giornaliera già salvata</div>' : ''}
-      </label>
-    `;
-    cont.appendChild(row);
-  });
-  openModal('saveModal');
-}
-
-function closeSaveModal() {
-  closeModal('saveModal');
-}
-
-$('saveModalCancel').addEventListener('click', closeSaveModal);
-$('saveModalConfirm').addEventListener('click', async () => {
-  const checks = [...document.querySelectorAll('#saveModalGroups input[type="checkbox"]:checked')];
-  const err = $('saveModalErr');
-  err.classList.remove('show');
-  if (!checks.length) {
-    err.textContent = 'Seleziona almeno un gruppo.';
-    err.classList.add('show');
-    return;
-  }
-  $('saveModalConfirm').disabled = true;
-  $('saveModalConfirm').textContent = 'Salvo…';
-  let okCount = 0, errors = [];
-  for (const ch of checks) {
-    const code = ch.dataset.code;
-    const grp = state.user.groups.find(g => g.code === code);
-    try {
-      if (state.mode === 'daily') {
-        const flagKey = `daily-saved-${todayISO()}-${code}-${state.user.name}`;
-        if (localStorage.getItem(flagKey)) continue;
-        localStorage.setItem(flagKey, '1');
-      }
-      await saveLeaderboardEntry({
-        name: state.user.name,
-        group: grp.name,
-        groupCode: code,
-        score: state.score,
-        total: state.questions.length,
-        pct: state.score / state.questions.length,
-        mode: state.mode,
-        dateISO: todayISO(),
-      });
-      okCount++;
-    } catch (e) { errors.push(`${grp.name}: ${e.message}`); }
-  }
-  $('saveModalConfirm').disabled = false;
-  $('saveModalConfirm').textContent = 'Salva';
-  if (errors.length) {
-    err.textContent = errors.join(' · ');
-    err.classList.add('show');
-    return;
-  }
-  closeSaveModal();
-  $('saveScoreBtn').textContent = `✓ Salvato in ${okCount} ${okCount === 1 ? 'gruppo' : 'gruppi'}`;
-  $('saveScoreBtn').disabled = true;
-});
-
-/* ===== FIREBASE LEADERBOARD ===== */
-let fbDb = null;
-let fbReady = false;
-
-function initFirebase() {
-  if (fbReady) return;
-  if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith('INSERISCI_QUI')) return;
-  try {
-    firebase.initializeApp(firebaseConfig);
-    fbDb = firebase.firestore();
-    fbReady = true;
-  } catch (e) { console.error('Firebase init error', e); }
-}
-initFirebase();
-
-async function saveLeaderboardEntry(entry) {
-  initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato. Inserisci i valori nel file HTML.');
-  await fbDb.collection('scores').add({
-    ...entry,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    monthKey: monthKey(entry.dateISO),
-  });
-}
-
-function genGroupCode() {
-  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s = '';
-  for (let i = 0; i < 6; i++) s += alphabet[Math.floor(Math.random()*alphabet.length)];
-  return s;
-}
-
-async function createGroup(name, groupName) {
-  initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato.');
-  let code;
-  for (let i = 0; i < 5; i++) {
-    code = genGroupCode();
-    const exists = await fbDb.collection('groups').doc(code).get();
-    if (!exists.exists) break;
-    code = null;
-  }
-  if (!code) throw new Error('Impossibile generare codice univoco. Riprova.');
-  await fbDb.collection('groups').doc(code).set({
-    name: groupName,
-    createdBy: name,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-  });
-  return code;
-}
-
-async function joinGroup(code) {
-  initFirebase();
-  if (!fbReady) throw new Error('Firebase non configurato.');
-  const snap = await fbDb.collection('groups').doc(code).get();
-  if (!snap.exists) throw new Error('Codice gruppo non trovato.');
-  return { code, name: snap.data().name };
-}
-
-/* ===== LOGIN SESSION ===== */
-state.user = loadUser();
-
-function showLBLoggedIn() {
-  $('lbLogin').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbContent').classList.remove('hidden');
-  $('lbWho').textContent = state.user.name;
-  renderGroupPills();
-  refreshLeaderboards();
-}
-
-function showLBLogin() {
-  $('lbContent').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbLogin').classList.remove('hidden');
-  if (state.user?.name) {
-    $('lbJoinName').value = state.user.name;
-    $('lbCreateName').value = state.user.name;
-  }
-}
-
-function renderGroupPills() {
-  const cont = $('groupPills');
-  cont.innerHTML = '';
-  if (!state.user.groups.length) {
-    cont.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic;margin:0">Nessun gruppo.</p>';
-    $('lbActiveGroup').textContent = '—';
-    return;
-  }
-  state.user.groups.forEach(g => {
-    const pill = document.createElement('div');
-    pill.className = 'pill' + (g.code === state.user.activeGroupCode ? ' active' : '');
-    pill.innerHTML = `<span>${escapeHtml(g.name)} <span style="opacity: 0.7;">(${g.code})</span></span><div class="pill-close">×</div>`;
-    pill.addEventListener('click', (e) => {
-      if (e.target !== pill.querySelector('.pill-close')) {
-        state.user.activeGroupCode = g.code;
-        saveUser();
-        renderGroupPills();
-        refreshLeaderboards();
-      }
-    });
-    pill.querySelector('.pill-close').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!confirm(`Vuoi davvero uscire dal gruppo "${g.name}"?`)) return;
-      state.user.groups = state.user.groups.filter(x => x.code !== g.code);
-      if (state.user.activeGroupCode === g.code) {
-        state.user.activeGroupCode = state.user.groups[0]?.code || null;
-      }
-      saveUser();
-      if (!state.user.groups.length) showLBLogin();
-      else { renderGroupPills(); refreshLeaderboards(); }
-    });
-    cont.appendChild(pill);
-  });
-  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
-  $('lbActiveGroup').textContent = active ? `${active.name}` : '—';
-}
-
-document.querySelectorAll('[data-lbtab]').forEach(b => {
-  b.addEventListener('click', () => {
-    document.querySelectorAll('[data-lbtab]').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    const t = b.dataset.lbtab;
-    $('lbPane-join').classList.toggle('hidden', t !== 'join');
-    $('lbPane-create').classList.toggle('hidden', t !== 'create');
-    $('lbJoinErr').style.display = 'none';
-    $('lbCreateErr').style.display = 'none';
-  });
-});
-
-$('lbCreateBtn').addEventListener('click', async () => {
-  const name = $('lbCreateName').value.trim().slice(0,24);
-  const groupName = $('lbCreateGroup').value.trim().slice(0,32);
-  const err = $('lbCreateErr');
-  err.style.display = 'none';
-  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
-  if (!groupName) { err.textContent = 'Inserisci il nome del gruppo.'; err.style.display = ''; return; }
-  $('lbCreateBtn').disabled = true;
-  $('lbCreateBtn').textContent = 'Creo…';
-  try {
-    const code = await createGroup(name, groupName);
-    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
-    state.user.name = name;
-    if (!state.user.groups.find(g => g.code === code)) state.user.groups.push({ code, name: groupName });
-    state.user.activeGroupCode = code;
-    saveUser();
-    $('newGroupCode').textContent = code;
-    $('lbLogin').classList.add('hidden');
-    $('lbCreated').classList.remove('hidden');
-  } catch (e) {
-    err.textContent = e.message;
-    err.style.display = '';
-  } finally {
-    $('lbCreateBtn').disabled = false;
-    $('lbCreateBtn').textContent = 'Crea il gruppo';
-  }
-});
-
-$('lbCreatedContinueBtn').addEventListener('click', () => {
-  showLBLoggedIn();
-});
-
-$('lbCopyCodeBtn').addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText($('newGroupCode').textContent);
-    $('lbCopyCodeBtn').textContent = '✓ Copiato';
-    setTimeout(() => { $('lbCopyCodeBtn').textContent = 'Copia codice'; }, 2000);
-  } catch {
-    alert('Codice: ' + $('newGroupCode').textContent);
-  }
-});
-
-$('lbJoinBtn').addEventListener('click', async () => {
-  const name = $('lbJoinName').value.trim().slice(0,24);
-  const code = $('lbJoinCode').value.trim().toUpperCase().slice(0,8);
-  const err = $('lbJoinErr');
-  err.style.display = 'none';
-  if (!name) { err.textContent = 'Inserisci il tuo nome.'; err.style.display = ''; return; }
-  if (!code) { err.textContent = 'Inserisci il codice gruppo.'; err.style.display = ''; return; }
-  $('lbJoinBtn').disabled = true;
-  $('lbJoinBtn').textContent = 'Verifico…';
-  try {
-    const g = await joinGroup(code);
-    if (!state.user) state.user = { name, groups: [], activeGroupCode: null };
-    state.user.name = name;
-    if (!state.user.groups.find(x => x.code === g.code)) state.user.groups.push({ code: g.code, name: g.name });
-    state.user.activeGroupCode = g.code;
-    saveUser();
-    showLBLoggedIn();
-    showToast(`Benvenuto nel gruppo "${g.name}"!`);
-  } catch (e) {
-    err.textContent = e.message;
-    err.style.display = '';
-  } finally {
-    $('lbJoinBtn').disabled = false;
-    $('lbJoinBtn').textContent = 'Entra nel gruppo';
-  }
-});
-
-$('lbAddJoinBtn').addEventListener('click', () => {
-  showLBLogin();
-  document.querySelector('[data-lbtab="join"]').click();
-});
-
-$('lbAddCreateBtn').addEventListener('click', () => {
-  showLBLogin();
-  document.querySelector('[data-lbtab="create"]').click();
-});
-
-$('lbLogoutBtn').addEventListener('click', () => {
-  if (!confirm('Vuoi davvero uscire? Tutti i tuoi gruppi verranno dimenticati.')) return;
-  state.user = null;
-  saveUser();
-  $('lbContent').classList.add('hidden');
-  $('lbCreated').classList.add('hidden');
-  $('lbLogin').classList.remove('hidden');
-  $('lbJoinName').value = ''; $('lbJoinCode').value = '';
-  $('lbCreateName').value = ''; $('lbCreateGroup').value = '';
-});
-
-if (state.user && state.user.groups?.length) showLBLoggedIn();
-else if (state.user?.name) showLBLogin();
-
-/* ===== LEADERBOARDS ===== */
-let _lbDayUnsub = null, _lbMonthUnsub = null;
-
-async function refreshLeaderboards() {
-  if (!state.user || !state.user.activeGroupCode) return;
-  initFirebase();
-  if (!fbReady) {
-    $('lbDayEmpty').textContent = 'Firebase non configurato';
-    $('lbMonthEmpty').textContent = 'Firebase non configurato';
-    return;
-  }
-  if (_lbDayUnsub)   { _lbDayUnsub();   _lbDayUnsub = null; }
-  if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
-
-  const today = todayISO();
-  const mk = monthKey(today);
-  $('lbDayDate').textContent = fmtDateIT(today);
-  $('lbMonthLabel').textContent = mk;
-
-  const code = state.user.activeGroupCode;
-  _lbDayUnsub = fbDb.collection('scores')
-    .where('groupCode', '==', code)
-    .where('dateISO', '==', today)
-    .onSnapshot(snap => renderDayTable(snap.docs.map(d => d.data())));
-
-  _lbMonthUnsub = fbDb.collection('scores')
-    .where('groupCode', '==', code)
-    .where('monthKey', '==', mk)
-    .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
-}
-
-function renderDayTable(rows) {
-  const byName = {};
-  rows.forEach(r => {
-    if (!byName[r.name] || r.pct > byName[r.name].pct) byName[r.name] = r;
-  });
-  const list = Object.values(byName).sort((a,b) => b.pct - a.pct || b.score - a.score);
-  const tbody = $('lbDayTable').querySelector('tbody');
-  tbody.innerHTML = '';
-  if (!list.length) { $('lbDayEmpty').style.display = ''; return; }
-  $('lbDayEmpty').style.display = 'none';
-  const medals = ['🥇','🥈','🥉'];
-  list.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    if (r.name === state.user.name) tr.classList.add('highlight');
-    tr.innerHTML = `<td><span class="table-medal">${medals[i]||(i+1)}</span></td><td>${escapeHtml(r.name)}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderMonthTable(rows) {
-  const byName = {};
-  rows.forEach(r => {
-    if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
-    byName[r.name].points += r.score;
-    byName[r.name].games += 1;
-  });
-  const list = Object.values(byName).sort((a,b) => b.points - a.points || b.games - a.games);
-  const tbody = $('lbMonthTable').querySelector('tbody');
-  tbody.innerHTML = '';
-  if (!list.length) { $('lbMonthEmpty').style.display = ''; return; }
-  $('lbMonthEmpty').style.display = 'none';
-  list.forEach((r, i) => {
-    const tr = document.createElement('tr');
-    if (r.name === state.user.name) tr.classList.add('highlight');
-    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td><strong>${r.points} pt</strong></td><td>${r.games} ${r.games === 1 ? 'partita' : 'partite'}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-/* ===== POPSTATE & HISTORY ===== */
-const NG_HISTORY = {
-  push(stateName, data = {}) {
-    history.pushState({ ng: true, name: stateName, ...data }, '', '');
-  },
-  isInternal(state) {
-    return state && state.ng === true;
-  }
-};
-
-function isQuizInProgress() {
-  return state.mode === 'daily' && !$('quizRunning').classList.contains('hidden') && state.questions.length && state.current < state.questions.length;
-}
-
-function showConfirmExit(onYes) {
-  openModal('confirmExit');
-  const yes = $('confirmExitYes'), no = $('confirmExitNo');
-  const cleanup = () => {
-    closeModal('confirmExit');
-  };
-  yes.onclick = () => { cleanup(); onYes(); };
-  no.onclick = () => { cleanup(); };
-}
-
-window.addEventListener('popstate', (e) => {
-  // 1) Se c'è un modale aperto → chiudilo senza uscire
-  if (!$('nameModal').classList.contains('hidden')) {
-    closeNameModal();
-    return;
-  }
-  if (!$('saveModal').classList.contains('hidden')) {
-    closeSaveModal();
-    return;
-  }
-  if (!$('confirmExit').classList.contains('hidden')) {
-    closeModal('confirmExit');
-    return;
-  }
-  
-  // 2) Se la sidebar è aperta (mobile) → chiudila
-  if ($('sidebar').classList.contains('open')) {
-    $('sidebar').classList.remove('open');
-    $('sidebarBackdrop').classList.remove('open');
-    return;
-  }
-  
-  // 3) Se c'è un quiz daily in corso → chiedi conferma PRIMA di uscire
-  if (isQuizInProgress()) {
-    // Ripristina lo stato della navigazione così il prossimo back non esce
-    NG_HISTORY.push('quiz-running');
-    showConfirmExit(() => {
-      // Utente ha confermato uscita: resetta il quiz
-      resetToMenu();
-      // Ora esce davvero (questo back non ritraggerà il popstate)
-      history.back();
-    });
-    return;
-  }
-  
-  // 4) Altrimenti: navigazione normale (torna indietro nella storia)
-  // Non fare nulla di speciale - il browser gestisce il back normalmente
-});
-
-NG_HISTORY.push('home');
-
-const _origStartQuiz = window.startQuiz || startQuiz;
-window.startQuiz = async function(mode, dateISO) {
-  if (mode === 'daily') NG_HISTORY.push('quiz-running');
-  return _origStartQuiz(mode, dateISO);
-};
 </script>
+<script>
+/* ============================================================
+   BADGE DEFINITIONS
+============================================================ */
+const BADGES = [
+  // PERFORMANCE
+  { id: "score_0",   name: "Blackout", desc: "Fai 0/5 in una partita", icon: "💀" },
+  { id: "score_3",   name: "Cronista", desc: "Fai almeno 3/5", icon: "📝" },
+  { id: "score_4",   name: "Caporedattore", desc: "Fai almeno 4/5", icon: "🧠" },
+  { id: "score_5",   name: "Direttore", desc: "Fai 5/5", icon: "👑" },
+
+  // COSTANZA
+  { id: "streak_5",  name: "Abbonato", desc: "Gioca 5 giorni consecutivi", icon: "📅" },
+  { id: "streak_10", name: "Fedelissimo", desc: "Gioca 10 giorni consecutivi", icon: "🔥" },
+  { id: "streak_30", name: "Storico", desc: "Gioca 30 giorni consecutivi", icon: "🏛️" },
+
+  // SOCIAL
+  { id: "share_1",   name: "Portavoce", desc: "Condividi il tuo risultato", icon: "📣" },
+
+  // TEMATICI (uno per giornale)
+  { id: "paper_fatto",      name: "Il Fatto", icon: "📰", desc: "Indovina Il Fatto Quotidiano" },
+  { id: "paper_sole",       name: "Il Sole", icon: "🌞", desc: "Indovina Il Sole 24 Ore" },
+  { id: "paper_avvenire",   name: "Avvenire", icon: "⛪", desc: "Indovina Avvenire" },
+  { id: "paper_messaggero", name: "Messaggero", icon: "🏛️", desc: "Indovina Il Messaggero" },
+  { id: "paper_corriere",   name: "Corriere", icon: "🗞️", desc: "Indovina Corriere della Sera" },
+  { id: "paper_stampa",     name: "La Stampa", icon: "📰", desc: "Indovina La Stampa" },
+  { id: "paper_libero",     name: "Libero", icon: "📢", desc: "Indovina Libero" },
+  { id: "paper_manifesto",  name: "Manifesto", icon: "✊", desc: "Indovina Il Manifesto" },
+  { id: "paper_giornale",   name: "Il Giornale", icon: "🦁", desc: "Indovina Il Giornale" },
+  { id: "paper_repubblica", name: "Repubblica", icon: "🇮🇹", desc: "Indovina La Repubblica" },
+];
+
+/* ============================================================
+   BADGE STATE
+============================================================ */
+let badgeState = loadBadgeState();
+let newlyUnlocked = [];
+
+/* ============================================================
+   LOAD BADGES INTO PAGE
+============================================================ */
+function loadBadges() {
+  const grid = $("badgeGrid");
+  grid.innerHTML = "";
+
+  BADGES.forEach(b => {
+    const unlocked = badgeState[b.id] === true;
+
+    const card = document.createElement("div");
+    card.className = "badge-card" + (unlocked ? "" : " locked");
+
+    card.innerHTML = `
+      <div class="badge-icon">${b.icon}</div>
+      <div>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+loadBadges();
+
+/* ============================================================
+   SAVE / LOAD BADGE STATE
+============================================================ */
+function saveBadgeState() {
+  localStorage.setItem("badges", JSON.stringify(badgeState));
+}
+
+function loadBadgeState() {
+  try {
+    return JSON.parse(localStorage.getItem("badges")) || {};
+  } catch {
+    return {};
+  }
+}
+
+/* ============================================================
+   UNLOCK BADGE
+============================================================ */
+function unlockBadge(id)  
+{
+  if (badgeState[id]) return; // già sbloccato
+
+  badgeState[id] = true;
+  newlyUnlocked.push(id);
+  saveBadgeState();
+}
+
+/* ============================================================
+   CHECK BADGES AFTER QUIZ
+============================================================ */
+function checkAndUnlockBadges() {
+  const score = quiz.score;
+
+  // PERFORMANCE
+  if (score === 0) unlockBadge("score_0");
+  if (score >= 3) unlockBadge("score_3");
+  if (score >= 4) unlockBadge("score_4");
+  if (score === 5) unlockBadge("score_5");
+
+  // TEMATICI (in base all'ultima risposta corretta)
+  const lastCorrect = quiz.questions[quiz.questions.length - 1].correct;
+
+  const map = {
+    "Il Fatto Quotidiano": "paper_fatto",
+    "Il Sole 24 Ore": "paper_sole",
+    "Avvenire": "paper_avvenire",
+    "Il Messaggero": "paper_messaggero",
+    "Corriere della Sera": "paper_corriere",
+    "La Stampa": "paper_stampa",
+    "Libero": "paper_libero",
+    "Il Manifesto": "paper_manifesto",
+    "Il Giornale": "paper_giornale",
+    "La Repubblica": "paper_repubblica"
+  };
+
+  if (map[lastCorrect]) unlockBadge(map[lastCorrect]);
+
+  // COSTANZA (streak giornaliero)
+  updateStreak();
+
+  // SOCIAL → sbloccato quando l’utente condivide (vedi sotto)
+}
+
+/* ============================================================
+   STREAK SYSTEM
+============================================================ */
+function updateStreak() {
+  const today = new Date().toDateString();
+  const last = localStorage.getItem("last_played");
+  let streak = Number(localStorage.getItem("streak") || 0);
+
+  if (last === today) {
+    // già giocato oggi → non incrementare
+  } else {
+    if (last) {
+      const diff = (new Date(today) - new Date(last)) / 86400000;
+      if (diff === 1) streak++;
+      else streak = 1;
+    } else {
+      streak = 1;
+    }
+  }
+
+  localStorage.setItem("last_played", today);
+  localStorage.setItem("streak", streak);
+
+  if (streak >= 5) unlockBadge("streak_5");
+  if (streak >= 10) unlockBadge("streak_10");
+  if (streak >= 30) unlockBadge("streak_30");
+}
+
+/* ============================================================
+   ANNOUNCE BADGES (MODAL)
+============================================================ */
+function announceBadges() {
+  if (newlyUnlocked.length === 0) return;
+
+  const id = newlyUnlocked.shift();
+  const badge = BADGES.find(b => b.id === id);
+
+  $("modalBadgeName").innerHTML = `${badge.icon} ${badge.name}`;
+  openModal("modalBadge");
+
+  loadBadges(); // aggiorna la pagina badge
+}
+
+/* ============================================================
+   SOCIAL BADGE (prima condivisione)
+============================================================ */
+$("btnShare").addEventListener("click", () => {
+  unlockBadge("share_1");
+  saveBadgeState();
+});
+</script>
+<script>
+/* ============================================================
+   ARCHIVIO (placeholder)
+============================================================ */
+function loadArchive() {
+  const list = $("archiveList");
+
+  // Placeholder: 10 partite generate casualmente
+  const items = Array.from({ length: 10 }).map((_, i) => ({
+    date: new Date(Date.now() - i * 86400000).toLocaleDateString("it-IT"),
+    score: Math.floor(Math.random() * 6)
+  }));
+
+  list.innerHTML = items
+    .map(
+      item => `
+      <div class="stat-card" style="margin-bottom:6px;">
+        <div class="stat-card-header">
+          <div class="stat-card-title">${item.date}</div>
+          <div class="stat-value">${item.score}/5</div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+
+loadArchive();
+
+/* ============================================================
+   STATISTICHE BASE
+============================================================ */
+function loadBasicStats() {
+  const games = Number(localStorage.getItem("games") || 0);
+  const correct = Number(localStorage.getItem("correct") || 0);
+
+  $("statGames").textContent = games;
+  $("statAccuracy").textContent =
+    games === 0 ? "–" : Math.round((correct / (games * 5)) * 100) + "%";
+}
+
+loadBasicStats();
+
+/* Aggiorna statistiche dopo ogni quiz */
+function updateBasicStats() {
+  const games = Number(localStorage.getItem("games") || 0) + 1;
+  const correct = Number(localStorage.getItem("correct") || 0) + quiz.score;
+
+  localStorage.setItem("games", games);
+  localStorage.setItem("correct", correct);
+
+  loadBasicStats();
+}
+
+/* Hook: quando finisce il quiz */
+const oldFinishQuiz = finishQuiz;
+finishQuiz = function () {
+  oldFinishQuiz();
+  updateBasicStats();
+};
+
+/* ============================================================
+   STATISTICHE AVANZATE — GRAFICO BARRE
+============================================================ */
+function loadAdvancedStats() {
+  const container = $("chartBars");
+  container.innerHTML = "";
+
+  // Placeholder: precisione casuale per ogni giornale
+  const data = NEWSPAPERS.map(name => ({
+    name,
+    value: Math.floor(Math.random() * 101)
+  }));
+
+  data.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "chart-bar-row";
+
+    row.innerHTML = `
+      <div class="chart-bar-label">${item.name}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:0%"></div>
+      </div>
+    `;
+
+    container.appendChild(row);
+
+    // animazione
+    setTimeout(() => {
+      row.querySelector(".chart-bar-fill").style.width = item.value + "%";
+    }, 100);
+  });
+}
+
+loadAdvancedStats();
+
+/* ============================================================
+   CLASSIFICA GRUPPO (placeholder)
+============================================================ */
+function loadGroupLeaderboard() {
+  const box = $("groupLeaderboard");
+
+  const players = [
+    { name: "Paolo", score: 23 },
+    { name: "Giulia", score: 19 },
+    { name: "Marco", score: 17 },
+    { name: "Sara", score: 15 }
+  ];
+
+  box.innerHTML = players
+    .map(
+      p => `
+      <div class="stat-card" style="margin-bottom:6px;">
+        <div class="stat-card-header">
+          <div class="stat-card-title">${p.name}</div>
+          <div class="stat-value">${p.score}</div>
+        </div>
+      </div>
+    `
+    )
+    .join("");
+}
+
+loadGroupLeaderboard();
+
+/* ============================================================
+   RESET LOCALE
+============================================================ */
+$("resetLocal").addEventListener("click", () => {
+  if (!confirm("Sei sicuro di voler resettare tutti i dati locali?")) return;
+
+  localStorage.clear();
+  badgeState = {};
+  newlyUnlocked = [];
+
+  loadBadges();
+  loadBasicStats();
+  loadAdvancedStats();
+  loadArchive();
+  loadGroupLeaderboard();
+
+  alert("Dati locali resettati.");
+});
+</script>
+
 </body>
 </html>
