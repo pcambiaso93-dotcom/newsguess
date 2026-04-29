@@ -142,11 +142,30 @@
     }
 
     .app-sidebar {
-      width: 100%;
+      width: 260px;
+      max-width: 85vw;
     }
 
     .app-sidebar.open ~ .sidebar-backdrop {
       display: block;
+    }
+
+    .nav-item {
+      padding: 14px 20px;
+      min-height: 48px;
+    }
+
+    .sidebar-header {
+      padding: 20px 16px;
+    }
+
+    .theme-toggle {
+      min-height: 44px;
+    }
+
+    .theme-btn {
+      min-height: 44px;
+      font-size: 14px;
     }
   }
 
@@ -165,6 +184,7 @@
     transition: background-color 0.2s, color 0.2s;
     border-left: 3px solid transparent;
     font-size: 15px;
+    min-height: 44px;
   }
 
   .nav-item:hover {
@@ -201,19 +221,24 @@
     gap: 6px;
     background: var(--bg-tertiary);
     border-radius: var(--radius);
-    padding: 4px;
+    padding: 6px;
+    min-height: 44px;
   }
 
   .theme-btn {
     flex: 1;
-    padding: 6px 10px;
+    padding: 8px 10px;
     border: none;
     background: transparent;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     border-radius: 4px;
     color: var(--text-secondary);
     transition: background-color 0.2s, color 0.2s;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .theme-btn.active {
@@ -285,7 +310,18 @@
     font-size: 24px;
     cursor: pointer;
     color: var(--text-primary);
-    padding: 4px;
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    transition: background-color 0.2s;
+  }
+
+  .menu-toggle:hover {
+    background-color: var(--bg-tertiary);
   }
 
   @media (max-width: 768px) {
@@ -299,6 +335,13 @@
     font-size: 24px;
     font-weight: 700;
     color: var(--text-primary);
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+  }
+
+  .header-title:hover {
+    color: var(--accent-primary);
   }
 
   .header-actions {
@@ -451,7 +494,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 18px;
+    padding: 12px 20px;
     background: var(--accent-primary);
     color: #fff;
     border: none;
@@ -462,6 +505,7 @@
     cursor: pointer;
     transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
     letter-spacing: 0.5px;
+    min-height: 44px;
   }
 
   .btn:hover {
@@ -858,7 +902,7 @@
 
   .modal-input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 12px;
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     background: var(--bg-primary);
@@ -867,6 +911,7 @@
     font-size: 14px;
     margin-bottom: 8px;
     transition: border-color 0.2s;
+    min-height: 44px;
   }
 
   .modal-input:focus {
@@ -1761,7 +1806,8 @@ function openPage(pageName) {
   // Nascondi tutte le pagine
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   // Mostra pagina selezionata
-  $(f`page-${pageName}`)?.classList.add('active');
+  const pageEl = $(`page-${pageName}`);
+  if (pageEl) pageEl.classList.add('active');
   // Aggiorna nav
   document.querySelectorAll('.nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.page === pageName);
@@ -1771,6 +1817,9 @@ function openPage(pageName) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
   }
+  // Carica dati se necessario
+  if (pageName === 'leaderboard') refreshLeaderboards();
+  if (pageName === 'stats') renderStats();
 }
 
 // Nav items click
@@ -1778,9 +1827,17 @@ document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const page = item.dataset.page;
     openPage(page);
-    if (page === 'leaderboard') refreshLeaderboards();
-    if (page === 'stats') renderStats();
   });
+});
+
+// Logo "Newsguess" torna a home (quiz page, mostra modePicker)
+document.querySelector('.header-title').addEventListener('click', () => {
+  openPage('quiz');
+  $('modePicker').classList.remove('hidden');
+  $('errorBox').classList.add('hidden');
+  $('quizRunning').classList.add('hidden');
+  $('finalScreen').classList.add('hidden');
+  $('loading').classList.add('hidden');
 });
 
 /* ===== SIDEBAR TOGGLE ===== */
