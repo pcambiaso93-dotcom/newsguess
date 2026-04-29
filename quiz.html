@@ -2880,17 +2880,17 @@ function renderBadges() {
     { id: 'portavoce', name: '📣 Portavoce', icon: 'megaphone', ok: st.hasShared, desc: 'Condividi il risultato almeno una volta', quote: '“Hai urlato la notizia più forte del megafono di un comizio.”' }
   ];
   const paperBadges = [
-    { id: 'fatto', name: '📰 Il Fatto', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina Il Fatto Quotidiano', quote: '“Hai colto il tono polemico al primo sguardo.”' },
-    { id: 'sole', name: '🌞 Il Sole', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina Il Sole 24 Ore', quote: '“Hai capito la prima pagina senza un commercialista accanto.”' },
-    { id: 'avvenire', name: '⛪ Avvenire', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina Avvenire', quote: '“La tua intuizione è stata benedetta.”' },
-    { id: 'messaggero', name: '🏛️ Messaggero', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina Il Messaggero', quote: '“Hai decifrato Roma prima ancora del traffico.”' },
-    { id: 'corriere', name: '🗞️ Corriere', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina Corriere della Sera', quote: '“Hai riconosciuto il Corriere come un vero milanese DOC.”' },
-    { id: 'stampa', name: '📰 La Stampa', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina La Stampa', quote: '“Hai sentito l’odore di Torino anche senza la Mole.”' },
-    { id: 'libero', name: '📢 Libero', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina Libero', quote: '“Hai percepito la polemica prima ancora di leggere il titolo.”' },
-    { id: 'manifesto', name: '✊ Manifesto', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina Il Manifesto', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
-    { id: 'giornale', name: '🦁 Il Giornale', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina Il Giornale', quote: '“Hai riconosciuto il ruggito già dal font.”' },
-    { id: 'repubblica', name: '🇮🇹 Repubblica', icon: 'land-plot', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina La Repubblica', quote: '“Hai individuato Repubblica con la sicurezza di un editorialista.”' }
-  ];
+  { id: 'fatto', name: '📰 Il Fattista', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina "Il Fatto Quotidiano" 10 volte', quote: '“Fiuti la polemica come un segugio da prima pagina.”' },
+  { id: 'sole', name: '🌞 L’Economo', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina "Il Sole 24 Ore" 10 volte', quote: '“Capisci i grafici anche senza un analista accanto.”' },
+  { id: 'avvenire', name: '⛪ Il Devoto', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina "Avvenire" 10 volte', quote: '“Hai ricevuto più illuminazioni tu che la redazione in un mese.”' },
+  { id: 'messaggero', name: '🏛️ Il Capitolino', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina "Il Messaggero" 10 volte', quote: '“Conosci Roma così bene che ti hanno dato le chiavi del raccordo.”' },
+  { id: 'corriere', name: '🗞️ Il Corrierista', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina "Corriere della Sera" 10 volte', quote: '“Riconosci il Corriere dal font come un vero milanese DOC.”' },
+  { id: 'stampa', name: '📰 Il Torinese', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina "La Stampa" 10 volte', quote: '“Individui Torino anche senza la Mole: sei un GPS editoriale.”' },
+  { id: 'libero', name: '📢 Il Provocatore', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina "Libero" 10 volte', quote: '“Fiuti la polemica prima ancora che venga scritta.”' },
+  { id: 'manifesto', name: '✊ Il Militante', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina "Il Manifesto" 10 volte', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
+  { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
+  { id: 'repubblica', name: '🇮🇹 Il Repubblicano', icon: 'land-plot', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
+];
   const allBadges = [...badges, ...paperBadges];
   grid.innerHTML = allBadges.map(b => `
     <div class="card card-small" style="opacity:${b.ok ? '1' : '0.58'}">
