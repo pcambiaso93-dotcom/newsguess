@@ -1,3 +1,6 @@
+Source URL: https://raw.githubusercontent.com/pcambiaso93-dotcom/newsguess/main/quiz.html
+Title: quiz.html
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -9,13 +12,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Newsguess" />
-<link rel="manifest" href="/api/manifest.json" />
-<link rel="icon" href="/api/icon-192.png" type="image/png" />
-<link rel="apple-touch-icon" href="/api/apple-touch-icon.png" />
+<link rel="manifest" href="./static/manifest.json" />
+<link rel="icon" href="./static/logo-newsguess.png" type="image/png" />
+<link rel="apple-touch-icon" href="./static/logo-newsguess.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" />
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
   :root {
@@ -87,16 +90,16 @@
 
   .app-sidebar {
     position: fixed;
-    left: 0;
+    right: 0;
     top: 0;
     width: 280px;
     height: 100vh;
     background: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     z-index: 1000;
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-md);
     overflow-y: auto;
@@ -119,6 +122,21 @@
     font-size: 20px;
     font-weight: 700;
     color: var(--text-primary);
+  }
+
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar-logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
   }
 
   .sidebar-close {
@@ -144,10 +162,6 @@
     .app-sidebar {
       width: 260px;
       max-width: 85vw;
-    }
-
-    .app-sidebar.open ~ .sidebar-backdrop {
-      display: block;
     }
 
     .nav-item {
@@ -182,7 +196,7 @@
     color: var(--text-secondary);
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
-    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
     font-size: 15px;
     min-height: 44px;
   }
@@ -195,7 +209,7 @@
   .nav-item.active {
     background-color: var(--bg-tertiary);
     color: var(--accent-primary);
-    border-left-color: var(--accent-primary);
+    border-right-color: var(--accent-primary);
     font-weight: 600;
   }
 
@@ -264,13 +278,13 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin-left: 0;
-    transition: margin-left 0.3s;
+    margin-right: 0;
+    transition: margin-right 0.3s;
   }
 
   @media (min-width: 769px) {
     .app-main {
-      margin-left: 280px;
+      margin-right: 280px;
     }
 
     .app-sidebar {
@@ -288,9 +302,9 @@
 
   /* ===== HEADER ===== */
   .app-header {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 24px;
+    background: transparent;
+    border-bottom: none;
+    padding: 16px 0 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -307,7 +321,7 @@
     display: none;
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: clamp(2.2rem, 7vw, 3.5rem);
     cursor: pointer;
     color: var(--text-primary);
     padding: 8px;
@@ -350,6 +364,14 @@
     gap: 8px;
   }
 
+  .header-brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+  }
+
   .header-action-btn {
     background: none;
     border: none;
@@ -370,7 +392,7 @@
   .app-content {
     flex: 1;
     overflow-y: auto;
-    padding: 24px;
+    padding: 18px 20px 90px;
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
@@ -1032,6 +1054,66 @@
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
   }
 
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 68px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1400;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .bottom-nav-item {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 56px;
+    min-height: 56px;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.2px;
+  }
+
+  .bottom-nav-item i {
+    width: 21px;
+    height: 21px;
+    stroke-width: 1.75;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--accent-primary);
+  }
+
+  .bottom-nav-item.active::after {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  @media (min-width: 769px) {
+    .bottom-nav {
+      display: none;
+    }
+    .app-content {
+      padding-bottom: 20px;
+    }
+  }
+
   /* ===== TABS ===== */
   .tabs-container {
     display: flex;
@@ -1044,7 +1126,7 @@
     padding: 12px 16px;
     background: none;
     border: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     color: var(--text-secondary);
     font-family: 'Playfair Display', serif;
     font-size: 15px;
@@ -1140,7 +1222,16 @@
   /* ===== FINAL SCREEN ===== */
   .result-container {
     text-align: center;
-    padding: 40px 20px;
+    padding: 28px 12px;
+  }
+
+  .result-frontpage {
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 16px;
   }
 
   .result-score {
@@ -1149,7 +1240,7 @@
     font-weight: 900;
     color: var(--accent-primary);
     line-height: 1;
-    margin: 20px 0;
+    margin: 10px 0 14px;
     animation: scoreCountUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -1169,7 +1260,13 @@
     font-style: italic;
     font-size: 24px;
     color: var(--accent-primary);
-    margin: 16px 0 24px;
+    margin: 4px 0 10px;
+  }
+
+  .result-commentary {
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
   }
 
   /* ===== UTILITIES ===== */
@@ -1307,7 +1404,7 @@
     }
 
     .app-main {
-      margin-left: 0;
+      margin-right: 0;
     }
   }
 </style>
@@ -1318,38 +1415,49 @@
   <!-- SIDEBAR -->
   <aside class="app-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-title">Menu</div>
-      <button class="sidebar-close" id="sidebarClose" aria-label="Chiudi menu">×</button>
+      <div class="sidebar-brand">
+        <img
+          class="sidebar-logo"
+          src="./static/logo-newsguess.png"
+          alt="Logo Newsguess"
+        />
+        <div class="sidebar-title">Menu</div>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Chiudi menu"><i data-lucide="x"></i></button>
     </div>
 
     <nav class="sidebar-nav">
       <div class="nav-item active" data-page="quiz">
-        <div class="nav-icon">🎮</div>
+        <div class="nav-icon"><i data-lucide="newspaper"></i></div>
         <div>Quiz</div>
       </div>
       <div class="nav-item" data-page="leaderboard">
-        <div class="nav-icon">🏆</div>
+        <div class="nav-icon"><i data-lucide="trophy"></i></div>
         <div>Classifica</div>
       </div>
       <div class="nav-item" data-page="stats">
-        <div class="nav-icon">📊</div>
+        <div class="nav-icon"><i data-lucide="chart-column"></i></div>
         <div>Statistiche</div>
       </div>
       <div class="nav-item" data-page="archive">
-        <div class="nav-icon">📂</div>
+        <div class="nav-icon"><i data-lucide="archive"></i></div>
         <div>Archivio</div>
       </div>
-      <div class="nav-item" data-page="badges">
-        <div class="nav-icon">🎖️</div>
+      <div class="nav-item" data-page="badge">
+        <div class="nav-icon"><i data-lucide="award"></i></div>
         <div>Badge</div>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <div class="nav-icon"><i data-lucide="settings"></i></div>
+        <div>Impostazioni</div>
       </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="theme-toggle">
-        <button class="theme-btn active" data-theme="light">☀️</button>
-        <button class="theme-btn" data-theme="auto">🔄</button>
-        <button class="theme-btn" data-theme="dark">🌙</button>
+        <button class="theme-btn active" data-theme="light">Chiaro</button>
+        <button class="theme-btn" data-theme="auto">Default</button>
+        <button class="theme-btn" data-theme="dark">Scuro</button>
       </div>
     </div>
   </aside>
@@ -1361,8 +1469,9 @@
     <!-- HEADER -->
     <header class="app-header">
       <div class="header-left">
-        <button class="menu-toggle" id="menuToggle" aria-label="Apri menu">☰</button>
-        <div class="header-title">Newsguess</div>
+        <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i data-lucide="menu"></i></button>
+        <img class="header-brand-mark" src="./static/logo-newsguess.png" alt="" />
+        <div class="header-title">NEWSGUESS</div>
       </div>
 
       <div class="header-actions">
@@ -1449,14 +1558,18 @@
         <!-- FINAL SCREEN -->
         <div id="finalScreen" class="hidden">
           <div class="result-container">
-            <p class="small-caps">Risultato</p>
-            <div class="result-score"><span id="finalScore">0</span><span style="opacity: 0.3; font-size: 0.4em;">/5</span></div>
-            <div class="result-verdict" id="verdict">—</div>
+            <div class="result-frontpage">
+              <p class="small-caps">Edizione straordinaria</p>
+              <div class="result-score" id="finalScoreVersus">0:5</div>
+              <div class="result-verdict" id="verdict">—</div>
+              <div class="result-commentary" id="resultCommentary">—</div>
+            </div>
 
             <table class="data-table" id="recapTable"></table>
 
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
               <button class="btn" id="saveScoreBtn">Salva punteggio</button>
+              <button class="btn btn-outline" id="shareResultBtn">Condividi</button>
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
               <button class="btn btn-outline" onclick="resetToMenu()">Menù principale</button>
             </div>
@@ -1506,7 +1619,7 @@
 
         <!-- GROUP CREATED -->
         <div id="lbCreated" class="section hidden">
-          <h2>Gruppo creato! 🎉</h2>
+          <h2>Gruppo creato</h2>
           <p>Condividi questo codice con i tuoi amici.</p>
           <div style="background: var(--bg-tertiary); border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 24px; text-align: center; margin: 20px 0; font-family: 'Playfair Display', serif;">
             <div style="font-size: 40px; font-weight: 900; letter-spacing: 8px; color: var(--accent-primary);" id="newGroupCode">—</div>
@@ -1521,7 +1634,7 @@
         <div id="lbContent" class="hidden">
           <div class="section">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-tertiary); border-radius: var(--radius);">
-              <div style="font-family: 'Playfair Display', serif; font-weight: 700;">Ciao <span id="lbWho">—</span> <button class="btn" style="background: none; color: var(--text-primary); border: none; cursor: pointer; padding: 4px 8px;" id="lbEditNameBtn" title="Cambia nome">✏️</button></div>
+              <div style="font-family: 'Playfair Display', serif; font-weight: 700;">Ciao <span id="lbWho">—</span> <button class="btn" style="background: none; color: var(--text-primary); border: none; cursor: pointer; padding: 4px 8px;" id="lbEditNameBtn" title="Cambia nome"><i data-lucide="pencil"></i></button></div>
               <button class="btn btn-outline" id="lbLogoutBtn">Esci</button>
             </div>
           </div>
@@ -1532,7 +1645,13 @@
             <div style="display: flex; gap: 10px; margin-top: 16px;">
               <button class="btn btn-outline" id="lbAddJoinBtn">+ Unisciti a un altro</button>
               <button class="btn btn-outline" id="lbAddCreateBtn">+ Crea nuovo</button>
+              <button class="btn btn-outline" id="lbRenameGroupBtn">Rinomina gruppo</button>
             </div>
+          </div>
+
+          <div class="section">
+            <h2>Gestione membri</h2>
+            <table class="data-table" id="lbMembersTable"><thead><tr><th>Membro</th><th>Partite mese</th><th>Punti mese</th></tr></thead><tbody></tbody></table>
           </div>
 
           <div class="section">
@@ -1616,14 +1735,35 @@
         </div>
       </div>
 
-      <!-- PAGE: BADGES -->
-      <div class="page" id="page-badges">
+      <!-- PAGE: BADGE -->
+      <div class="page" id="page-badge">
         <h2>Badge & Risultati</h2>
         <p>Presto: badge e risultati speciali.</p>
+      </div>
+
+      <!-- PAGE: SETTINGS -->
+      <div class="page" id="page-settings">
+        <h2>Impostazioni</h2>
+        <div class="card">
+          <p class="small-caps">Tema</p>
+          <div class="theme-toggle" id="settingsThemeToggle">
+            <button class="theme-btn active" data-theme="light">Chiaro</button>
+            <button class="theme-btn" data-theme="auto">Default</button>
+            <button class="theme-btn" data-theme="dark">Scuro</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bottom-nav-item active" data-page="quiz" aria-label="Quiz"><i data-lucide="newspaper"></i><span>Quiz</span></button>
+  <button class="bottom-nav-item" data-page="leaderboard" aria-label="Classifica"><i data-lucide="trophy"></i><span>Classifica</span></button>
+  <button class="bottom-nav-item" data-page="stats" aria-label="Statistiche"><i data-lucide="chart-column"></i><span>Stats</span></button>
+  <button class="bottom-nav-item" data-page="archive" aria-label="Archivio"><i data-lucide="archive"></i><span>Archivio</span></button>
+  <button class="bottom-nav-item" data-page="settings" aria-label="Impostazioni"><i data-lucide="settings"></i><span>Settings</span></button>
+</nav>
 
 <!-- MODALS -->
 
@@ -1666,6 +1806,23 @@
     <div class="modal-row">
       <button class="btn btn-outline" id="confirmExitNo">Annulla</button>
       <button class="btn btn-error" id="confirmExitYes">Esci</button>
+    </div>
+  </div>
+</div>
+
+<!-- RENAME GROUP MODAL -->
+<div class="modal-overlay" id="renameGroupModal">
+  <div class="modal">
+    <h2>Rinomina gruppo</h2>
+    <p>Il nuovo nome verrà usato nelle schermate del tuo profilo e della classifica.</p>
+    <div class="form-group">
+      <label for="renameGroupInput">Nuovo nome gruppo</label>
+      <input class="modal-input" id="renameGroupInput" type="text" maxlength="32" />
+    </div>
+    <p class="modal-error" id="renameGroupErr"></p>
+    <div class="modal-row">
+      <button class="btn btn-outline" id="renameGroupCancel">Annulla</button>
+      <button class="btn" id="renameGroupConfirm">Salva</button>
     </div>
   </div>
 </div>
@@ -1741,6 +1898,11 @@ function saveUser() {
 
 /* Helpers */
 const $ = (id) => document.getElementById(id);
+const createLucideIcons = () => {
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+};
 
 const todayISO = () => {
   const d = new Date();
@@ -1805,22 +1967,14 @@ function updateThemeButtons(theme) {
 const savedTheme = localStorage.getItem(themeKey) || 'auto';
 setTheme(savedTheme);
 
-const themeToggleContainer = document.querySelector('.theme-toggle');
-if (themeToggleContainer) {
+document.querySelectorAll('.theme-toggle').forEach((themeToggleContainer) => {
   themeToggleContainer.addEventListener('click', (e) => {
     const btn = e.target.closest('.theme-btn');
     if (btn && btn.dataset.theme) {
       setTheme(btn.dataset.theme);
     }
   });
-} else {
-  // Fallback: direct attachment
-  setTimeout(() => {
-    document.querySelectorAll('.theme-btn').forEach(b => {
-      b.addEventListener('click', () => setTheme(b.dataset.theme));
-    });
-  }, 100);
-}
+});
 
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
@@ -1831,6 +1985,9 @@ function openPage(pageName) {
   if (pageEl) pageEl.classList.add('active');
   // Aggiorna nav
   document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pageName);
+  });
+  document.querySelectorAll('.bottom-nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.page === pageName);
   });
   // Chiudi sidebar su mobile
@@ -1852,6 +2009,13 @@ if (sidebarNav) {
       const page = navItem.dataset.page;
       if (page) openPage(page);
     }
+  });
+}
+const bottomNav = $('bottomNav');
+if (bottomNav) {
+  bottomNav.addEventListener('click', (e) => {
+    const item = e.target.closest('.bottom-nav-item');
+    if (item?.dataset?.page) openPage(item.dataset.page);
   });
 }
 
@@ -2101,8 +2265,7 @@ document.querySelectorAll('.mode-card').forEach(c => {
   c.addEventListener('click', () => {
     const mode = c.dataset.mode;
     if (mode === 'daily' && dailyDoneToday()) {
-      const done = JSON.parse(dailyDoneToday());
-      alert(`Hai già giocato la sfida del giorno (${done.score}/5).\nPer la classifica vale solo il primo tentativo. Torna domani per una nuova sfida!`);
+      showDailyAlreadyPlayedResult();
       return;
     }
     startQuiz(mode);
@@ -2322,11 +2485,21 @@ function verdictFor(score) {
   return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
 }
 
+function satiricalComment(score, total) {
+  const against = total - score;
+  if (score === total) return 'Edizione speciale: hai asfaltato le redazioni. Domani ti chiamano in direzione.';
+  if (score >= total - 1) return 'Titolo di apertura: prestazione quasi perfetta, l\'edicola applaude in piedi.';
+  if (score >= Math.ceil(total / 2)) return 'Cronaca politica: partita solida, qualche svista da conferenza stampa del lunedi.';
+  if (score > 0) return 'Ultim\'ora: giornata complicata, ma hai comunque strappato una notizia al caos.';
+  return 'Breaking news: blackout editoriale totale. Serve caffe forte e rassegna stampa.';
+}
+
 function finishQuiz() {
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
-  animateScoreCountUp($('finalScore'), state.score, 800);
+  $('finalScoreVersus').textContent = `${state.score}:${state.questions.length - state.score}`;
   $('verdict').textContent = verdictFor(state.score);
+  $('resultCommentary').textContent = satiricalComment(state.score, state.questions.length);
 
   let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
   state.questions.forEach((q, i) => {
@@ -2369,19 +2542,6 @@ function finishQuiz() {
   }
 }
 
-function animateScoreCountUp(el, target, duration) {
-  if (!el) return;
-  const start = performance.now();
-  const step = (now) => {
-    const t = Math.min(1, (now - start) / duration);
-    const eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = Math.round(target * eased);
-    if (t < 1) requestAnimationFrame(step);
-    else el.textContent = target;
-  };
-  requestAnimationFrame(step);
-}
-
 function launchConfetti() {
   const layer = document.createElement('div');
   layer.style.cssText = 'position: fixed; inset: 0; pointer-events: none; z-index: 9998; overflow: hidden;';
@@ -2400,6 +2560,18 @@ function launchConfetti() {
 }
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
+$('shareResultBtn').addEventListener('click', async () => {
+  const text = `NEWSGUESS ${state.score}:${state.questions.length - state.score} · ${verdictFor(state.score)}.`;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'NEWSGUESS', text }); return; } catch {}
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Risultato copiato negli appunti');
+  } catch {
+    showToast(text);
+  }
+});
 
 function resetToMenu() {
   $('loading').classList.add('hidden');
@@ -2722,7 +2894,7 @@ function renderGroupPills() {
   state.user.groups.forEach(g => {
     const pill = document.createElement('div');
     pill.className = 'pill' + (g.code === state.user.activeGroupCode ? ' active' : '');
-    pill.innerHTML = `<span>${escapeHtml(g.name)} <span style="opacity: 0.7;">(${g.code})</span></span><div class="pill-close">×</div>`;
+    pill.innerHTML = `<span>${escapeHtml(g.name)} <span style="opacity: 0.7;">(${g.code})</span></span><div class="pill-close"><i data-lucide="x"></i></div>`;
     pill.addEventListener('click', (e) => {
       if (e.target !== pill.querySelector('.pill-close')) {
         state.user.activeGroupCode = g.code;
@@ -2746,6 +2918,7 @@ function renderGroupPills() {
   });
   const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
   $('lbActiveGroup').textContent = active ? `${active.name}` : '—';
+  createLucideIcons();
 }
 
 document.querySelectorAll('[data-lbtab]').forEach(b => {
@@ -2894,11 +3067,10 @@ function renderDayTable(rows) {
   tbody.innerHTML = '';
   if (!list.length) { $('lbDayEmpty').style.display = ''; return; }
   $('lbDayEmpty').style.display = 'none';
-  const medals = ['🥇','🥈','🥉'];
   list.forEach((r, i) => {
     const tr = document.createElement('tr');
     if (r.name === state.user.name) tr.classList.add('highlight');
-    tr.innerHTML = `<td><span class="table-medal">${medals[i]||(i+1)}</span></td><td>${escapeHtml(r.name)}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
+    tr.innerHTML = `<td><span class="table-medal">${i+1}</span></td><td>${escapeHtml(r.name)}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -2921,7 +3093,53 @@ function renderMonthTable(rows) {
     tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td><strong>${r.points} pt</strong></td><td>${r.games} ${r.games === 1 ? 'partita' : 'partite'}</td>`;
     tbody.appendChild(tr);
   });
+  renderMembersTable(list);
 }
+
+function renderMembersTable(rows) {
+  const tbody = $('lbMembersTable')?.querySelector('tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(r.name)}</td><td>${r.games}</td><td><strong>${r.points}</strong></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function openRenameGroupModal() {
+  if (!state.user?.activeGroupCode) return;
+  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
+  if (!active) return;
+  $('renameGroupInput').value = active.name;
+  $('renameGroupErr').classList.remove('show');
+  openModal('renameGroupModal');
+}
+
+$('lbRenameGroupBtn').addEventListener('click', openRenameGroupModal);
+$('renameGroupCancel').addEventListener('click', () => closeModal('renameGroupModal'));
+$('renameGroupConfirm').addEventListener('click', async () => {
+  const val = $('renameGroupInput').value.trim().slice(0, 32);
+  const err = $('renameGroupErr');
+  err.classList.remove('show');
+  if (!val) {
+    err.textContent = 'Inserisci un nome gruppo valido.';
+    err.classList.add('show');
+    return;
+  }
+  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
+  if (!active) return;
+  active.name = val;
+  saveUser();
+  try {
+    initFirebase();
+    if (fbReady) await fbDb.collection('groups').doc(active.code).update({ name: val });
+  } catch {}
+  closeModal('renameGroupModal');
+  renderGroupPills();
+  refreshLeaderboards();
+  showToast('Nome gruppo aggiornato');
+});
 
 /* ===== POPSTATE & HISTORY ===== */
 const NG_HISTORY = {
@@ -2949,16 +3167,20 @@ function showConfirmExit(onYes) {
 
 window.addEventListener('popstate', (e) => {
   // 1) Se c'è un modale aperto → chiudilo senza uscire
-  if (!$('nameModal').classList.contains('hidden')) {
+  if ($('nameModal').classList.contains('open')) {
     closeNameModal();
     return;
   }
-  if (!$('saveModal').classList.contains('hidden')) {
+  if ($('saveModal').classList.contains('open')) {
     closeSaveModal();
     return;
   }
-  if (!$('confirmExit').classList.contains('hidden')) {
+  if ($('confirmExit').classList.contains('open')) {
     closeModal('confirmExit');
+    return;
+  }
+  if ($('renameGroupModal').classList.contains('open')) {
+    closeModal('renameGroupModal');
     return;
   }
   
@@ -2993,6 +3215,29 @@ window.startQuiz = async function(mode, dateISO) {
   if (mode === 'daily') NG_HISTORY.push('quiz-running');
   return _origStartQuiz(mode, dateISO);
 };
+
+// Consenti il salvataggio daily (una volta per gruppo) anche dopo aver già giocato.
+function showDailyAlreadyPlayedResult() {
+  const done = JSON.parse(dailyDoneToday() || '{}');
+  if (!done || typeof done.score !== 'number') return;
+  state.mode = 'daily';
+  state.score = done.score;
+  state.questions = new Array(done.total || 5).fill({});
+  state.current = (done.total || 5) - 1;
+  $('modePicker').classList.add('hidden');
+  $('errorBox').classList.add('hidden');
+  $('quizRunning').classList.add('hidden');
+  $('loading').classList.add('hidden');
+  $('finalScreen').classList.remove('hidden');
+  $('finalScoreVersus').textContent = `${done.score}:${(done.total || 5) - done.score}`;
+  $('verdict').textContent = verdictFor(done.score);
+  $('resultCommentary').textContent = 'Sfida giornaliera già giocata: puoi comunque salvarla nei gruppi non ancora registrati.';
+  $('recapTable').innerHTML = '<tbody><tr><td colspan="4">Partita daily già conclusa oggi. Recap dettagliato disponibile solo nella sessione originale.</td></tr></tbody>';
+  $('saveScoreBtn').style.display = '';
+  $('trainAgainBtn').style.display = 'none';
+}
+
+createLucideIcons();
 </script>
 </body>
 </html>
