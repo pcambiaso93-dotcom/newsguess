@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Newsguess" />
 <link rel="manifest" href="./static/manifest.json" />
 <link rel="icon" href="./static/logo-newsguess.png" type="image/png" />
+<link rel="shortcut icon" href="./static/logo-newsguess.png" type="image/png" />
 <link rel="apple-touch-icon" href="./static/logo-newsguess.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -128,8 +129,8 @@
   }
 
   .sidebar-logo {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     object-fit: cover;
     box-shadow: var(--shadow-sm);
@@ -336,8 +337,35 @@
   }
 
   @media (max-width: 768px) {
+    .app-header {
+      padding: 0;
+      min-height: 0;
+    }
+
+    .header-title,
+    .header-brand-mark,
+    .header-actions {
+      display: none;
+    }
+
+    .header-left {
+      gap: 0;
+    }
+
     .menu-toggle {
-      display: block;
+      display: flex;
+      position: fixed;
+      top: max(8px, env(safe-area-inset-top));
+      left: 10px;
+      z-index: 1600;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      padding: 10px;
+    }
+
+    .app-content {
+      padding-top: 52px;
     }
   }
 
