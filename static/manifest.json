@@ -8,13 +8,13 @@
   "theme_color": "#0f3460",
   "icons": [
     {
-      "src": "./logo-newsguess.png",
+      "src": "/static/logo-newsguess.png?v=3",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "./logo-newsguess.png",
+      "src": "/static/logo-newsguess.png?v=3",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
