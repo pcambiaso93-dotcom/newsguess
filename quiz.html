@@ -424,7 +424,7 @@
   .app-content {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 20px 130px; /* +40px spazio per la bottom-nav, evita che i pulsanti siano coperti */
+    padding: 18px 20px 180px; /* tanto spazio per bottom-nav (68px) + safe area, evita pulsanti coperti */
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
@@ -1730,7 +1730,7 @@
     <div class="app-content">
       <!-- MASTHEAD -->
       <div class="masthead">
-        <img src="/api/icon-192.png" alt="Newsguess" class="masthead-logo" />
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFBAcGBgYIBwcICxILCwoKCxYPEA0SGhYbGhkWGRgcICgiHB4mHhgZIzAkJiorLS4tGyIyNTEsNSgsLSz/2wBDAQcICAsJCxULCxUsHRkdLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCz/wAARCADAAMADASIAAhEBAxEB/8QAHAAAAgIDAQEAAAAAAAAAAAAAAwQAAgEGCAUH/8QAQRAAAQMCBAIHAwkHBAMBAAAAAQACEQMEBRIhMQZBBxMiUWFxgRSRoQgVMkJicoKxwSM0NUOSovBSU+HxFkSy0f/EABgBAQEBAQEAAAAAAAAAAAAAAAABAgME/8QAGxEBAQEBAQEBAQAAAAAAAAAAAAERMQIhEhP/2gAMAwEAAhEDEQA/AOkVFFEEUUQ3XFJu9RvvQEUQfa6B/mhVff2tMdqsB6FTYGFEqcTswda7fiqfO9hmy+0sn1TYuHVEo3FLJ85bhpjzVxf2xbmFUEeRTYhhRAde27Wgmpv4FY9vtcwb1zZTYGFEqMRtcpPXARyIMq3t9tlB60GfAymwMKIJvKAIGeZ5gKrr63YYdVA9CmwMKJB+N4bTMPu6bfOQmre6oXVPPQrMqt72OBTYCqKKKiKKKIIooogiiiHXdlt6h7mlB59xcurVC0GKY0AHNAIAGirmgKrnmeS426qwIaCSlKxznUI73ks8OaXJk6RostQJ9DNprqi08OpN1e4lFbG8hZc/KFMVYUrekNGqrrqAQ0bIVRxeNxCHEiOSIy6o6o4yYVWCHEkmFkbxA0V2ydIRWGMLjJGiYpsCo1pEyNUVo0bOsogrQBqFSrTkQiNEFWcJCqPDvbIPkkFeTam5wrE6da2eWlxgjk7wK2qswEbLyri3HXsMAQ4fmo1K2jDMTpYlQzN7FRv06Z3b/wAJ1ae+lVtbhlzbOyVG92xHcfBbFhmKUsRoyBkrM+nTO48fELv59axYeUUUWkRRRRBEG7/dKnkjIF5HslSf81UvB4x2VdZMq+6wYXBoOoYZKXGjTJIRqxBAHJBBRRgdNChOqGT4KF3ZPchOMA9yixYOcROaFYOJOrhohAlwnYK7T2SYO6gJzmRMojR4hDb2iFcu3nZUXBPgfVEl2nP1QmmBAV2kgzO6IYZJGunqiIVPYTsr6z3rSK1NQV5943skgDRei4JW4YI12hQhenVzDL+aDWp1beu25tXZKjNjyPgfBKVL6naPAr5g3/UBMeiFV4y4ftW5a988HuFB5/RTVytywrFaWJ0CQMlZmlSmTqD3+IT6+XM4xwM3jK9hifV1gdM9F4BHcdFv+C45aY1aipQq03VGjtsa6Y/4Xbz6lSyx6Siii2yiBekCzqEif+0dAvZ9iqR3KXg8Ulo5oL38uSlR+UaDTzQQ7MTK4NslxIE81UwBHesyI8hKC5xkcoCirufOg0Cry1171XNpKg1Ose9FXDRCs3UaDcqrSSQM2hXwPi2p0xjiHFb3DqWPW2GOrvNvTtnhwbSBhsNaSdoVk1K6DZodYlEDXZQC0wOcFcbVekvjgvdTrcUYuwt0cPaCHAjknuD+kfHcN42wnFMUxrEbqzo3DRcU61097HU3dl0gmNiT6LX4Z/Trz6LSeSu0gkTGiqdXCCHA7EHQjvWZIjkubQzToiAgITDovH4x4qtODOFLrGrtoqdUA2jRzQa1U/QYD48zyAK1GaLxLxdgXCVk25xvEado189WyC6pUjfKwan8vFfP6HyhOB7u99nf8521OY66rajIPE5XEgei+L3tPH+PcPx/jPEbl5p4exrq9WIaXOcGsoMB2AzTHIa6k66C97nEgg98ytzymuy724tMUtHVrCvTuaUAipTMtIc0OBB2IIIOnetBxqgWE6b943TnQV7XddFFNtyHGnTvK1K2Ltur7JgeGYu9ZW04hgLKziSwFcfU+u3ivllJxp1YadfBbdwvf3dniNC6oEh9Mgn7Q5g+BCd/8YptqTlGaV61lhDaEEAeKxJd1q2PqtKo2rSZUb9F4Dh5FWSuGmcLtvCm0fBNL3R5kQL6fYqkdyOl7/8AcausafqpeDW65J05lBBy7q9ZxBnRJ1KmUT/gXB0MOqDLvshPqAkZdZhAFXNu4EbgKCS/YrOqYDwSstIIIOqG1jRBk+5EbDTE/BARugjVFp1qVrUZUrubTph4knTx/IE+iEBLdBp3rwePL6lhfR9jeIvDOtt7Kt1DnfVe9hpgjx7asSuQb6sL3Fry81cK9Z9SSBJzOJ29UIMzu2IkQfBbx0d8DnizA+LstIvr2WHNdaugn9tnD4HiW03CPtLSac9XmDRJbIXZzdd9FPER4k6McKuqj+subZnsdc881PsgnzblPqtyDhABBlc+fJwx42+K4tw/XcG072mLygJ+vT0eB5tcD+FdBGSuXr5W4KwukdkZYJJ2+C5y6eeJrjHOOrfh/Dy6pSwqKfVM1626qROngC1nvXQOKYrQwLBb3Fbk/sLKg+4eO8NEx6kAeq5z6HcFr8T9LIxi/b1gtHVMTrkif2rndgH8bp/CrEr7fg3AFhhvRpS4PuAH0KtEtvnsAJq1XEGp5GdjuMjV8yPyaLWliDqp4kua9mCSaNO2ays8To0OLsoPjHovvEMa5xaxoLjLiBBPmhO0P5ptTHm4XguHYNhFtYYbZi1tremxlNkdoBskZp3MkkzzJR3saeSYKrlkSs1uETbgjVqo6iBEAJ54HchuaI2UXWyYWZwu3+4m0phemGUB9n9U2vTOOSJbESBh1YmdG8kylcSLRhtcv+jl1S8I1GvUJI115ckpWa9zdgvQaBcOa5ureRRqVi1xBcDAOq8+OmvNtrV7mZntLQe9NU7aDABlej1Ae8kiGjQBFZQpgaFMNINtlcW8HmnuqYBMys5GzIPgmJpL2cNPMr5l0/3otuALbDm6PxC9bIB1LKYLz8S1fW8gHMLnv5QOIU7vjCxsKbsxw20LyPt1O1Hua33qxLW39AeEOw7gCtfuptpvxC8c9sc2sAYPiHL4hx/wqOFuPcVw6k3JbdYa1ADWaVTtNn4j8K6q4QwgYBwXg+FgZTa2rGuEfWPad/c4r5f8oPAJtcM4ipMzdUTZ3BA1h3apk+E5x6hXUfGOFMXqcMcZ4VjYEiyuQ6qBOtI6Pb4y0ldlZWuAdSIcwiWuGxHI+ULi4dVUa8VXT2i0gDXUcyupOiXHxxD0bYdVe/Pc2c2Vc88zNGz5sLCl+rHj9N+Kmy6PGYaHAXOKVmUiGHdjIe+J5TlHqlugDA34fwZe4lXbFXEbotaZ/l05aP7i9aj08Yr7Xxra2FIueMNtNWgb1KhzEecBgX3DhbCm4HwphGFHKKtvaMa4aAufALz/AFOPvQehU0bO0oRGs6JmowwJG6Fk01UAeSxGkdyIWHXTVQsO8IoRaVjJKPk0KwTpyQezhwy4fSHh+qZS9h+40vL9Uwu84wiQxufmS6gx+zKfSeLtL8IuWjUlhS8WNBo1rik2GVHDmeRRhiF0GkOqPOvfsmBbtDBDYAUdbtcNl58dClS9ugAWuJ0G6G/Ebum8EkgciJ19F6TKTMsamFV1IEbSFMCBxO6nYmfNEGI3DxqTHKCQjOoF2+krLaLQoBsvrkvDZMHSQ4rmllzU47+UDrUdUtrrFBIa4kGjTP5ZGL7/AMa4q3hzgPGcVzRUpWzm0jP8x/YZ8XA+i+N/J2wN9xxRimMObNKxtuoa6Pr1Dy/C13vXTz8lrN66Eff16ji8ucSTJheNxhhtTingzE8GeYqXNA9WTJy1G9qmf6gB6r2zSAkaa7qNpkOkCDOhXP604bqVrmnUcx9So1wJDmkkEHYyvsvycOJX2/EOI8P1a7gy+pC4pAnTrKf0v7Cf6Vp/THw0OHOkm/bTbltr+L2j3Q8kuHo8OC1PCMTvcCxSliFhV6m6pZsrxrAc0tPvDiPVem/Y5cb5gd7ccf8AT5Tqmo99re4mblzQSR1LHZ48srAF1MA52JC8JJrdU6lJeYDc2Yw3aSdyNYAC56+TXhHX8WYni7m5m2NoKLJH1qpj/wCWO966Pp0wXDTv1XP13Gov1r20NTzkSgOuaobMg+EJmq2KUcgknhZVb2uoB9VY9sqzBcInuVQACsFumiiruvXuO0+ar7S4g+PghkEAD8lSCCNVFbZhf8Mo+X6ptKYWZwyifs/qm16ZxyqJXE/4bX+6mktiOmHV/upeDVY0g+Sq4arObeYHcqPdlAjded0WaBHj5KNBIEqjajRv39yrWuPZ7d1XI+rlE5aYlx95HvOg3QFAk8/NQUydu9fAuMPlC37cZq23C1tassaDiwXFxT6x9ePrBsw1p5DU/kt16LelO742tL84rbWNkMJomvdXLHuaCw7ODDMRBzdrugbrV83E2PA+UbxEKGEYXw3SfFS4ebuu0aQxstYPVxcfwhbP0J4A/AujO1q1WuZXxV5vHgjXKezT/tE/iXxe4qXXTJ0ygMD6dtdVcrZ/kWtMbnxygn7zl1NRay2t6VCkwMpUmCmxo+q1ogD0ACvr5MSfRAGkkETpooCW7fkpoYJI8PFSQXQubT5R8oXhl+I8G2mPUWh1XCqpbVga9VUgE+QcG/1Fc1HMI8Cu4cWwe24hwq6wy60p3dF9AuJIy52lsxMGJnXuXE+IWVbDMRuLG5YW3FrVdSqA8nNMH8l28X4xXTfyeMIFj0ZVMQLP2mJXj3AkaljAGN+OdfWaYAPj4LWuBMN+Z+j7AbAMyOpWNIuHe5zQ9x97itlboyXaLnb9anFqv0fVJu0J0TNR0t0Sz9DugqQcomFNY/zRUndZJMFRUIETCG/Q9yse4KhaTsUVtOEknCqBO+X9U4lMLEYXQH2U2vROOVRK4nPzbXj/AEppK4n/AA2v9wpeDUtY7pVCSPVWce1yCGYBJzE8tO9ed0ZaNXeOyWxai+9wS/s6TstW5tqtFhBiHOYWj4lHLoiVA7U68vcoriC6ta9ld1ba5pPpV6LjTqMcILXDQghelgtzjNa3uMBwhtWo7FXMZVo0WkvrBpJa37smT5Cdl1djXBfDHEVf2nFsFtbq5mDVLS17u4FzSCfVNYLw1gfDktwfCbWxLxD3Umdtw7i46nyldf6Rj8tb6KujxnA+BvrXeR+NXgHtDwcwpMGopNPnqSNzHIBb+CDudUEA6HSY3RAYJ0+ErlbreLjme7RSToNj3yoI11Gm6wNSANVAQGXSe7vXyfpJ6GrfiO+uOIMJqV/nWvXpvr2znN6qozRrsukh0drU66+C+r5mgFx1Ky0BrQdY8VZ6sM0xLGEsp/QmG+XL4I7Se9LUjLxGoHJMsM76lEZqnTUpJ2jjJ3TVU9nZJuccyqI5riDlcAeRIlQ++e9Tu5qT3KNIImFYNWRoN1djJga+qqNjw7+H0fuplL2AixpDwTC9E451EpiumFXH3E2k8W/hNzP+gpeEagXBw2VCZnxQxzbM+uyyXdleZ1XmdDEKkjQg6HZYzEuErI7RGv6qDAlwcCOZhWEyNPUhRpIHgVMrp30PeUBAQCdd1kukAaeiw0GI1J71kgZoifJBljN3aeawJGquDoYnTcclVpERACgtEOiR6K0w0S4AIWYtg6k7rLqusd2nkimqLpflHvKcYIEkbbpS1OhghNAkDaAtRA6zpJhJElzx4JqsdTrokw6HTyVqLhwPnsrjR0ygZiNCNkdkkhSKuwTomKbYCG1FzRstI9+y/cqfkjpewM2NI/ZTC7zjnUSuJsNTC7ho3NMppYIDmkESDoVR8/eRyVC6R/8Ai9HFcMfYVpDC6iT2XxoPArz2t+yvNZjpGS0uE/4VGgtIAiQi06RI0EogtHl0nQdyzil2hxEmdFcMkAb+Cdp4eXD6WnkjtsMsa7eCuBAjKAG7gK2UuJOsc9EzVpZREx3lCDQJlyADgQ6OSxyju8IRHwHT3a7IbiHa7TqoKubrAGu+qxJIGYa8lHENEkEk6olvbucRUc3yCBq3AZRyiE0NBqfNBpsc0fRWSTroqgddwJlKtH/SPUiO4obWdnzQULRmEJljcvMwhBsHdE1KKKDpHesOcYJ5KokDmE1ZWVS8qAZSKX1neHcFqfU49zD25cOoD7AKZWGtDWhoEACAFleiOaKKKIMEBwIIBB5FLOw2zc6TbU58GwmlECvzbZgQKDR5SrCxthtSHxTCimQBFpQH8sLPstE/ywiqJkCxw+1cZNFpPqq/Nln/ALDfim1EyBN2E2Lt7dh96x80WA/9ZnxTqiZDSRwiwdE2zTG0yiiwtWiBRaEwomQA9jt/9pqhsbYjWi1HUTIFThtmd6DT71BhlmNqDfimlEyBT5ss/wDYb7yrDDbQCOob8UyomQ0AWNq0yKFP1Eo4AAgCAFFFRFFFEH//2Q==" alt="Newsguess" class="masthead-logo" />
         <div class="masthead-tag">Est. 2019 · Quiz dei quotidiani</div>
         <h1 class="masthead-title">Newsguess</h1>
         <p class="masthead-subtitle">Il quiz delle prime pagine d'Italia</p>
@@ -2933,7 +2933,17 @@ function launchConfetti() {
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
 $('shareResultBtn').addEventListener('click', async () => {
-  const text = `NEWSGUESS ${state.score}:${state.questions.length - state.score} · ${verdictFor(state.score)}.`;
+  // Costruisce stringa con pallini colorati per ogni risposta (✅ giusta / ❌ sbagliata)
+  const dots = state.questions.map(q => (q.given === q.paper.id) ? '🟢' : '🔴').join('');
+  const url = (location.origin || '') + (location.pathname || '/api/quiz');
+  const lines = [
+    `📰 NEWSGUESS — ${state.score}/${state.questions.length}`,
+    dots,
+    verdictFor(state.score) + '.',
+    '',
+    `Riesci a fare meglio? 👉 ${url}`
+  ];
+  const text = lines.join('\n');
   if (navigator.share) {
     try {
       await navigator.share({ title: 'NEWSGUESS', text });
@@ -2948,7 +2958,9 @@ $('shareResultBtn').addEventListener('click', async () => {
     if (document.querySelector('#page-badge.active')) renderBadges();
     showToast('Risultato copiato negli appunti');
   } catch {
-    showToast(text);
+    // Fallback: apri WhatsApp Web direttamente
+    const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(wa, '_blank');
   }
 });
 
@@ -3087,6 +3099,11 @@ function renderBadges() {
     { id: 'abbonato', name: '📅 Abbonato', icon: 'calendar-check-2', ok: st.streak >= 5, desc: 'Gioca 5 giorni consecutivi', quote: '“Ti vedono così spesso che ti hanno fatto il badge del personale.”' },
     { id: 'fedelissimo', name: '🔥 Fedelissimo', icon: 'flame', ok: st.streak >= 10, desc: 'Gioca 10 giorni consecutivi', quote: '“La tua presenza è più costante delle tirature del lunedì.”' },
     { id: 'storico', name: '🏛️ Storico', icon: 'landmark', ok: st.streak >= 30, desc: 'Gioca 30 giorni consecutivi', quote: '“Hai sbloccato il livello ‘giornalista che non va mai in ferie’.”' },
+    { id: 'veterano', name: '🎖️ Veterano', icon: 'medal', ok: st.streak >= 60, desc: 'Gioca 60 giorni consecutivi', quote: '“Sei più affidabile della rassegna stampa del mattino.”' },
+    { id: 'leggenda', name: '👑 Leggenda', icon: 'crown', ok: st.streak >= 100, desc: 'Gioca 100 giorni consecutivi', quote: '“Cento giorni: hanno scritto un editoriale per celebrarti.”' },
+    { id: 'mito', name: '🌟 Mito', icon: 'star', ok: st.streak >= 365, desc: 'Gioca 365 giorni consecutivi', quote: '“Un anno intero. Ti hanno dedicato una pagina nella domenica del Corriere.”' },
+    { id: 'macinatore', name: '⚙️ Macinatore', icon: 'cog', ok: st.totalGames >= 50, desc: 'Gioca 50 partite totali', quote: '“Hai macinato più partite di un torchio in tipografia.”' },
+    { id: 'instancabile', name: '💪 Instancabile', icon: 'dumbbell', ok: st.totalGames >= 200, desc: 'Gioca 200 partite totali', quote: '“Duecento partite. Servirebbe un nuovo titolo onorifico.”' },
     { id: 'portavoce', name: '📣 Portavoce', icon: 'megaphone', ok: st.hasShared, desc: 'Condividi il risultato almeno una volta', quote: '“Hai urlato la notizia più forte del megafono di un comizio.”' }
   ];
   const paperBadges = [
@@ -3099,7 +3116,7 @@ function renderBadges() {
   { id: 'libero', name: '📢 Il Provocatore', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina "Libero" 10 volte', quote: '“Fiuti la polemica prima ancora che venga scritta.”' },
   { id: 'manifesto', name: '✊ Il Militante', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina "Il Manifesto" 10 volte', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
   { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
-  { id: 'repubblica', name: '🇮🇹 Il Repubblicano', icon: 'land-plot', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
+  { id: 'repubblica', name: '📕 Il Repubblicano', icon: 'book', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
 ];
   const allBadges = [...badges, ...paperBadges];
   // Estrae l'emoji dal name (primo carattere prima dello spazio)
