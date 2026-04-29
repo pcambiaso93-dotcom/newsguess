@@ -9,10 +9,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Newsguess" />
-<link rel="manifest" href="./static/manifest.json" />
-<link rel="icon" href="./static/logo-newsguess.png" type="image/png" />
-<link rel="shortcut icon" href="./static/logo-newsguess.png" type="image/png" />
-<link rel="apple-touch-icon" href="./static/logo-newsguess.png" />
+<link rel="manifest" href="/static/manifest.json?v=3" />
+<link rel="icon" href="/static/logo-newsguess.png?v=3" type="image/png" sizes="32x32" />
+<link rel="icon" href="/static/logo-newsguess.png?v=3" type="image/png" sizes="192x192" />
+<link rel="shortcut icon" href="/static/logo-newsguess.png?v=3" type="image/png" />
+<link rel="apple-touch-icon" href="/static/logo-newsguess.png?v=3" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -329,7 +330,13 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius);
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, opacity 0.2s, transform 0.2s;
+  }
+
+  .menu-toggle.sidebar-open-hidden {
+    opacity: 0;
+    transform: scale(0.92);
+    pointer-events: none;
   }
 
   .menu-toggle:hover {
@@ -355,7 +362,7 @@
     .menu-toggle {
       display: flex;
       position: fixed;
-      top: max(8px, env(safe-area-inset-top));
+      top: max(18px, env(safe-area-inset-top));
       left: 10px;
       z-index: 1600;
       background: var(--bg-secondary);
@@ -1477,7 +1484,7 @@
       <div class="sidebar-brand">
         <img
           class="sidebar-logo"
-          src="./static/logo-newsguess.png"
+          src="/static/logo-newsguess.png?v=3"
           alt="Logo Newsguess"
         />
         <div class="sidebar-title">Menu</div>
@@ -1529,7 +1536,7 @@
     <header class="app-header">
       <div class="header-left">
         <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i data-lucide="menu"></i></button>
-        <img class="header-brand-mark" src="./static/logo-newsguess.png" alt="" />
+        <img class="header-brand-mark" src="/static/logo-newsguess.png?v=3" alt="" />
         <div class="header-title">NEWSGUESS</div>
       </div>
 
@@ -1709,11 +1716,6 @@
           </div>
 
           <div class="section">
-            <h2>Gestione membri</h2>
-            <table class="data-table" id="lbMembersTable"><thead><tr><th>Membro</th><th>Partite mese</th><th>Punti mese</th></tr></thead><tbody></tbody></table>
-          </div>
-
-          <div class="section">
             <h2>Classifica del giorno · <span id="lbActiveGroup" style="font-family: 'Playfair Display', serif; color: var(--accent-primary);">—</span></h2>
             <p class="small-caps" id="lbDayDate">—</p>
             <table class="data-table" id="lbDayTable"><thead><tr><th></th><th>Nome</th><th>Precisione</th><th>Punti</th></tr></thead><tbody></tbody></table>
@@ -1725,6 +1727,11 @@
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
+          </div>
+
+          <div class="section">
+            <h2>Gestione membri</h2>
+            <table class="data-table" id="lbMembersTable"><thead><tr><th>Membro</th><th>Partite mese</th><th>Punti mese</th></tr></thead><tbody></tbody></table>
           </div>
         </div>
       </div>
@@ -1781,15 +1788,15 @@
         <p>Consulta le edizioni passate archivia te.</p>
 
         <div class="tabs-container">
-          <button class="tab-btn active" data-abtab="dates">Per data</button>
-          <button class="tab-btn" data-abtab="papers">Per giornale</button>
+          <button class="tab-btn" data-abtab="dates">Per data</button>
+          <button class="tab-btn active" data-abtab="papers">Per giornale</button>
         </div>
 
-        <div class="tab-content active" id="ab-pane-dates">
+        <div class="tab-content" id="ab-pane-dates">
           <div id="abDatesList"></div>
         </div>
 
-        <div class="tab-content" id="ab-pane-papers">
+        <div class="tab-content active" id="ab-pane-papers">
           <div id="abPapersList"></div>
         </div>
       </div>
@@ -1828,6 +1835,11 @@
               <input id="setConfirmExitDaily" type="checkbox" checked />
             </label>
           </div>
+        </div>
+        <div class="card">
+          <p class="small-caps">Installazione iOS</p>
+          <p>Su iPhone/iPad puoi installare l'app dalla condivisione di Safari.</p>
+          <button class="btn btn-outline" id="iosInstallHelpBtn"><i data-lucide="smartphone"></i> Guida installazione iOS</button>
         </div>
       </div>
     </div>
@@ -1879,10 +1891,22 @@
 <div class="modal-overlay" id="confirmExit">
   <div class="modal" style="max-width: 340px;">
     <h2>Vuoi davvero uscire?</h2>
-    <p>Stai giocando il Livello del giorno. Se esci adesso perderai i progressi della partita.</p>
+    <p>Sei sicuro di voler uscire? Tutti i tuoi risultati andranno persi.</p>
     <div class="modal-row">
       <button class="btn btn-outline" id="confirmExitNo">Annulla</button>
       <button class="btn btn-error" id="confirmExitYes">Esci</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="iosInstallModal">
+  <div class="modal">
+    <h2>Installa su iPhone/iPad</h2>
+    <p>1) Apri il sito in Safari</p>
+    <p>2) Tocca Condividi (quadrato con freccia)</p>
+    <p>3) Seleziona "Aggiungi a Home"</p>
+    <div class="modal-row">
+      <button class="btn" id="iosInstallModalClose">Ho capito</button>
     </div>
   </div>
 </div>
@@ -2096,6 +2120,9 @@ function applyUiSettings() {
 });
 applyUiSettings();
 
+if ($('iosInstallHelpBtn')) $('iosInstallHelpBtn').addEventListener('click', () => openModal('iosInstallModal'));
+if ($('iosInstallModalClose')) $('iosInstallModalClose').addEventListener('click', () => closeModal('iosInstallModal'));
+
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
   // Nascondi tutte le pagine
@@ -2114,6 +2141,7 @@ function openPage(pageName) {
   if (window.innerWidth < 769) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
+    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
   }
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
@@ -2161,6 +2189,7 @@ if (menuToggle) {
   menuToggle.addEventListener('click', () => {
     $('sidebar').classList.toggle('open');
     $('sidebarBackdrop').classList.toggle('open');
+    menuToggle.classList.toggle('sidebar-open-hidden', $('sidebar').classList.contains('open'));
   });
 }
 
@@ -2169,6 +2198,7 @@ if (sidebarClose) {
   sidebarClose.addEventListener('click', () => {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
+    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
   });
 }
 
@@ -2177,6 +2207,7 @@ if (sidebarBackdrop) {
   sidebarBackdrop.addEventListener('click', () => {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
+    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
   });
 }
 
@@ -2215,6 +2246,8 @@ if ('serviceWorker' in navigator) {
 }
 
 let _deferredInstall = null;
+const isIosDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   _deferredInstall = e;
@@ -2222,16 +2255,22 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function triggerInstall() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.finally(() => {
-    _deferredInstall = null;
-    $('installBtn').style.display = 'none';
-  });
+  if (_deferredInstall) {
+    _deferredInstall.prompt();
+    _deferredInstall.userChoice.finally(() => {
+      _deferredInstall = null;
+      $('installBtn').style.display = 'none';
+    });
+    return;
+  }
+  if (isIosDevice() && !isStandalone()) {
+    openModal('iosInstallModal');
+  }
 }
 
 $('installBtn').addEventListener('click', triggerInstall);
 window.triggerInstall = triggerInstall;
+if (isIosDevice() && !isStandalone()) $('installBtn').style.display = '';
 
 /* ===== ARCHIVIO ===== */
 async function loadArchive() {
@@ -2268,6 +2307,8 @@ document.querySelectorAll('[data-abtab]').forEach(t => {
     document.querySelectorAll('[data-abtab]').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
     const tab = t.dataset.abtab;
+    $('ab-pane-dates').classList.toggle('active', tab === 'dates');
+    $('ab-pane-papers').classList.toggle('active', tab === 'papers');
     $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
     $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
   });
@@ -3343,7 +3384,7 @@ const NG_HISTORY = {
 };
 
 function isQuizInProgress() {
-  return state.mode === 'daily' && !$('quizRunning').classList.contains('hidden') && state.questions.length && state.current < state.questions.length;
+  return !$('quizRunning').classList.contains('hidden') && !!state.mode && state.questions.length && state.current < state.questions.length;
 }
 
 function showConfirmExit(onYes) {
@@ -3374,11 +3415,16 @@ window.addEventListener('popstate', (e) => {
     closeModal('renameGroupModal');
     return;
   }
+  if ($('iosInstallModal').classList.contains('open')) {
+    closeModal('iosInstallModal');
+    return;
+  }
   
   // 2) Se la sidebar è aperta (mobile) → chiudila
   if ($('sidebar').classList.contains('open')) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
+    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
     return;
   }
   
