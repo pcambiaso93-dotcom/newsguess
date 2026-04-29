@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Newsguess" />
 <link rel="manifest" href="/static/manifest.json?v=3" />
-<link rel="icon" href="/static/logo-newsguess.png" type="image/png" sizes="32x32" />
-<link rel="icon" href="/static/logo-newsguess.png" type="image/png" sizes="192x192" />
-<link rel="shortcut icon" href="/static/logo-newsguess.png" type="image/png" />
-<link rel="apple-touch-icon" href="/static/logo-newsguess.png" />
+<link rel="icon" href="/api/icon-192.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="/api/icon-192.png" type="image/png" sizes="192x192" />
+<link rel="shortcut icon" href="/api/icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="/api/icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -133,9 +133,16 @@
     width: 44px;
     height: 44px;
     border-radius: 8px;
-    object-fit: cover;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    object-fit: contain;
+    background: transparent;
+    transition: filter .2s ease;
+  }
+  /* Inverti il logo nel sidebar in tema scuro per restare leggibile */
+  [data-theme="dark"] .sidebar-logo,
+  [data-theme="dark"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] .sidebar-logo,
+    [data-theme="system"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
   }
 
   .sidebar-close {
@@ -1224,6 +1231,12 @@
     display: block;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: filter .2s ease;
+  }
+  /* Logo invertito in tema scuro per restare leggibile su sfondo scuro */
+  [data-theme="dark"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
   }
   }
 
@@ -1669,7 +1682,7 @@
       <div class="sidebar-brand">
         <img
           class="sidebar-logo"
-          src="/static/logo-newsguess.png"
+          src="/api/icon-192.png"
           alt="Logo Newsguess"
         />
         <div class="sidebar-title">Menu</div>
@@ -1721,7 +1734,7 @@
     <header class="app-header">
       <div class="header-left">
         <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i data-lucide="menu"></i></button>
-        <img class="header-brand-mark" src="/static/logo-newsguess.png" alt="" />
+        <img class="header-brand-mark" src="/api/icon-192.png" alt="" />
         <div class="header-title">NEWSGUESS</div>
       </div>
 
