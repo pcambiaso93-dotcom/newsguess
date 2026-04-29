@@ -2,9 +2,9 @@
   "name": "Newsguess",
   "short_name": "Newsguess",
   "description": "Il quiz delle prime pagine d'Italia",
-  "start_url": "./../quiz-0.html",
+  "start_url": "/quiz.html",
   "display": "standalone",
-  "background_color": "#f9f8f5",
+  "background_color": "#f6f1e7",
   "theme_color": "#0f3460",
   "icons": [
     {
