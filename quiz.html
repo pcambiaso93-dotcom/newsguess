@@ -2888,7 +2888,9 @@ async function startQuiz(mode, dateISO) {
   $('loading').classList.remove('hidden');
 
   try {
-    // ALLENAMENTO LIBERO: 5 quotidiani diversi presi ognuno da una data archivio random diversa
+    // ALLENAMENTO LIBERO: sempre 5 domande con giornali diversi.
+    // Strategia preferita: 5 giornali diversi presi da 5 date diverse.
+    // Fallback graduale: se l'archivio è povero, allenta i vincoli per arrivare comunque a 5.
     if (mode === 'training') {
       const r = await fetch('/api/archive-dates');
       if (!r.ok) throw new Error('Archivio non disponibile.');
@@ -2898,28 +2900,70 @@ async function startQuiz(mode, dateISO) {
       if (!eligibleDates.length) {
         throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno.');
       }
-      // Carico per ogni data quali giornali sono disponibili
-      // Strategia: provo 5 date random; per ognuna scelgo un giornale random NON ancora usato
-      const shuffledDates = [...eligibleDates].sort(() => Math.random() - 0.5);
-      const usedNewspapers = new Set();
-      const pickedQs = [];   // [{paper, dateISO}]
-      for (const dt of shuffledDates) {
-        if (pickedQs.length >= 5) break;
-        try {
-          const rp = await fetch(`/api/archive-papers?date=${dt.date}`);
-          if (!rp.ok) continue;
-          const dp = await rp.json();
-          const candidates = NEWSPAPERS.filter(n => (dp.slugs || []).includes(n.slug) && !usedNewspapers.has(n.id));
-          if (!candidates.length) continue;
-          const np = candidates[Math.floor(Math.random() * candidates.length)];
-          pickedQs.push({ paper: np, dateISO: dt.date });
-          usedNewspapers.add(np.id);
-        } catch {}
+
+      // Carico in parallelo gli slug disponibili per ogni data
+      const dateSlugMap = await Promise.all(
+        eligibleDates.map(async (dt) => {
+          try {
+            const rp = await fetch(`/api/archive-papers?date=${dt.date}`);
+            if (!rp.ok) return { date: dt.date, slugs: [] };
+            const dp = await rp.json();
+            return { date: dt.date, slugs: dp.slugs || [] };
+          } catch { return { date: dt.date, slugs: [] }; }
+        })
+      );
+
+      // Costruisco tutte le combinazioni (paper, dateISO) disponibili in archivio
+      const allCombos = [];
+      for (const ds of dateSlugMap) {
+        for (const slug of ds.slugs) {
+          const np = NEWSPAPERS.find(n => n.slug === slug);
+          if (np) allCombos.push({ paper: np, dateISO: ds.date });
+        }
       }
+
+      if (allCombos.length < 4) {
+        throw new Error('Archivio insufficiente: continua a giocare il livello del giorno per popolarlo.');
+      }
+
+      // Picker a passi multipli per garantire 5 domande
+      const TARGET = 5;
+      const shuffled = [...allCombos].sort(() => Math.random() - 0.5);
+      const picked = [];
+      const usedPapers = new Set();
+      const usedDates = new Set();
+
+      // Pass 1: giornali unici E date uniche (caso ideale)
+      for (const c of shuffled) {
+        if (picked.length >= TARGET) break;
+        if (usedPapers.has(c.paper.id) || usedDates.has(c.dateISO)) continue;
+        picked.push(c); usedPapers.add(c.paper.id); usedDates.add(c.dateISO);
+      }
+      // Pass 2: giornali unici (le date possono ripetersi)
+      if (picked.length < TARGET) {
+        for (const c of shuffled) {
+          if (picked.length >= TARGET) break;
+          if (usedPapers.has(c.paper.id)) continue;
+          picked.push(c); usedPapers.add(c.paper.id); usedDates.add(c.dateISO);
+        }
+      }
+      // Pass 3: ultimo fallback — qualsiasi combinazione paper+date non già usata
+      if (picked.length < TARGET) {
+        const usedCombo = new Set(picked.map(p => p.paper.id + '|' + p.dateISO));
+        for (const c of shuffled) {
+          if (picked.length >= TARGET) break;
+          const k = c.paper.id + '|' + c.dateISO;
+          if (usedCombo.has(k)) continue;
+          picked.push(c); usedCombo.add(k);
+        }
+      }
+
+      const pickedQs = picked;
       if (pickedQs.length < 4) {
-        throw new Error('Archivio insufficiente: servono almeno 4 giornali su date diverse. Continua a giocare il livello del giorno per popolare l\'archivio.');
+        throw new Error('Archivio insufficiente: servono almeno 4 giornali. Continua a giocare il livello del giorno per popolare l\'archivio.');
       }
-      // Costruisco le domande con date diverse
+
+      // Costruisco le domande
       state.dateISO = pickedQs[0].dateISO; // di riferimento per metadati
       const LOADING_MESSAGES = [
         "«Sapere è potere.» — Francis Bacon",
@@ -3994,6 +4038,9 @@ document.querySelectorAll('[data-lbtab]').forEach(b => {
     document.querySelectorAll('[data-lbtab]').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     const t = b.dataset.lbtab;
+    // Gestisco sia .active (visibilità via CSS) sia .hidden (override esplicito)
+    $('lbPane-join').classList.toggle('active', t === 'join');
+    $('lbPane-create').classList.toggle('active', t === 'create');
     $('lbPane-join').classList.toggle('hidden', t !== 'join');
     $('lbPane-create').classList.toggle('hidden', t !== 'create');
     $('lbJoinErr').style.display = 'none';
