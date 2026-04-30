@@ -264,7 +264,7 @@
 
   .theme-btn.active {
     background: var(--accent-primary);
-    color: var(--bg-primary);
+    color: #fff;
     border-color: var(--accent-primary);
     font-weight: 700;
   }
@@ -435,15 +435,21 @@
     flex: 1;
     overflow-y: auto;
     /* Garantisce sempre 40px di margine sopra la bottom-nav */
-    padding: 18px 20px calc(var(--bn-height) + 40px);
+    padding: 18px 20px calc(var(--bn-height) + 80px);
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
-    scroll-padding-bottom: calc(var(--bn-height) + 60px);
+    scroll-padding-bottom: calc(var(--bn-height) + 100px);
   }
   /* Pulsanti sticky in fondo al quiz: extra margine per non finire mai sotto bottom-nav */
   .quiz-actions, #nextBtn, .final .row {
     margin-bottom: 24px;
+  }
+  /* Ultima tabella/sezione di ogni pagina: extra respiro sotto */
+  .page > *:last-child,
+  .page .section:last-child,
+  .page .data-table:last-of-type {
+    margin-bottom: 32px;
   }
 
   .page {
@@ -773,8 +779,8 @@
   }
 
   .progress-dot.answered {
-    background: var(--text-secondary);
-    border-color: var(--text-secondary);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
   }
 
   .progress-dot.current {
@@ -1145,12 +1151,15 @@
     background: var(--bg-secondary);
     transition: transform .15s ease, box-shadow .15s ease;
     position: relative;
+    cursor: pointer;
   }
+  .badge-card-v2:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
   .badge-card-v2.locked {
-    opacity: .35;
-    filter: grayscale(.85);
+    opacity: .55;
     background: var(--bg-tertiary);
   }
+  .badge-card-v2.locked .badge-emoji { filter: grayscale(.5); }
+  .badge-card-v2.locked .badge-title { color: var(--text-secondary); }
   .badge-card-v2.unlocked {
     background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
     border-color: var(--accent-primary);
@@ -1194,7 +1203,7 @@
     line-height: 1.3;
     display: none;
   }
-  .badge-card-v2.unlocked .badge-quote { display: block; }
+  /* La quote non si mostra nelle card: appare solo nella modale dettaglio */
 
   /* Striscia "stories Instagram" dei badge sbloccati nella tab Badge */
   .badge-stories {
@@ -2117,7 +2126,7 @@
       <!-- PAGE: ARCHIVE -->
       <div class="page" id="page-archive">
         <h2>Archivio storico</h2>
-        <p>Consulta le edizioni passate archivia te.</p>
+        <p>Consulta le edizioni passate archiviate.</p>
 
         <div class="tabs-container">
           <button class="tab-btn" data-abtab="dates">Per data</button>
@@ -2287,6 +2296,55 @@
   </div>
 </div>
 
+<!-- BADGE DETAIL MODAL -->
+<div class="modal-overlay" id="badgeDetailModal">
+  <div class="modal" style="max-width: 400px; text-align: center;">
+    <div id="bdmEmoji" style="font-size: 64px; line-height: 1; margin: 8px 0 12px;">🏅</div>
+    <h2 id="bdmTitle" style="margin-bottom: 6px;">—</h2>
+    <div id="bdmState" class="bdm-state" style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 18px;">—</div>
+    <div style="text-align: left; background: var(--bg-tertiary); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
+      <div id="bdmHowTitle" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 6px;">Come sbloccarlo</div>
+      <div id="bdmHow" style="font-size: 14px; color: var(--text-primary); line-height: 1.4;">—</div>
+    </div>
+    <div id="bdmQuote" style="font-style: italic; color: var(--text-secondary); font-size: 13px; line-height: 1.5; padding: 0 8px; margin-bottom: 18px;">—</div>
+    <div class="modal-row">
+      <button class="btn" onclick="closeBadgeDetailModal()">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE RESULT MODAL -->
+<div class="modal-overlay" id="shareResultModal">
+  <div class="modal" style="max-width: 380px;">
+    <h2 style="margin-bottom: 8px;">Condividi il risultato</h2>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 18px;">Scegli il formato:</p>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn" id="shareCompactBtn" style="justify-content: flex-start; gap: 10px;">
+        <span style="font-size: 22px;">📋</span>
+        <div style="text-align: left;">
+          <div style="font-weight: 700;">Compatta</div>
+          <div style="font-size: 12px; opacity: 0.8; font-weight: normal;">Solo punteggio + pallini</div>
+        </div>
+      </button>
+      <button class="btn btn-outline" id="shareExtendedBtn" style="justify-content: flex-start; gap: 10px;">
+        <span style="font-size: 22px;">📝</span>
+        <div style="text-align: left;">
+          <div style="font-weight: 700;">Estesa</div>
+          <div style="font-size: 12px; opacity: 0.8; font-weight: normal;">Con commento e lista giornali</div>
+        </div>
+      </button>
+    </div>
+    <div class="modal-row" style="margin-top: 16px;">
+      <button class="btn btn-outline" onclick="closeShareResultModal()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bdm-state.unlocked { color: var(--success); }
+  .bdm-state.locked { color: var(--text-tertiary); }
+</style>
+
 <!-- ANDROID INSTALL MODAL -->
 <div class="modal-overlay" id="androidInstallModal">
   <div class="modal">
@@ -2326,6 +2384,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 
 <script>
 /* =========================================================
@@ -2340,8 +2399,21 @@ const firebaseConfig = {
   projectId:         "giornali-4cdfe",
   storageBucket:     "giornali-4cdfe.firebasestorage.app",
   messagingSenderId: "911753113078",
-  appId:             "1:911753113078:web:098f358c69273158ba6bd7"
+  appId:             "1:911753113078:web:098f358c69273158ba6bd7",
+  // measurementId necessario per Firebase Analytics.
+  // Se mostra warning in console, prendilo da: Firebase Console → Project Settings → Your apps → Web → App ID / measurementId (inizia con G-)
+  measurementId:     "G-S5ZB8XPQN7"
 };
+
+/* ===== FIREBASE ANALYTICS (dati visibili SOLO al creatore su Firebase Console) ===== */
+let fbAnalytics = null;
+function logAnalytics(eventName, params) {
+  try {
+    if (!fbAnalytics || typeof fbAnalytics.logEvent !== 'function') return;
+    fbAnalytics.logEvent(eventName, params || {});
+  } catch (e) { /* silenzioso */ }
+}
+window.logAnalytics = logAnalytics;
 
 const NEWSPAPERS = [
   { id: "corriere",   name: "Corriere della Sera",   slug: "corriere-della-sera",   clue: "Quotidiano milanese fondato nel 1876, considerato giornale di riferimento del centro-Italia." },
@@ -2878,6 +2950,8 @@ async function startQuiz(mode, dateISO) {
   state.current = 0;
   state.score = 0;
 
+  try { logAnalytics('quiz_start', { mode, date: dateISO || '' }); } catch {}
+
   if (mode === 'daily')    state.dateISO = todayISO();
   if (mode === 'past')     state.dateISO = dateISO;
 
@@ -3201,6 +3275,8 @@ function finishQuiz() {
   // Snapshot dei badge sbloccati prima di salvare la nuova partita
   const beforeBadges = computeUnlockedBadgeIds();
 
+  try { logAnalytics('quiz_complete', { mode: state.mode, score: state.score, total: state.questions.length }); } catch {}
+
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
   $('finalScoreVersus').textContent = `${state.score}:${state.questions.length - state.score}`;
@@ -3319,23 +3395,47 @@ function launchConfetti() {
 }
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
-$('shareResultBtn').addEventListener('click', async () => {
-  // Costruisce stringa con pallini colorati per ogni risposta (✅ giusta / ❌ sbagliata)
-  const dots = state.questions.map(q => (q.given === q.paper.id) ? '🟢' : '🔴').join('');
+
+/* Condivisione risultati: modale con 2 formati (compatta / estesa) */
+function _buildShareText(mode) {
   const url = (location.origin || '') + (location.pathname || '/api/quiz');
+  const dots = state.questions.map(q => (q.given === q.paper.id) ? '🟢' : '🔴').join('');
+  if (mode === 'compact') {
+    return [
+      `📰 NEWSGUESS — ${state.score}/${state.questions.length}`,
+      dots,
+      verdictFor(state.score) + '.',
+      '',
+      `Riesci a fare meglio? 👉 ${url}`
+    ].join('\n');
+  }
+  // estesa: aggiunge commento finale e lista risultati per giornale
+  const details = state.questions.map(q => {
+    const mark = (q.given === q.paper.id) ? '🟢' : '🔴';
+    return `${mark} ${q.paper.name}`;
+  }).join('\n');
+  const commentary = (() => {
+    try { return (document.getElementById('resultCommentary')?.textContent || '').trim(); }
+    catch { return ''; }
+  })();
   const lines = [
     `📰 NEWSGUESS — ${state.score}/${state.questions.length}`,
     dots,
     verdictFor(state.score) + '.',
-    '',
-    `Riesci a fare meglio? 👉 ${url}`
   ];
-  const text = lines.join('\n');
+  if (commentary && commentary !== '—') lines.push('', `«${commentary}»`);
+  lines.push('', '📋 I giornali di oggi:', details);
+  lines.push('', `Riesci a fare meglio? 👉 ${url}`);
+  return lines.join('\n');
+}
+
+async function _dispatchShare(text) {
   if (navigator.share) {
     try {
       await navigator.share({ title: 'NEWSGUESS', text });
       localStorage.setItem(SHARE_BADGE_KEY, '1');
       if (document.querySelector('#page-badge.active')) renderBadges();
+      try { logAnalytics('share_result'); } catch {}
       return;
     } catch {}
   }
@@ -3344,11 +3444,30 @@ $('shareResultBtn').addEventListener('click', async () => {
     localStorage.setItem(SHARE_BADGE_KEY, '1');
     if (document.querySelector('#page-badge.active')) renderBadges();
     showToast('Risultato copiato negli appunti');
+    try { logAnalytics('share_result'); } catch {}
   } catch {
-    // Fallback: apri WhatsApp Web direttamente
     const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(wa, '_blank');
   }
+}
+
+function closeShareResultModal() {
+  const m = document.getElementById('shareResultModal');
+  if (m) m.classList.remove('open');
+}
+window.closeShareResultModal = closeShareResultModal;
+
+$('shareResultBtn').addEventListener('click', () => {
+  const m = document.getElementById('shareResultModal');
+  if (m) m.classList.add('open');
+});
+document.getElementById('shareCompactBtn')?.addEventListener('click', async () => {
+  closeShareResultModal();
+  await _dispatchShare(_buildShareText('compact'));
+});
+document.getElementById('shareExtendedBtn')?.addEventListener('click', async () => {
+  closeShareResultModal();
+  await _dispatchShare(_buildShareText('extended'));
 });
 
 function resetToMenu() {
@@ -3537,16 +3656,42 @@ function renderBadges() {
   }
   // Render della griglia completa con nuovo stile
   grid.innerHTML = allBadges.map(b => `
-    <div class="badge-card-v2 ${b.ok ? 'unlocked' : 'locked'}">
-      <span class="badge-emoji">${b.ok ? extractEmoji(b.name) : '🔒'}</span>
-      <div class="badge-title">${b.ok ? escapeHtml(cleanName(b.name)) : '???'}</div>
-      ${b.ok ? `<div class="badge-desc">${escapeHtml(b.desc || '')}</div>` : '<div class="badge-desc">Continua a giocare per scoprirlo</div>'}
+    <div class="badge-card-v2 ${b.ok ? 'unlocked' : 'locked'}" data-badge-id="${escapeHtml(b.id)}">
+      <span class="badge-emoji">${extractEmoji(b.name)}</span>
+      <div class="badge-title">${escapeHtml(cleanName(b.name))}</div>
+      <div class="badge-desc">${escapeHtml(b.desc || '')}</div>
       <div class="badge-quote">${escapeHtml(b.quote || '')}</div>
-      <div class="badge-state">${b.ok ? '✓ Sbloccato' : 'Bloccato'}</div>
+      <div class="badge-state">${b.ok ? '✓ Sbloccato' : 'Da sbloccare'}</div>
     </div>
   `).join('');
+  // Apri modale al click
+  grid.querySelectorAll('.badge-card-v2').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.badgeId;
+      const badge = allBadges.find(x => x.id === id);
+      if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName);
+    });
+  });
   if (typeof createLucideIcons === 'function') createLucideIcons();
 }
+
+function openBadgeDetailModal(badge, extractEmoji, cleanName) {
+  const modal = document.getElementById('badgeDetailModal');
+  if (!modal) return;
+  document.getElementById('bdmEmoji').textContent = extractEmoji(badge.name);
+  document.getElementById('bdmTitle').textContent = cleanName(badge.name);
+  document.getElementById('bdmState').textContent = badge.ok ? '✓ Sbloccato' : '🔒 Da sbloccare';
+  document.getElementById('bdmState').className = 'bdm-state ' + (badge.ok ? 'unlocked' : 'locked');
+  document.getElementById('bdmHowTitle').textContent = badge.ok ? 'Come l\'hai ottenuto' : 'Come sbloccarlo';
+  document.getElementById('bdmHow').textContent = badge.desc || '';
+  document.getElementById('bdmQuote').textContent = badge.quote || '';
+  modal.classList.add('open');
+}
+function closeBadgeDetailModal() {
+  const modal = document.getElementById('badgeDetailModal');
+  if (modal) modal.classList.remove('open');
+}
+window.closeBadgeDetailModal = closeBadgeDetailModal;
 
 $('stResetBtn').addEventListener('click', () => {
   if (confirm('Sei sicuro di voler azzerare tutte le statistiche? Questa azione non può essere annullata.')) {
@@ -3866,6 +4011,7 @@ function _authErrorMsg(e) {
 function _bindAuthListeners() {
   if (!fbAuth) return;
   fbAuth.onAuthStateChanged(async (user) => {
+    const wasLoggedIn = !!_authUser;
     _authUser = user;
     window._authUserPresent = !!user;
     _renderAuthUI();
@@ -3881,8 +4027,20 @@ function _bindAuthListeners() {
             showLBLoggedIn();
           }
         } catch {}
-        showToast('Accesso effettuato. Dati sincronizzati ✓');
+        // Mostra toast SOLO al primo login reale di questa sessione browser
+        // (evita lo "spike" a ogni refresh con sessione persistente)
+        const alreadyShown = sessionStorage.getItem('ng-login-toast-shown') === '1';
+        if (!alreadyShown) {
+          showToast('Accesso effettuato. Dati sincronizzati ✓');
+          sessionStorage.setItem('ng-login-toast-shown', '1');
+          try {
+            const method = (user.providerData?.[0]?.providerId || 'unknown').replace('.com', '');
+            logAnalytics('login', { method });
+          } catch {}
+        }
       } catch (e) { console.error('Sync error:', e); }
+    } else if (wasLoggedIn) {
+      sessionStorage.removeItem('ng-login-toast-shown');
     }
   });
   if ($('authShowEmailBtn')) $('authShowEmailBtn').addEventListener('click', () => $('authEmailForm').classList.toggle('hidden'));
@@ -3897,7 +4055,10 @@ function _bindAuthListeners() {
   });
   if ($('authSignupBtn')) $('authSignupBtn').addEventListener('click', async () => {
     _showAuthError('');
-    try { await fbAuth.createUserWithEmailAndPassword($('authEmailInput').value.trim(), $('authPasswordInput').value); }
+    try {
+      await fbAuth.createUserWithEmailAndPassword($('authEmailInput').value.trim(), $('authPasswordInput').value);
+      try { logAnalytics('sign_up', { method: 'email' }); } catch {}
+    }
     catch (e) { _showAuthError(_authErrorMsg(e)); }
   });
   if ($('authResetPwdBtn')) $('authResetPwdBtn').addEventListener('click', async () => {
@@ -3923,6 +4084,13 @@ function initFirebase() {
       fbAuth = firebase.auth();
       fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
     }
+    // Inizializza Analytics solo se measurementId valido
+    try {
+      if (firebase.analytics && firebaseConfig.measurementId && !firebaseConfig.measurementId.includes('REPLACE_ME')) {
+        fbAnalytics = firebase.analytics();
+        fbAnalytics.logEvent('app_open');
+      }
+    } catch (e) { /* analytics non critico */ }
     fbReady = true;
     _bindAuthListeners();
   } catch (e) { console.error('Firebase init error', e); }
@@ -4064,6 +4232,7 @@ $('lbCreateBtn').addEventListener('click', async () => {
     if (!state.user.groups.find(g => g.code === code)) state.user.groups.push({ code, name: groupName });
     state.user.activeGroupCode = code;
     saveUser();
+    try { logAnalytics('group_created', { code }); } catch {}
     $('newGroupCode').textContent = code;
     $('lbLogin').classList.add('hidden');
     $('lbCreated').classList.remove('hidden');
@@ -4106,6 +4275,7 @@ $('lbJoinBtn').addEventListener('click', async () => {
     if (!state.user.groups.find(x => x.code === g.code)) state.user.groups.push({ code: g.code, name: g.name });
     state.user.activeGroupCode = g.code;
     saveUser();
+    try { logAnalytics('group_joined', { code: g.code }); } catch {}
     showLBLoggedIn();
     showToast(`Benvenuto nel gruppo "${g.name}"!`);
   } catch (e) {
