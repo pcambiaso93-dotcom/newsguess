@@ -268,6 +268,16 @@
     border-color: var(--accent-primary);
     font-weight: 700;
   }
+  /* In dark mode l'accent è un azzurro chiaro: serve testo scuro per leggibilità */
+  [data-theme="dark"] .theme-btn.active {
+    color: #0a1220;
+  }
+  @media (prefers-color-scheme: dark) {
+    [data-theme="system"] .theme-btn.active,
+    html:not([data-theme]) .theme-btn.active {
+      color: #0a1220;
+    }
+  }
 
   .sidebar-backdrop {
     display: none;
@@ -1713,7 +1723,7 @@
   /* ===== RESPONSIVE ===== */
   @media (max-width: 640px) {
     .app-content {
-      padding: 16px;
+      padding: 16px 16px calc(var(--bn-height) + 80px);
     }
 
     .card-grid {
@@ -2402,7 +2412,7 @@ const firebaseConfig = {
   appId:             "1:911753113078:web:098f358c69273158ba6bd7",
   // measurementId necessario per Firebase Analytics.
   // Se mostra warning in console, prendilo da: Firebase Console → Project Settings → Your apps → Web → App ID / measurementId (inizia con G-)
-  measurementId:     "G-S5ZB8XPQN7"
+  measurementId:     "G-REPLACE_ME"
 };
 
 /* ===== FIREBASE ANALYTICS (dati visibili SOLO al creatore su Firebase Console) ===== */
@@ -3159,10 +3169,17 @@ function renderQuestion() {
 
   const dots = $('dots');
   dots.innerHTML = '';
+  const hideFeedbackRQ = (state.mode === 'daily');
   state.questions.forEach((qq, i) => {
     const d = document.createElement('div');
     d.className = 'progress-dot';
-    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
+    if (qq.given != null) {
+      if (hideFeedbackRQ) {
+        d.classList.add('answered');
+      } else {
+        d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
+      }
+    }
     if (i === state.current && qq.given == null) d.classList.add('current');
     dots.appendChild(d);
   });
@@ -3648,10 +3665,18 @@ function renderBadges() {
       stories.innerHTML = '<div class="badge-stories-empty">Gioca per sbloccare i tuoi primi badge!</div>';
     } else {
       stories.innerHTML = unlocked.map(b => `
-        <div class="badge-story" title="${escapeHtml(b.desc || '')}">
+        <div class="badge-story" data-badge-id="${escapeHtml(b.id)}" title="${escapeHtml(b.desc || '')}">
           <div class="badge-story-circle"><div class="badge-story-inner">${extractEmoji(b.name)}</div></div>
           <div class="badge-story-name">${escapeHtml(cleanName(b.name))}</div>
         </div>`).join('');
+      // Click = apre la stessa modale dei badge nella griglia
+      stories.querySelectorAll('.badge-story').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.badgeId;
+          const badge = allBadges.find(x => x.id === id);
+          if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName);
+        });
+      });
     }
   }
   // Render della griglia completa con nuovo stile
