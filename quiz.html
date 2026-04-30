@@ -9,26 +9,24 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Newsguess" />
-<link rel="manifest" href="/api/manifest.json?v=4" />
-<link rel="icon" href="/api/icon-192.png" type="image/png" sizes="32x32" />
-<link rel="icon" href="/api/icon-192.png" type="image/png" sizes="192x192" />
-<link rel="shortcut icon" href="/api/icon-192.png" type="image/png" />
-<link rel="apple-touch-icon" href="/api/icon-192.png" />
+<link rel="manifest" href="data:application/json,{%22name%22:%22Newsguess%22,%22short_name%22:%22Newsguess%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22theme_color%22:%22%230f3460%22,%22background_color%22:%22%23f9f8f5%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%20192%20192%27%3E%3Crect%20fill=%27%23f9f8f5%27%20width=%27192%27%20height=%27192%27/%3E%3Ctext%20x=%2796%27%20y=%27140%27%20font-size=%27120%27%20font-weight=%27900%27%20font-family=%27Playfair%20Display,%20serif%27%20text-anchor=%27middle%27%20fill=%27%230f3460%27%20font-style=%27italic%27%3EN%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}" />
+<link rel="icon" href="/api/icon-192.png" type="image/png" />
+<link rel="apple-touch-icon" href="/api/apple-touch-icon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" />
 
 <style>
   :root {
     /* Light theme */
-    --bg-primary: #f6f1e7;
-    --bg-secondary: #fdfaf3;
-    --bg-tertiary: #efe7d9;
-    --text-primary: #1c1712;
-    --text-secondary: #4e4538;
-    --text-tertiary: #7a6f61;
-    --border-color: #d8cdbb;
+    --bg-primary: #f9f8f5;
+    --bg-secondary: #f0ebe2;
+    --bg-tertiary: #e8e2d5;
+    --text-primary: #1a1410;
+    --text-secondary: #524a3f;
+    --text-tertiary: #8b7f72;
+    --border-color: #d4cfc5;
     --accent-primary: #0f3460;
     --accent-secondary: #2b6a96;
     --success: #2d7a4a;
@@ -41,15 +39,15 @@
   }
 
   [data-theme="dark"] {
-    --bg-primary: #101319;
-    --bg-secondary: #171c24;
-    --bg-tertiary: #212834;
-    --text-primary: #f2eee6;
-    --text-secondary: #d3c9bc;
-    --text-tertiary: #9f9688;
-    --border-color: #313949;
-    --accent-primary: #5da9e8;
-    --accent-secondary: #7dc1f2;
+    --bg-primary: #0f0e0a;
+    --bg-secondary: #1a1612;
+    --bg-tertiary: #24201a;
+    --text-primary: #f5f0e8;
+    --text-secondary: #d4cfc5;
+    --text-tertiary: #a8a299;
+    --border-color: #3a362f;
+    --accent-primary: #4a9dd9;
+    --accent-secondary: #6bb8f0;
     --success: #4ab366;
     --error: #ff6b6f;
     --warning: #f5b546;
@@ -123,28 +121,6 @@
     color: var(--text-primary);
   }
 
-  .sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .sidebar-logo {
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
-    object-fit: contain;
-    background: transparent;
-    transition: filter .2s ease;
-  }
-  /* Inverti il logo nel sidebar in tema scuro per restare leggibile */
-  [data-theme="dark"] .sidebar-logo,
-  [data-theme="dark"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
-  @media (prefers-color-scheme: dark) {
-    [data-theme="system"] .sidebar-logo,
-    [data-theme="system"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
-  }
-
   .sidebar-close {
     background: none;
     border: none;
@@ -168,6 +144,10 @@
     .app-sidebar {
       width: 260px;
       max-width: 85vw;
+    }
+
+    .app-sidebar.open ~ .sidebar-backdrop {
+      display: block;
     }
 
     .nav-item {
@@ -306,169 +286,13 @@
     }
   }
 
-  /* ===== HEADER ===== */
-  .app-header {
-    background: transparent;
-    border-bottom: none;
-    padding: 16px 0 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: clamp(2.2rem, 7vw, 3.5rem);
-    cursor: pointer;
-    color: var(--text-primary);
-    padding: 8px;
-    min-width: 44px;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    transition: background-color 0.2s, opacity 0.2s, transform 0.2s;
-  }
-
-  .menu-toggle.sidebar-open-hidden {
-    opacity: 0;
-    transform: scale(0.92);
-    pointer-events: none;
-  }
-
-  .menu-toggle:hover {
-    background-color: var(--bg-tertiary);
-  }
-
-  @media (max-width: 768px) {
-    .app-header {
-      padding: 0;
-      min-height: 0;
-    }
-
-    .header-title,
-    .header-brand-mark,
-    .header-actions {
-      display: none;
-    }
-
-    .header-left {
-      gap: 0;
-    }
-
-    .menu-toggle {
-      display: flex;
-      position: fixed;
-      top: max(18px, env(safe-area-inset-top));
-      left: 10px;
-      z-index: 1600;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-md);
-      padding: 10px;
-    }
-
-    .app-content {
-      padding-top: 52px;
-    }
-  }
-
-  .header-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: color 0.2s;
-    user-select: none;
-  }
-
-  .header-title:hover {
-    color: var(--accent-primary);
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .header-brand-mark {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    object-fit: cover;
-    border: 1px solid var(--border-color);
-  }
-
-  .header-action-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    padding: 8px;
-    border-radius: var(--radius);
-    transition: background-color 0.2s, color 0.2s;
-  }
-
-  .header-action-btn:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-  }
-
-  /* ===== CONTENT AREA ===== */
-  .app-content {
-    flex: 1;
-    overflow-y: auto;
-    /* bottom-nav 68px + safe-area + 100px margine sicurezza per pulsanti */
-    padding: 18px 20px calc(170px + env(safe-area-inset-bottom, 0px));
-    max-width: 1000px;
-    margin: 0 auto;
-    width: 100%;
-    scroll-padding-bottom: 200px;
-  }
-  /* Pulsanti sticky in fondo al quiz: extra margine per non finire mai sotto bottom-nav */
-  .quiz-actions, #nextBtn, .final .row {
-    margin-bottom: 24px;
-  }
-
-  .page {
-    display: none;
-    animation: pageIn 0.3s ease;
-  }
-
-  .page.active {
-    display: block;
-  }
-
-  @keyframes pageIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ===== MASTHEAD (HEADER EDITORIALE) ===== */
+  /* ===== MASTHEAD con hamburger integrato ===== */
   .masthead {
     text-align: center;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
     border-bottom: 1px solid var(--border-color);
+    position: relative;
   }
 
   .masthead-tag {
@@ -478,21 +302,63 @@
     text-transform: uppercase;
     color: var(--accent-primary);
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+  }
+
+  /* Riga con hamburger + titolo centrato */
+  .masthead-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .hamburger-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    transition: background-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .hamburger-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+
+  /* Su desktop nascondi l'hamburger */
+  @media (min-width: 769px) {
+    .hamburger-btn {
+      display: none;
+    }
+    .masthead-title-row {
+      justify-content: center;
+    }
   }
 
   .masthead-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 8vw, 56px);
+    font-size: clamp(36px, 9vw, 60px);
     font-weight: 900;
     font-style: italic;
     color: var(--text-primary);
     letter-spacing: -1px;
     line-height: 1.1;
-    margin-bottom: 6px;
     cursor: pointer;
     transition: color 0.2s, transform 0.2s;
     user-select: none;
+    margin: 0;
   }
 
   .masthead-title:hover {
@@ -505,7 +371,7 @@
     font-size: 14px;
     font-style: italic;
     color: var(--text-secondary);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .masthead-meta {
@@ -522,6 +388,264 @@
   .masthead-meta .accent {
     color: var(--accent-primary);
     font-weight: 700;
+  }
+
+  /* ===== COMMENTO EDITORIALE - stile ritaglio di giornale ===== */
+  .result-editorial {
+    max-width: 520px;
+    margin: 0 auto 28px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-top: 4px solid var(--accent-primary);
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 18px 20px 16px;
+    text-align: left;
+    position: relative;
+  }
+
+  .editorial-byline {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .editorial-headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(16px, 3.5vw, 20px);
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .editorial-body {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+  }
+
+  .editorial-body p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .editorial-body p:last-child { margin-bottom: 0; }
+
+  /* ===== BADGE ===== */
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .badge-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 18px 14px;
+    text-align: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .badge-card.unlocked {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-sm);
+  }
+
+  .badge-card.unlocked:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-md);
+  }
+
+  .badge-card.locked {
+    opacity: 0.45;
+    filter: grayscale(1);
+  }
+
+  .badge-icon {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .badge-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+
+  .badge-desc {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 1.4;
+  }
+
+  .badge-date {
+    font-size: 10px;
+    color: var(--accent-primary);
+    font-weight: 600;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-lock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 12px;
+    opacity: 0.4;
+  }
+
+  .badge-new {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--accent-primary);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ===== BADGE UNLOCK POPUP ===== */
+  #badgeUnlockOverlay .modal {
+    animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes badgePop {
+    from { opacity: 0; transform: scale(0.6) translateY(30px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ===== STORICO MESI TABS ===== */
+  #lbHistoryTabs {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  #lbHistoryTabs::-webkit-scrollbar { display: none; }
+  #lbHistoryTabs .tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ===== SETTINGS PAGE ===== */
+  .section {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .section:last-child {
+    border-bottom: none;
+  }
+
+  .section h3 {
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .theme-toggle {
+    display: flex;
+    gap: 8px;
+    border-radius: var(--radius);
+    background: var(--bg-secondary);
+    padding: 6px;
+  }
+
+  .theme-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: calc(var(--radius) - 2px);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 40px;
+  }
+
+  .theme-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .theme-btn.active {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-error {
+    border-color: var(--error);
+    color: var(--error);
+  }
+
+  .btn-error:hover {
+    background: rgba(193, 66, 74, 0.08);
+  }
+
+  @media (max-width: 480px) {
+    .badges-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ===== CONTENT AREA ===== */
+  .app-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px calc(88px + env(safe-area-inset-bottom, 0px)) 24px;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page {
+    display: none;
+    animation: pageIn 0.3s ease;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* ===== TYPOGRAPHY ===== */
@@ -769,11 +893,6 @@
     border-color: var(--error);
   }
 
-  .progress-dot.answered {
-    background: var(--text-secondary);
-    border-color: var(--text-secondary);
-  }
-
   .progress-dot.current {
     animation: dotPulse 1.5s ease-in-out infinite;
     border-color: var(--accent-primary);
@@ -860,15 +979,6 @@
     color: #fff;
     border-color: var(--error);
     animation: incorrectShake 0.5s ease;
-  }
-
-  /* Risposta scelta in DAILY (neutra: non rivela) */
-  .choice-btn.chosen {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border-color: var(--accent-primary);
-    border-width: 2px;
-    font-weight: 700;
   }
 
   @keyframes correctFlash {
@@ -1069,177 +1179,6 @@
     font-weight: 600;
   }
 
-  /* Mobile: nomi lunghi nelle classifiche con ellipsis */
-  .data-table td:nth-child(2),
-  .data-table th:nth-child(2) {
-    max-width: 140px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  @media (max-width: 480px) {
-    .data-table { font-size: 13px; }
-    .data-table td, .data-table th { padding: 10px 6px; }
-    .data-table td:nth-child(2),
-    .data-table th:nth-child(2) {
-      max-width: 90px;
-    }
-  }
-
-  /* Archive: thumbnail accanto al titolo */
-  .archive-row {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-    cursor: pointer;
-  }
-  .archive-thumb {
-    flex-shrink: 0;
-    width: 64px;
-    height: 86px;
-    object-fit: cover;
-    object-position: top center;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: var(--bg-tertiary);
-    transition: transform .2s ease, box-shadow .2s ease;
-  }
-  .archive-row:hover .archive-thumb {
-    transform: scale(1.06);
-    box-shadow: 0 4px 12px rgba(0,0,0,.18);
-  }
-  .archive-info { flex: 1; min-width: 0; }
-
-  /* Badge migliorati: pieni quando sbloccati, una sola emoji colorata grande */
-  .badge-card-v2 {
-    text-align: center;
-    padding: 16px 10px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    transition: transform .15s ease, box-shadow .15s ease;
-    position: relative;
-  }
-  .badge-card-v2.locked {
-    opacity: .35;
-    filter: grayscale(.85);
-    background: var(--bg-tertiary);
-  }
-  .badge-card-v2.unlocked {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    border-color: var(--accent-primary);
-    box-shadow: 0 4px 16px rgba(15, 52, 96, .12);
-  }
-  .badge-card-v2 .badge-emoji {
-    font-size: 44px;
-    line-height: 1;
-    margin-bottom: 8px;
-    display: block;
-    filter: none;
-  }
-  .badge-card-v2 .badge-title {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-    line-height: 1.2;
-  }
-  .badge-card-v2 .badge-state {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    color: var(--text-tertiary);
-    margin-top: 6px;
-  }
-  .badge-card-v2.unlocked .badge-state { color: var(--accent-primary); }
-  .badge-card-v2 .badge-desc {
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 6px;
-    line-height: 1.3;
-  }
-  .badge-card-v2 .badge-quote {
-    font-size: 11px;
-    font-style: italic;
-    color: var(--text-secondary);
-    margin-top: 6px;
-    line-height: 1.3;
-    display: none;
-  }
-  .badge-card-v2.unlocked .badge-quote { display: block; }
-
-  /* Striscia "stories Instagram" dei badge sbloccati nella tab Badge */
-  .badge-stories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 10px;
-    padding: 12px 4px 16px;
-    margin: 0 -4px 16px;
-    justify-content: flex-start;
-  }
-  .badge-story {
-    flex: 0 0 auto;
-    width: 72px;
-    text-align: center;
-    cursor: pointer;
-  }
-  .badge-story-circle {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #fde68a, #fbbf24, #f59e0b, #b45309);
-    padding: 3px;
-    margin: 0 auto 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,.15);
-  }
-  .badge-story-inner {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-  }
-  .badge-story-name {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-primary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .badge-stories-empty {
-    color: var(--text-tertiary);
-    font-style: italic;
-    text-align: center;
-    padding: 16px;
-    font-size: 13px;
-  }
-
-  /* Logo nella masthead */
-  .masthead-logo {
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 8px;
-    display: block;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    transition: filter .2s ease;
-  }
-  /* Logo invertito in tema scuro per restare leggibile su sfondo scuro */
-  [data-theme="dark"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
-  @media (prefers-color-scheme: dark) {
-    [data-theme="system"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
-  }
-  }
-
   .table-error {
     color: var(--error);
     font-weight: 600;
@@ -1284,66 +1223,6 @@
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
   }
 
-  /* ===== BOTTOM NAV ===== */
-  .bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 68px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    z-index: 1400;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .bottom-nav-item {
-    appearance: none;
-    border: none;
-    background: transparent;
-    color: var(--text-tertiary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-width: 56px;
-    min-height: 56px;
-    cursor: pointer;
-    font-size: 11px;
-    letter-spacing: 0.2px;
-  }
-
-  .bottom-nav-item i {
-    width: 21px;
-    height: 21px;
-    stroke-width: 1.75;
-  }
-
-  .bottom-nav-item.active {
-    color: var(--accent-primary);
-  }
-
-  .bottom-nav-item.active::after {
-    content: '';
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: currentColor;
-  }
-
-  @media (min-width: 769px) {
-    .bottom-nav {
-      display: none;
-    }
-    .app-content {
-      padding-bottom: 20px;
-    }
-  }
-
   /* ===== TABS ===== */
   .tabs-container {
     display: flex;
@@ -1356,7 +1235,7 @@
     padding: 12px 16px;
     background: none;
     border: none;
-    border-bottom: 2px solid transparent;
+    border-bottom: 3px solid transparent;
     color: var(--text-secondary);
     font-family: 'Playfair Display', serif;
     font-size: 15px;
@@ -1452,16 +1331,7 @@
   /* ===== FINAL SCREEN ===== */
   .result-container {
     text-align: center;
-    padding: 28px 12px;
-  }
-
-  .result-frontpage {
-    border: 1px solid var(--border-color);
-    background: var(--bg-secondary);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow-md);
-    margin-bottom: 16px;
+    padding: 40px 20px;
   }
 
   .result-score {
@@ -1470,7 +1340,7 @@
     font-weight: 900;
     color: var(--accent-primary);
     line-height: 1;
-    margin: 10px 0 14px;
+    margin: 20px 0;
     animation: scoreCountUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -1490,13 +1360,7 @@
     font-style: italic;
     font-size: 24px;
     color: var(--accent-primary);
-    margin: 4px 0 10px;
-  }
-
-  .result-commentary {
-    font-style: italic;
-    color: var(--text-secondary);
-    margin-bottom: 14px;
+    margin: 16px 0 24px;
   }
 
   /* ===== UTILITIES ===== */
@@ -1637,40 +1501,6 @@
       margin-left: 0;
     }
   }
-
-  body.compact-ui .card,
-  body.compact-ui .question-card,
-  body.compact-ui .stat-card {
-    padding: 14px;
-  }
-
-  body.flat-ui .card,
-  body.flat-ui .question-card,
-  body.flat-ui .stat-card {
-    box-shadow: none !important;
-    transform: none !important;
-  }
-
-  body.flat-ui .card:hover,
-  body.flat-ui .stat-card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-  }
-
-  .settings-list {
-    display: grid;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .settings-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px dashed var(--border-color);
-  }
 </style>
 </head>
 <body>
@@ -1679,49 +1509,42 @@
   <!-- SIDEBAR -->
   <aside class="app-sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-brand">
-        <img
-          class="sidebar-logo"
-          src="/api/icon-192.png"
-          alt="Logo Newsguess"
-        />
-        <div class="sidebar-title">Menu</div>
-      </div>
-      <button class="sidebar-close" id="sidebarClose" aria-label="Chiudi menu"><i data-lucide="x"></i></button>
+      <div class="sidebar-title">Menu</div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Chiudi menu">×</button>
     </div>
 
     <nav class="sidebar-nav">
       <div class="nav-item active" data-page="quiz">
-        <div class="nav-icon"><i data-lucide="newspaper"></i></div>
+        <div class="nav-icon">🎮</div>
         <div>Quiz</div>
       </div>
       <div class="nav-item" data-page="leaderboard">
-        <div class="nav-icon"><i data-lucide="trophy"></i></div>
+        <div class="nav-icon">🏆</div>
         <div>Classifica</div>
       </div>
       <div class="nav-item" data-page="stats">
-        <div class="nav-icon"><i data-lucide="chart-column"></i></div>
+        <div class="nav-icon">📊</div>
         <div>Statistiche</div>
       </div>
       <div class="nav-item" data-page="archive">
-        <div class="nav-icon"><i data-lucide="archive"></i></div>
+        <div class="nav-icon">📂</div>
         <div>Archivio</div>
       </div>
-      <div class="nav-item" data-page="badge">
-        <div class="nav-icon"><i data-lucide="award"></i></div>
+      <div class="nav-item" data-page="badges">
+        <div class="nav-icon">🎖️</div>
         <div>Badge</div>
       </div>
       <div class="nav-item" data-page="settings">
-        <div class="nav-icon"><i data-lucide="settings"></i></div>
+        <div class="nav-icon">⚙️</div>
         <div>Impostazioni</div>
       </div>
     </nav>
 
     <div class="sidebar-footer">
       <div class="theme-toggle">
-        <button class="theme-btn active" data-theme="light">Chiaro</button>
-        <button class="theme-btn" data-theme="auto">Default</button>
-        <button class="theme-btn" data-theme="dark">Scuro</button>
+        <button class="theme-btn active" data-theme="light">☀️</button>
+        <button class="theme-btn" data-theme="auto">🔄</button>
+        <button class="theme-btn" data-theme="dark">🌙</button>
       </div>
     </div>
   </aside>
@@ -1730,26 +1553,16 @@
 
   <!-- MAIN CONTENT -->
   <div class="app-main">
-    <!-- HEADER -->
-    <header class="app-header">
-      <div class="header-left">
-        <button class="menu-toggle" id="menuToggle" aria-label="Apri menu"><i data-lucide="menu"></i></button>
-        <img class="header-brand-mark" src="/api/icon-192.png" alt="" />
-        <div class="header-title">NEWSGUESS</div>
-      </div>
-
-      <div class="header-actions">
-        <button class="header-action-btn" id="installBtn" title="Installa app" style="display: none;">📲</button>
-      </div>
-    </header>
-
     <!-- CONTENT -->
     <div class="app-content">
-      <!-- MASTHEAD -->
+      <!-- MASTHEAD con hamburger integrato -->
       <div class="masthead">
-        <img src="data:image/png;base64,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" alt="Newsguess" class="masthead-logo" />
         <div class="masthead-tag">Est. 2019 · Quiz dei quotidiani</div>
-        <h1 class="masthead-title">Newsguess</h1>
+        <div class="masthead-title-row">
+          <button class="hamburger-btn" id="menuToggle" aria-label="Apri menu">☰</button>
+          <h1 class="masthead-title" id="mastheadTitle">Newsguess</h1>
+          <button class="header-action-btn" id="installBtn" title="Installa app" style="display:none;">📲</button>
+        </div>
         <p class="masthead-subtitle">Il quiz delle prime pagine d'Italia</p>
         <div class="masthead-meta">
           <span id="todayDate">—</span>
@@ -1823,20 +1636,18 @@
         <!-- FINAL SCREEN -->
         <div id="finalScreen" class="hidden">
           <div class="result-container">
-            <div class="result-frontpage">
-              <p class="small-caps">Edizione straordinaria</p>
-              <div class="result-score" id="finalScoreVersus">0:5</div>
-              <div class="result-verdict" id="verdict">—</div>
-              <div class="result-commentary" id="resultCommentary">—</div>
-            </div>
+            <p class="small-caps">Risultato</p>
+            <div class="result-score"><span id="finalScore">0</span><span style="opacity: 0.3; font-size: 0.4em;">/5</span></div>
+            <div class="result-verdict" id="verdict">—</div>
+            <div class="result-editorial" id="editorialComment"></div>
 
             <table class="data-table" id="recapTable"></table>
 
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-              <button class="btn" id="saveScoreBtn">Salva punteggio</button>
-              <button class="btn btn-outline" id="shareResultBtn">Condividi</button>
+              <button class="btn" id="saveScoreBtn">💾 Salva punteggio</button>
+              <button class="btn btn-outline" id="shareResultBtn">📤 Condividi</button>
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
-              <button class="btn btn-outline" onclick="resetToMenu()">Menù principale</button>
+              <button class="btn btn-outline" onclick="resetToMenu()">← Menù</button>
             </div>
           </div>
         </div>
@@ -1884,7 +1695,7 @@
 
         <!-- GROUP CREATED -->
         <div id="lbCreated" class="section hidden">
-          <h2>Gruppo creato</h2>
+          <h2>Gruppo creato! 🎉</h2>
           <p>Condividi questo codice con i tuoi amici.</p>
           <div style="background: var(--bg-tertiary); border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 24px; text-align: center; margin: 20px 0; font-family: 'Playfair Display', serif;">
             <div style="font-size: 40px; font-weight: 900; letter-spacing: 8px; color: var(--accent-primary);" id="newGroupCode">—</div>
@@ -1899,7 +1710,7 @@
         <div id="lbContent" class="hidden">
           <div class="section">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--bg-tertiary); border-radius: var(--radius);">
-              <div style="font-family: 'Playfair Display', serif; font-weight: 700;">Ciao <span id="lbWho">—</span> <button class="btn" style="background: none; color: var(--text-primary); border: none; cursor: pointer; padding: 4px 8px;" id="lbEditNameBtn" title="Cambia nome"><i data-lucide="pencil"></i></button></div>
+              <div style="font-family: 'Playfair Display', serif; font-weight: 700;">Ciao <span id="lbWho">—</span> <button class="btn" style="background: none; color: var(--text-primary); border: none; cursor: pointer; padding: 4px 8px;" id="lbEditNameBtn" title="Cambia nome">✏️</button></div>
               <button class="btn btn-outline" id="lbLogoutBtn">Esci</button>
             </div>
           </div>
@@ -1910,7 +1721,6 @@
             <div style="display: flex; gap: 10px; margin-top: 16px;">
               <button class="btn btn-outline" id="lbAddJoinBtn">+ Unisciti a un altro</button>
               <button class="btn btn-outline" id="lbAddCreateBtn">+ Crea nuovo</button>
-              <button class="btn btn-outline" id="lbRenameGroupBtn">Rinomina gruppo</button>
             </div>
           </div>
 
@@ -1928,9 +1738,10 @@
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
           </div>
 
-          <div class="section">
-            <h2>Gestione membri</h2>
-            <table class="data-table" id="lbMembersTable"><thead><tr><th>Membro</th><th>Partite mese</th><th>Punti mese</th></tr></thead><tbody></tbody></table>
+          <div class="section" id="lbHistorySection" style="display: none;">
+            <h2>Storico mesi precedenti</h2>
+            <div class="tabs-container" id="lbHistoryTabs" style="flex-wrap: wrap; gap: 4px;"></div>
+            <div id="lbHistoryContent"></div>
           </div>
         </div>
       </div>
@@ -1987,76 +1798,98 @@
         <p>Consulta le edizioni passate archivia te.</p>
 
         <div class="tabs-container">
-          <button class="tab-btn" data-abtab="dates">Per data</button>
-          <button class="tab-btn active" data-abtab="papers">Per giornale</button>
+          <button class="tab-btn active" data-abtab="dates">Per data</button>
+          <button class="tab-btn" data-abtab="papers">Per giornale</button>
         </div>
 
-        <div class="tab-content" id="ab-pane-dates">
+        <div class="tab-content active" id="ab-pane-dates">
           <div id="abDatesList"></div>
         </div>
 
-        <div class="tab-content active" id="ab-pane-papers">
+        <div class="tab-content" id="ab-pane-papers">
           <div id="abPapersList"></div>
         </div>
       </div>
 
-      <!-- PAGE: BADGE -->
-      <div class="page" id="page-badge">
+      <!-- PAGE: BADGES -->
+      <div class="page" id="page-badges">
         <h2>Badge & Risultati</h2>
-        <p>I badge si sbloccano automaticamente mentre giochi.</p>
-        <div id="badgeStories" class="badge-stories"></div>
-        <div class="card-grid" id="badgeGrid"></div>
+        <p style="color: var(--text-secondary);">Sblocca i badge giocando ogni giorno, completando sfide e perfezionando la tecnica.</p>
+        <div class="badges-grid" id="badgesGrid"></div>
       </div>
 
       <!-- PAGE: SETTINGS -->
       <div class="page" id="page-settings">
         <h2>Impostazioni</h2>
-        <div class="card">
-          <p class="small-caps">Tema</p>
-          <div class="theme-toggle" id="settingsThemeToggle">
-            <button class="theme-btn active" data-theme="light">Chiaro</button>
-            <button class="theme-btn" data-theme="auto">Default</button>
-            <button class="theme-btn" data-theme="dark">Scuro</button>
+        
+        <div class="section">
+          <h3 style="font-size: 18px;">Tema</h3>
+          <div class="theme-toggle" style="margin-top: 12px; max-width: 200px;">
+            <button class="theme-btn" data-theme="light">☀️ Chiaro</button>
+            <button class="theme-btn" data-theme="auto">🔄 Auto</button>
+            <button class="theme-btn" data-theme="dark">🌙 Scuro</button>
           </div>
         </div>
-        <div class="card">
-          <p class="small-caps">Interfaccia</p>
-          <div class="settings-list">
-            <label class="settings-row" for="setCompactUi">
-              <span>Modalità compatta</span>
-              <input id="setCompactUi" type="checkbox" />
-            </label>
-            <label class="settings-row" for="setFlatUi">
-              <span>Riduci animazioni/effetti</span>
-              <input id="setFlatUi" type="checkbox" />
-            </label>
-            <label class="settings-row" for="setConfirmExitDaily">
-              <span>Conferma uscita dal daily</span>
-              <input id="setConfirmExitDaily" type="checkbox" checked />
-            </label>
+
+        <div class="section">
+          <h3 style="font-size: 18px;">Notifiche</h3>
+          <p style="color: var(--text-secondary); font-size: 13px;">Promemoria giornaliero alle 8:00</p>
+          <button class="btn btn-outline" id="settingsNotifBtn" style="margin-top: 10px;">📬 Attiva promemoria</button>
+          <p id="settingsNotifStatus" style="color: var(--text-tertiary); font-size: 12px; margin-top: 8px;"></p>
+        </div>
+
+        <div class="section" id="groupSettingsSection" style="display: none;">
+          <h3 style="font-size: 18px;">Gruppo attivo</h3>
+          <p style="color: var(--text-secondary); font-size: 13px;">Rinomina il tuo gruppo</p>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <input id="groupNameInput" type="text" maxlength="32" placeholder="Nuovo nome" class="modal-input" style="flex: 1; margin: 0;" />
+            <button class="btn" id="groupNameSaveBtn" style="padding: 12px 16px; min-height: 44px;">Salva</button>
+          </div>
+          <p id="groupNameStatus" style="color: var(--text-tertiary); font-size: 12px; margin-top: 8px;"></p>
+        </div>
+
+        <div class="section">
+          <h3 style="font-size: 18px;">Dati</h3>
+          <p style="color: var(--text-secondary); font-size: 13px;">Gestisci i tuoi dati personali</p>
+          <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+            <button class="btn btn-outline" id="exportDataBtn">📥 Esporta dati</button>
+            <button class="btn btn-outline btn-error" id="resetDataBtn">🗑️ Azzera tutto</button>
           </div>
         </div>
-        <div class="card">
-          <p class="small-caps">Installazione iOS</p>
-          <p>Su iPhone/iPad puoi installare l'app dalla condivisione di Safari.</p>
-          <button class="btn btn-outline" id="iosInstallHelpBtn"><i data-lucide="smartphone"></i> Guida installazione iOS</button>
+
+        <div class="section">
+          <h3 style="font-size: 18px;">Info</h3>
+          <p style="color: var(--text-secondary); font-size: 13px;">
+            <strong>Newsguess</strong> v1.0<br>
+            Il quiz delle prime pagine d'Italia<br><br>
+            Realizzato con cura dalla redazione digitale.<br>
+            <a href="#" style="color: var(--accent-primary); text-decoration: none;">Privacy Policy</a> · 
+            <a href="#" style="color: var(--accent-primary); text-decoration: none;">Termini</a>
+          </p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<nav class="bottom-nav" id="bottomNav">
-  <button class="bottom-nav-item active" data-page="quiz" aria-label="Quiz"><i data-lucide="newspaper"></i><span>Quiz</span></button>
-  <button class="bottom-nav-item" data-page="leaderboard" aria-label="Classifica"><i data-lucide="trophy"></i><span>Classifica</span></button>
-  <button class="bottom-nav-item" data-page="stats" aria-label="Statistiche"><i data-lucide="chart-column"></i><span>Stats</span></button>
-  <button class="bottom-nav-item" data-page="archive" aria-label="Archivio"><i data-lucide="archive"></i><span>Archivio</span></button>
-  <button class="bottom-nav-item" data-page="badge" aria-label="Badge"><i data-lucide="award"></i><span>Badge</span></button>
-</nav>
-
 <!-- MODALS -->
 
-<!-- CHANGE NAME MODAL -->
+<!-- RENAME GROUP MODAL -->
+<div class="modal-overlay" id="renameGroupModal">
+  <div class="modal">
+    <h2>Rinomina gruppo</h2>
+    <p>Scegli un nuovo nome per il tuo gruppo.</p>
+    <div class="form-group">
+      <label for="renameGroupInput">Nuovo nome</label>
+      <input class="modal-input" id="renameGroupInput" type="text" maxlength="32" placeholder="Es. Amici di Carlo" />
+    </div>
+    <p class="modal-error" id="renameGroupErr"></p>
+    <div class="modal-row">
+      <button class="btn btn-outline" id="renameGroupCancel">Annulla</button>
+      <button class="btn" id="renameGroupConfirm">Salva</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="nameModal">
   <div class="modal">
     <h2>Cambia nome</h2>
@@ -2091,54 +1924,10 @@
 <div class="modal-overlay" id="confirmExit">
   <div class="modal" style="max-width: 340px;">
     <h2>Vuoi davvero uscire?</h2>
-    <p>Sei sicuro di voler uscire? Tutti i tuoi risultati andranno persi.</p>
+    <p>Stai giocando il Livello del giorno. Se esci adesso perderai i progressi della partita.</p>
     <div class="modal-row">
       <button class="btn btn-outline" id="confirmExitNo">Annulla</button>
       <button class="btn btn-error" id="confirmExitYes">Esci</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="iosInstallModal">
-  <div class="modal">
-    <h2>Installa su iPhone/iPad</h2>
-    <p>1) Apri il sito in Safari</p>
-    <p>2) Tocca Condividi (quadrato con freccia)</p>
-    <p>3) Seleziona "Aggiungi a Home"</p>
-    <div class="modal-row">
-      <button class="btn" id="iosInstallModalClose">Ho capito</button>
-    </div>
-  </div>
-</div>
-
-<!-- ANDROID INSTALL MODAL -->
-<div class="modal-overlay" id="androidInstallModal">
-  <div class="modal">
-    <h2>Installa su Android</h2>
-    <p>Se non vedi il prompt automatico:</p>
-    <p>1) Tocca i tre puntini (⋮) in alto a destra in Chrome</p>
-    <p>2) Seleziona <strong>"Installa app"</strong> o <strong>"Aggiungi a schermata Home"</strong></p>
-    <p>3) Conferma con <strong>"Installa"</strong></p>
-    <p style="font-size:13px; color:var(--text-secondary); margin-top:12px">Se l'app è già installata sul telefono, non vedrai più questa opzione.</p>
-    <div class="modal-row">
-      <button class="btn" id="androidInstallModalClose">Ho capito</button>
-    </div>
-  </div>
-</div>
-
-<!-- RENAME GROUP MODAL -->
-<div class="modal-overlay" id="renameGroupModal">
-  <div class="modal">
-    <h2>Rinomina gruppo</h2>
-    <p>Il nuovo nome verrà usato nelle schermate del tuo profilo e della classifica.</p>
-    <div class="form-group">
-      <label for="renameGroupInput">Nuovo nome gruppo</label>
-      <input class="modal-input" id="renameGroupInput" type="text" maxlength="32" />
-    </div>
-    <p class="modal-error" id="renameGroupErr"></p>
-    <div class="modal-row">
-      <button class="btn btn-outline" id="renameGroupCancel">Annulla</button>
-      <button class="btn" id="renameGroupConfirm">Salva</button>
     </div>
   </div>
 </div>
@@ -2214,11 +2003,6 @@ function saveUser() {
 
 /* Helpers */
 const $ = (id) => document.getElementById(id);
-const createLucideIcons = () => {
-  if (window.lucide && typeof window.lucide.createIcons === 'function') {
-    window.lucide.createIcons();
-  }
-};
 
 const todayISO = () => {
   const d = new Date();
@@ -2283,61 +2067,22 @@ function updateThemeButtons(theme) {
 const savedTheme = localStorage.getItem(themeKey) || 'auto';
 setTheme(savedTheme);
 
-document.querySelectorAll('.theme-toggle').forEach((themeToggleContainer) => {
+const themeToggleContainer = document.querySelector('.theme-toggle');
+if (themeToggleContainer) {
   themeToggleContainer.addEventListener('click', (e) => {
     const btn = e.target.closest('.theme-btn');
     if (btn && btn.dataset.theme) {
       setTheme(btn.dataset.theme);
     }
   });
-});
-
-/* ===== UI SETTINGS ===== */
-const UI_SETTINGS_KEY = 'ng-ui-settings';
-const uiDefaults = {
-  compactUi: false,
-  flatUi: false,
-  confirmExitDaily: true
-};
-
-function loadUiSettings() {
-  try {
-    return { ...uiDefaults, ...(JSON.parse(localStorage.getItem(UI_SETTINGS_KEY) || '{}')) };
-  } catch {
-    return { ...uiDefaults };
-  }
+} else {
+  // Fallback: direct attachment
+  setTimeout(() => {
+    document.querySelectorAll('.theme-btn').forEach(b => {
+      b.addEventListener('click', () => setTheme(b.dataset.theme));
+    });
+  }, 100);
 }
-
-function saveUiSettings(s) {
-  localStorage.setItem(UI_SETTINGS_KEY, JSON.stringify(s));
-}
-
-function applyUiSettings() {
-  const s = loadUiSettings();
-  document.body.classList.toggle('compact-ui', !!s.compactUi);
-  document.body.classList.toggle('flat-ui', !!s.flatUi);
-  if ($('setCompactUi')) $('setCompactUi').checked = !!s.compactUi;
-  if ($('setFlatUi')) $('setFlatUi').checked = !!s.flatUi;
-  if ($('setConfirmExitDaily')) $('setConfirmExitDaily').checked = !!s.confirmExitDaily;
-}
-
-['setCompactUi', 'setFlatUi', 'setConfirmExitDaily'].forEach((id) => {
-  const el = $(id);
-  if (!el) return;
-  el.addEventListener('change', () => {
-    const s = loadUiSettings();
-    s.compactUi = !!$('setCompactUi')?.checked;
-    s.flatUi = !!$('setFlatUi')?.checked;
-    s.confirmExitDaily = !!$('setConfirmExitDaily')?.checked;
-    saveUiSettings(s);
-    applyUiSettings();
-  });
-});
-applyUiSettings();
-
-if ($('iosInstallHelpBtn')) $('iosInstallHelpBtn').addEventListener('click', () => openModal('iosInstallModal'));
-if ($('iosInstallModalClose')) $('iosInstallModalClose').addEventListener('click', () => closeModal('iosInstallModal'));
-if ($('androidInstallModalClose')) $('androidInstallModalClose').addEventListener('click', () => closeModal('androidInstallModal'));
 
 /* ===== NAVIGAZIONE PAGINE ===== */
 function openPage(pageName) {
@@ -2350,82 +2095,57 @@ function openPage(pageName) {
   document.querySelectorAll('.nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.page === pageName);
   });
-  document.querySelectorAll('.bottom-nav-item').forEach(n => {
-    n.classList.toggle('active', n.dataset.page === pageName);
-  });
   // Chiudi sidebar su mobile
   if (window.innerWidth < 769) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
   }
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
   if (pageName === 'stats') renderStats();
-  if (pageName === 'badge') renderBadges();
 }
 
-// Nav items click - usa event delegation
+// Nav items click - usa event delegation sulla sidebar
 const sidebarNav = document.querySelector('.sidebar-nav');
 if (sidebarNav) {
   sidebarNav.addEventListener('click', (e) => {
     const navItem = e.target.closest('.nav-item');
-    if (navItem) {
-      const page = navItem.dataset.page;
-      if (page) openPage(page);
-    }
+    if (navItem && navItem.dataset.page) openPage(navItem.dataset.page);
   });
 }
-const bottomNav = $('bottomNav');
-if (bottomNav) {
-  bottomNav.addEventListener('click', (e) => {
-    const item = e.target.closest('.bottom-nav-item');
-    if (item?.dataset?.page) openPage(item.dataset.page);
-  });
-}
-
-// Logo "Newsguess" GRANDE (masthead) torna a home - con deferred binding
-setTimeout(() => {
-  const masthead = document.querySelector('.masthead-title');
-  if (masthead) {
-    masthead.addEventListener('click', () => {
-      openPage('quiz');
-      $('modePicker').classList.remove('hidden');
-      $('errorBox').classList.add('hidden');
-      $('quizRunning').classList.add('hidden');
-      $('finalScreen').classList.add('hidden');
-      $('loading').classList.add('hidden');
-    });
-  }
-}, 100);
 
 /* ===== SIDEBAR TOGGLE ===== */
-const menuToggle = $('menuToggle');
-if (menuToggle) {
-  menuToggle.addEventListener('click', () => {
-    $('sidebar').classList.toggle('open');
-    $('sidebarBackdrop').classList.toggle('open');
-    menuToggle.classList.toggle('sidebar-open-hidden', $('sidebar').classList.contains('open'));
-  });
-}
-
-const sidebarClose = $('sidebarClose');
-if (sidebarClose) {
-  sidebarClose.addEventListener('click', () => {
+document.addEventListener('click', (e) => {
+  // Hamburger apre/chiude sidebar
+  if (e.target.closest('#menuToggle')) {
+    const isOpen = $('sidebar').classList.toggle('open');
+    $('sidebarBackdrop').classList.toggle('open', isOpen);
+    if (isOpen) NG_HISTORY.push('sidebar-open');
+    return;
+  }
+  // Chiudi con X interna
+  if (e.target.closest('#sidebarClose')) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
-  });
-}
-
-const sidebarBackdrop = $('sidebarBackdrop');
-if (sidebarBackdrop) {
-  sidebarBackdrop.addEventListener('click', () => {
+    return;
+  }
+  // Chiudi cliccando backdrop
+  if (e.target.id === 'sidebarBackdrop') {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
-  });
-}
+    return;
+  }
+  // Titolo grande → home
+  if (e.target.closest('#mastheadTitle')) {
+    openPage('quiz');
+    $('modePicker').classList.remove('hidden');
+    $('errorBox').classList.add('hidden');
+    $('quizRunning').classList.add('hidden');
+    $('finalScreen').classList.add('hidden');
+    $('loading').classList.add('hidden');
+    return;
+  }
+});
 
 /* ===== MODALI ===== */
 function openModal(modalId) {
@@ -2462,9 +2182,6 @@ if ('serviceWorker' in navigator) {
 }
 
 let _deferredInstall = null;
-const isIosDevice = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const isAndroidDevice = () => /Android/i.test(navigator.userAgent);
-const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   _deferredInstall = e;
@@ -2472,35 +2189,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function triggerInstall() {
-  if (_deferredInstall) {
-    _deferredInstall.prompt();
-    _deferredInstall.userChoice.finally(() => {
-      _deferredInstall = null;
-      // Non nascondo il bottone subito così se l'utente cancella ha ancora la possibilità
-      if (isStandalone()) $('installBtn').style.display = 'none';
-    });
-    return;
-  }
-  if (isIosDevice() && !isStandalone()) {
-    openModal('iosInstallModal');
-    return;
-  }
-  if (isAndroidDevice() && !isStandalone()) {
-    openModal('androidInstallModal');
-    return;
-  }
-  // Desktop (Chrome): istruzioni generiche
-  if (!isStandalone()) {
-    showToast('Per installare: menu del browser → "Installa app" o "Aggiungi a schermata Home"');
-  }
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  _deferredInstall.userChoice.finally(() => {
+    _deferredInstall = null;
+    $('installBtn').style.display = 'none';
+  });
 }
 
 $('installBtn').addEventListener('click', triggerInstall);
 window.triggerInstall = triggerInstall;
-// Mostra il bottone "Installa" su iOS e Android quando NON è già installato come PWA
-if (!isStandalone() && (isIosDevice() || isAndroidDevice())) {
-  $('installBtn').style.display = '';
-}
 
 /* ===== ARCHIVIO ===== */
 async function loadArchive() {
@@ -2534,13 +2232,12 @@ loadArchive();
 /* ===== ARCHIVE BROWSER ===== */
 document.querySelectorAll('[data-abtab]').forEach(t => {
   t.addEventListener('click', () => {
+    const tab = t.dataset.abtab;
     document.querySelectorAll('[data-abtab]').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
-    const tab = t.dataset.abtab;
     $('ab-pane-dates').classList.toggle('active', tab === 'dates');
     $('ab-pane-papers').classList.toggle('active', tab === 'papers');
-    $('ab-pane-dates').classList.toggle('hidden', tab !== 'dates');
-    $('ab-pane-papers').classList.toggle('hidden', tab !== 'papers');
+    if (tab === 'papers' && !$('abPapersList').children.length) loadArchiveBrowserPapers();
   });
 });
 
@@ -2576,14 +2273,11 @@ async function showDateDetail(date) {
       data.items.forEach(it => {
         const np = NEWSPAPERS.find(n => n.slug === it.slug);
         const imgUrl = `/api/archive-image?slug=${encodeURIComponent(it.slug)}&date=${date}`;
-        html += `<div class="card card-small archive-row" onclick="openLightbox('${imgUrl}')">
-          <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
-          <div class="archive-info">
-            <div style="font-weight: 700; margin-bottom: 8px;">${escapeHtml(np?.name || it.slug)}</div>
-            ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
-            <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
-            ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>
+        html += `<div class="card card-small" style="cursor: pointer;" onclick="openLightbox('${imgUrl}')">
+          <div style="font-weight: 700; margin-bottom: 8px;">${escapeHtml(np?.name || it.slug)}</div>
+          ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
+          <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
+          ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
         </div>`;
       });
     }
@@ -2616,14 +2310,11 @@ async function showPaperDetail(np) {
     } else {
       data.items.forEach(it => {
         const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
-        html += `<div class="card card-small archive-row" onclick="openLightbox('${imgUrl}')">
-          <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
-          <div class="archive-info">
-            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
-            ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
-            <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
-            ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>
+        html += `<div class="card card-small" style="cursor: pointer;" onclick="openLightbox('${imgUrl}')">
+          <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
+          ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
+          <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
+          ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
         </div>`;
       });
     }
@@ -2663,7 +2354,8 @@ document.querySelectorAll('.mode-card').forEach(c => {
   c.addEventListener('click', () => {
     const mode = c.dataset.mode;
     if (mode === 'daily' && dailyDoneToday()) {
-      showDailyAlreadyPlayedResult();
+      const done = JSON.parse(dailyDoneToday());
+      alert(`Hai già giocato la sfida del giorno (${done.score}/5).\nPer la classifica vale solo il primo tentativo. Torna domani per una nuova sfida!`);
       return;
     }
     startQuiz(mode);
@@ -2701,60 +2393,21 @@ async function startQuiz(mode, dateISO) {
   $('loading').classList.remove('hidden');
 
   try {
-    // ALLENAMENTO LIBERO: 5 quotidiani diversi presi ognuno da una data archivio random diversa
     if (mode === 'training') {
       const r = await fetch('/api/archive-dates');
       if (!r.ok) throw new Error('Archivio non disponibile.');
       const data = await r.json();
       const today = todayISO();
-      const eligibleDates = (data.dates || []).filter(d => d.papers >= 1 && d.date !== today);
+      const eligibleDates = (data.dates || []).filter(d => d.papers >= 4 && d.date !== today);
       if (!eligibleDates.length) {
         throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno.');
       }
-      // Carico per ogni data quali giornali sono disponibili
-      // Strategia: provo 5 date random; per ognuna scelgo un giornale random NON ancora usato
-      const shuffledDates = [...eligibleDates].sort(() => Math.random() - 0.5);
-      const usedNewspapers = new Set();
-      const pickedQs = [];   // [{paper, dateISO}]
-      for (const dt of shuffledDates) {
-        if (pickedQs.length >= 5) break;
-        try {
-          const rp = await fetch(`/api/archive-papers?date=${dt.date}`);
-          if (!rp.ok) continue;
-          const dp = await rp.json();
-          const candidates = NEWSPAPERS.filter(n => (dp.slugs || []).includes(n.slug) && !usedNewspapers.has(n.id));
-          if (!candidates.length) continue;
-          const np = candidates[Math.floor(Math.random() * candidates.length)];
-          pickedQs.push({ paper: np, dateISO: dt.date });
-          usedNewspapers.add(np.id);
-        } catch {}
-      }
-      if (pickedQs.length < 4) {
-        throw new Error('Archivio insufficiente: servono almeno 4 giornali su date diverse. Continua a giocare il livello del giorno per popolare l\'archivio.');
-      }
-      // Costruisco le domande con date diverse
-      state.dateISO = pickedQs[0].dateISO; // di riferimento per metadati
-      const LOADING_MESSAGES = [
-        "«Sapere è potere.» — Francis Bacon",
-        "«La libertà di stampa è il sale della libertà.» — Voltaire",
-        "«Senza libertà di pensiero non vi può essere ricerca della verità.» — Benjamin Franklin",
-        "«La saggezza comincia nella meraviglia.» — Socrate",
-        "«L'informazione è il pane della democrazia.» — Thomas Jefferson",
-      ];
-      for (let i = 0; i < pickedQs.length; i++) {
-        const { paper, dateISO } = pickedQs[i];
-        $('loading').querySelector('p').textContent = LOADING_MESSAGES[i % LOADING_MESSAGES.length];
-        const q = await buildQuestion(paper, dateISO);
-        state.questions.push(q);
-      }
-      $('loading').classList.add('hidden');
-      $('quizRunning').classList.remove('hidden');
-      renderQuestion();
-      return;
+      const pickDate = eligibleDates[Math.floor(Math.random() * eligibleDates.length)].date;
+      state.dateISO = pickDate;
     }
 
     let pickedFrom = NEWSPAPERS;
-    if (mode === 'past') {
+    if (mode === 'past' || mode === 'training') {
       const r = await fetch(`/api/archive-papers?date=${state.dateISO}`);
       if (!r.ok) throw new Error('Archivio non disponibile per questa data');
       const data = await r.json();
@@ -2886,44 +2539,23 @@ function answer(givenId, btnEl) {
   q.given = givenId;
   const correct = q.paper.id;
   if (givenId === correct) state.score++;
-  // In modalità DAILY non riveliamo le risposte fino al recap finale
-  const hideFeedback = (state.mode === 'daily');
   document.querySelectorAll('.choice-btn').forEach(b => {
     b.disabled = true;
-    if (!hideFeedback) {
-      const cid = q.choices.find(c => c.name === b.textContent)?.id;
-      if (cid === correct) b.classList.add('correct');
-      else if (cid === givenId) b.classList.add('incorrect');
-    } else {
-      // Feedback neutro: evidenzia solo la scelta dell'utente, senza rivelare se giusta
-      const cid = q.choices.find(c => c.name === b.textContent)?.id;
-      if (cid === givenId) b.classList.add('chosen');
-    }
+    const cid = q.choices.find(c => c.name === b.textContent)?.id;
+    if (cid === correct) b.classList.add('correct');
+    else if (cid === givenId) b.classList.add('incorrect');
   });
   renderDotsOnly();
   $('nextBtn').style.display = '';
-  // Ultima domanda? Cambia testo del bottone
-  if (state.current === state.questions.length - 1) {
-    $('nextBtn').textContent = (state.mode === 'daily') ? 'Vedi i risultati' : 'Risultato finale';
-  } else {
-    $('nextBtn').textContent = 'Prossima domanda →';
-  }
 }
 
 function renderDotsOnly() {
   const dots = $('dots');
   dots.innerHTML = '';
-  const hideFeedback = (state.mode === 'daily');
   state.questions.forEach((qq, i) => {
     const d = document.createElement('div');
     d.className = 'progress-dot';
-    if (qq.given != null) {
-      if (hideFeedback) {
-        d.classList.add('answered'); // pallino neutro = risposta data
-      } else {
-        d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
-      }
-    }
+    if (qq.given != null) d.classList.add(qq.given === qq.paper.id ? 'correct' : 'incorrect');
     if (i === state.current && qq.given == null) d.classList.add('current');
     dots.appendChild(d);
   });
@@ -2938,26 +2570,211 @@ $('nextBtn').addEventListener('click', () => {
   }
 });
 
+/* =========================================================
+   ARTICOLI SATIRICI — stile ritaglio di giornale
+   Ogni score ha 3 varianti casuali. Formato: { hl, body[] }
+========================================================= */
+const ARTICLES = [
+  /* 0/5 */
+  [
+    { hl: "TRAGEDIA ALL'EDICOLA: LETTORE NON RICONOSCE NEMMENO UN GIORNALE",
+      body: ["Cinque prime pagine, zero risposte esatte. Una prestazione che ha lasciato attoniti anche i colleghi più compassionevoli della redazione.", "Fonti vicine all'interessato riferiscono di una dieta mediatica composta esclusivamente da notifiche push e meme su WhatsApp.", "La direzione ha disposto un abbonamento d'ufficio al Corriere della Sera. Partenza: domani mattina, ore 6."] },
+    { hl: "ZERO SU CINQUE: IL MISTERO CHE SCUOTE IL MONDO DEL GIORNALISMO",
+      body: ["Gli esperti parlano di un caso senza precedenti nella storia del quiz editoriale italiano.", "«Non avevo mai visto un punteggio del genere», ha dichiarato il nostro responsabile statistiche, visibilmente commosso.", "Si consiglia di passare davanti a un'edicola almeno una volta a settimana. Anche solo per guardare i titoli dalla vetrina."] },
+    { hl: "INDAGINE ESCLUSIVA: MA QUESTI GIORNALI LI HA MAI VISTI?",
+      body: ["Un punteggio che apre interrogativi profondi sul rapporto tra cittadino e informazione cartacea.", "Il soggetto ha risposto con sicurezza a tutte e cinque le domande. Peccato che tutte fossero sbagliate.", "La redazione augura una pronta guarigione. E una visita settimanale all'edicola sotto casa."] },
+  ],
+  /* 1/5 */
+  [
+    { hl: "UN PUNTO STRAPPATO ALLE FAUCI DEL DISASTRO",
+      body: ["Con coraggio degno di miglior causa, il lettore ha salvato una risposta dal naufragio totale.", "Quattro errori su cinque restano, tuttavia, una statistica che desta preoccupazione nelle alte sfere della redazione.", "Il progresso è lento, ma esiste. Come il quotidiano sotto la porta di casa: arriva, anche se spesso non lo si legge."] },
+    { hl: "UN ACUTO IN UN CONCERTO STONATO",
+      body: ["Una sola risposta giusta su cinque, ma con tale convinzione da sembrare quasi competenza.", "I restanti quattro errori sono stati commessi con eguale, ammirevole sicurezza. È una qualità, in fondo.", "La redazione suggerisce di iniziare da Il Manifesto: riconoscibile dal colore rosso e dall'umore."] },
+    { hl: "CRONACA: EDICOLA SFIDA LETTORE, LETTORE PERDE (QUASI) TUTTO",
+      body: ["Il punteggio di uno su cinque riflette una conoscenza della stampa italiana ancora in fase embrionale.", "Ciononostante, quell'unico punto brilla come un titolo di prima pagina in un'edicola deserta.", "Con costanza giornaliera e un buon caffè accanto, il futuro appare meno fosco del presente."] },
+  ],
+  /* 2/5 */
+  [
+    { hl: "DUE PUNTI: LA MEDIOCRITÀ HA UN NOME, E OGGI È IL TUO",
+      body: ["Non un disastro, non un trionfo. Due risposte esatte su cinque: una performance che definire «sufficiente» sarebbe un eufemismo.", "Il lettore dimostra una conoscenza selettiva della stampa: ottima per alcuni giornali, inesistente per altri.", "La redazione ci vede del potenziale. Nascosto, ma presente, come la quarta pagina di un quotidiano locale."] },
+    { hl: "METÀ TORTA MANGIATA, METÀ LASCIATA AI COLLEGHI",
+      body: ["Due su cinque è il risultato del lettore a metà del percorso verso l'illuminazione editoriale.", "Fonti interne segnalano che entrambe le risposte esatte sono state date con esitazione. Quelle sbagliate, con grande certezza.", "Il consiglio della settimana: sfogliare un giornale diverso ogni mattina. Anche solo il titolone in copertina."] },
+    { hl: "NOTIZIA: LETTORE SUPERA IL 33%. FESTEGGIAMENTI PREMATURI",
+      body: ["Con il 40% di precisione, il soggetto entra nella fascia dei «lettori occasionali con potenziale».", "Le due risposte esatte comprendono almeno un giornale che chiunque riconoscerebbe a colori invertiti.", "La strada per la caporedazione è lunga, ma oggi è stato fatto un piccolo, onesto passo."] },
+  ],
+  /* 3/5 */
+  [
+    { hl: "TRE SU CINQUE: IL LETTORE CHE NON SI VERGOGNA DI SÉ STESSO",
+      body: ["Un punteggio onesto, solido, privo di fronzoli. Come un buon corsivo di seconda pagina.", "Tre testate indovinate correttamente: un risultato che permette di guardare l'edicolante dritto negli occhi.", "I due errori restanti sono una ferita aperta. La redazione consiglia di elaborarli durante la pausa caffè."] },
+    { hl: "CLASSIFICA LECTORUM: TERZO POSTO SU CINQUE, ONOREVOLE SCONFITTA",
+      body: ["Né eroe né vittima: il lettore di oggi si colloca in quella zona grigia che i giornalisti chiamano «notizia di spalla».", "Tre risposte indovinate testimoniano una frequentazione reale, seppur discontinua, dell'edicola nazionale.", "Con un po' più di impegno quotidiano, questo lettore potrebbe aspirare alla quarta pagina. Magari alla terza."] },
+    { hl: "BUONA PRESTAZIONE, CON RISERVA: IL GIORNALISMO APPROVA A METÀ",
+      body: ["Tre su cinque è il punteggio del lettore che sfoglia i giornali ma non sempre li finisce.", "Le due mancanze sono imputabili, secondo la redazione, a testate «dal carattere grafico subdolo».", "Il verdetto finale: promosso con riserva. La riserva si scioglie con una settimana di allenamento."] },
+  ],
+  /* 4/5 */
+  [
+    { hl: "QUASI PERFETTO: UN SOLO GIORNALE SFUGGE ALLA PRESA FERREA DEL LETTORE",
+      body: ["Quattro risposte esatte su cinque: una prestazione da caporedattore con qualche anno di esperienza.", "L'unico errore è ciò che separa il bravo dal grande. Oggi, purtroppo, siete ancora «bravi».", "La redazione applaude, ma con quella riserva tipica di chi sa che la perfezione è a un passo."] },
+    { hl: "UN REFUSO IN UNA PRIMA PAGINA ALTRIMENTI IMPECCABILE",
+      body: ["Come il tipografo che sbaglia una lettera su mille, il lettore ha inciampato su una sola testata.", "Quattro su cinque garantiscono un posto fisso in redazione. Il quinto punto vale la firma in prima pagina.", "«Chi non sbaglia non titola» dice un vecchio adagio delle redazioni. Oggi vale anche per voi."] },
+    { hl: "ECCELLENZA SFIORATA: IL DIRETTORE TRATTIENE IL RESPIRO",
+      body: ["Quattro risposte perfette, una scivolata finale. Il direttore ha abbassato la matita rossa, per stavolta.", "La testata mancata verrà analizzata in riunione di redazione. O almeno, così ha promesso il caporedattore.", "Il prossimo cinque su cinque è alla portata. La redazione scommette su di voi — con discrezione."] },
+  ],
+  /* 5/5 */
+  [
+    { hl: "PUNTEGGIO PIENO: IL DIRETTORE SI CONGRATULA CON LACRIME AGLI OCCHI",
+      body: ["Cinque su cinque. Non succedeva da quando l'inviato speciale tornò da Mosca con il Pulitzer in tasca.", "Il lettore ha identificato ogni testata con la precisione di un linotipista in pensione che ha visto tutto.", "La redazione ha già preparato la tessera stampa. Firma qui, per favore. Benvenuto nella famiglia."] },
+    { hl: "NOTIZIA DELL'ANNO: LETTORE CONOSCE TUTTI I GIORNALI ITALIANI",
+      body: ["Un punteggio perfetto che lascia senza parole anche il critico più incallito della nostra redazione.", "Cinque testate, cinque risposte giuste, zero esitazioni. Come leggere l'ora su un orologio analogico.", "Questo è il tipo di lettore che i giornalisti sognano. Curioso, informato, e probabilmente abbonato a tre quotidiani."] },
+    { hl: "EDITORIALE STRAORDINARIO: NASCE UNA STELLA DEL GIORNALISMO QUIZ",
+      body: ["In anni di carriera, il nostro redattore capo dice di non aver mai visto un punteggio così con tale apparente facilità.", "Cinque su cinque: un risultato che merita una rettifica positiva in prima pagina, cosa rarissima nel mestiere.", "Il giornalismo italiano saluta un nuovo campione. L'edicola di via XX Settembre ha già messo da parte la copia."] },
+  ],
+];
+
+function buildArticleHtml(score) {
+  const pool = ARTICLES[Math.min(score, 5)];
+  const art  = pool[Math.floor(Math.random() * pool.length)];
+  const now  = new Date();
+  const byline = `Redazione Newsguess · ${now.toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric'})}`;
+  return `<div class="editorial-byline">${byline}</div>
+    <div class="editorial-headline">${art.hl}</div>
+    <div class="editorial-body">${art.body.map(p => `<p>${p}</p>`).join('')}</div>`;
+}
+
+/* =========================================================
+   BADGE SYSTEM
+========================================================= */
+const BADGES_KEY = 'ng-badges';
+
+const BADGE_DEFS = [
+  { id:'first-game',     icon:'📰', name:'Prima Prima Pagina',  desc:'Gioca la tua prima partita',
+    check: h => h.length >= 1 },
+  { id:'perfect',        icon:'🏆', name:'Direttore Emerito',   desc:'Ottieni 5/5 in una partita',
+    check: h => h.some(g => g.score === g.total && g.total === 5) },
+  { id:'perfect3',       icon:'🥇', name:"Terza Pagina d'Oro",  desc:'Ottieni 5/5 per 3 volte',
+    check: h => h.filter(g => g.score === g.total && g.total === 5).length >= 3 },
+  { id:'streak3',        icon:'🔥', name:'Tre Volte Grazie',    desc:'3 giorni consecutivi di daily',
+    check: h => computeStreak(h) >= 3 },
+  { id:'streak7',        icon:'📅', name:'Abbonato Fedele',     desc:'7 giorni consecutivi di daily',
+    check: h => computeStreak(h) >= 7 },
+  { id:'streak30',       icon:'🗞️', name:'Edicola Aperta',      desc:'30 giorni consecutivi di daily',
+    check: h => computeStreak(h) >= 30 },
+  { id:'games10',        icon:'✍️', name:'Redattore Junior',    desc:'10 partite giocate in totale',
+    check: h => h.length >= 10 },
+  { id:'games50',        icon:'🎩', name:'Vecchia Guardia',     desc:'50 partite giocate in totale',
+    check: h => h.length >= 50 },
+  { id:'training5',      icon:'🏋️', name:'Praticante',          desc:'5 allenamenti liberi completati',
+    check: h => h.filter(g => g.mode === 'training').length >= 5 },
+  { id:'archive-player', icon:'📚', name:'Archivista',          desc:"Gioca un'edizione dall'archivio",
+    check: h => h.some(g => g.mode === 'past') },
+  { id:'all-papers',     icon:'🌐', name:'Tuttologi',           desc:'Indovina tutti e 10 i giornali almeno una volta',
+    check: h => { const s = new Set(); h.forEach(g => (g.questions||[]).filter(q=>q.ok).forEach(q=>s.add(q.paperId))); return s.size >= 10; } },
+  { id:'sole-fan',       icon:'🐟', name:'Salmone Dorato',      desc:'Indovina Il Sole 24 Ore 5 volte',
+    check: h => { let n=0; h.forEach(g=>(g.questions||[]).forEach(q=>{if(q.ok&&q.paperId==='sole')n++;})); return n>=5; } },
+  { id:'manifesto-fan',  icon:'✊', name:'Rosso Shocking',      desc:'Indovina Il Manifesto 5 volte',
+    check: h => { let n=0; h.forEach(g=>(g.questions||[]).forEach(q=>{if(q.ok&&q.paperId==='manifesto')n++;})); return n>=5; } },
+  { id:'no-miss',        icon:'✨', name:'Refuso Zero',         desc:'3 daily di fila con 5/5',
+    check: h => { const d=h.filter(g=>g.mode==='daily').slice(-3); return d.length>=3&&d.every(g=>g.score===g.total); } },
+];
+
+function loadBadges() {
+  try { return JSON.parse(localStorage.getItem(BADGES_KEY) || '{}'); }
+  catch { return {}; }
+}
+function saveBadges(obj) {
+  try { localStorage.setItem(BADGES_KEY, JSON.stringify(obj)); } catch {}
+}
+
+function checkAndUnlockBadges() {
+  const history = loadStatsHistory();
+  const earned  = loadBadges();
+  const newOnes = [];
+  BADGE_DEFS.forEach(b => {
+    if (!earned[b.id] && b.check(history)) {
+      earned[b.id] = { ts: Date.now() };
+      newOnes.push(b);
+    }
+  });
+  if (newOnes.length) saveBadges(earned);
+  return newOnes;
+}
+
+function renderBadgesPage() {
+  const grid = $('badgesGrid');
+  if (!grid) return;
+  const earned = loadBadges();
+  grid.innerHTML = '';
+  BADGE_DEFS.forEach(b => {
+    const isUnlocked = !!earned[b.id];
+    const card = document.createElement('div');
+    card.className = 'badge-card ' + (isUnlocked ? 'unlocked' : 'locked');
+    const isNew = isUnlocked && earned[b.id].ts && (Date.now() - earned[b.id].ts < 86400000);
+    const dateStr = isUnlocked && earned[b.id].ts
+      ? new Date(earned[b.id].ts).toLocaleDateString('it-IT', {day:'numeric', month:'short', year:'numeric'})
+      : '';
+    card.innerHTML = `
+      ${isNew ? '<div class="badge-new">Nuovo!</div>' : ''}
+      <span class="badge-icon" style="${!isUnlocked ? 'filter:grayscale(1) opacity(0.4)' : ''}">${b.icon}</span>
+      <div class="badge-name">${b.name}</div>
+      ${isUnlocked
+        ? `<div class="badge-desc">${b.desc}</div><div class="badge-date">🔓 ${dateStr}</div>`
+        : `<div class="badge-desc" style="color:var(--text-tertiary);font-style:italic;font-size:11px;">🔒 Da sbloccare</div>`
+      }
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function announceBadges(newBadges) {
+  if (!newBadges.length) return;
+  // Mostra un popup per ogni badge sbloccato, in sequenza
+  let delay = 1200;
+  newBadges.forEach((b) => {
+    setTimeout(() => showBadgePopup(b), delay);
+    delay += 3200;
+  });
+}
+
+function showBadgePopup(badge) {
+  // Crea un modal temporaneo per il badge sbloccato
+  let overlay = $('badgeUnlockOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'badgeUnlockOverlay';
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal" style="text-align:center; max-width:320px;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px;">🏅 Badge sbloccato!</div>
+        <div id="badgePopupIcon" style="font-size:64px;line-height:1;margin:16px 0;"></div>
+        <div id="badgePopupName" style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--accent-primary);margin-bottom:8px;"></div>
+        <div id="badgePopupDesc" style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5;"></div>
+        <button class="btn" onclick="document.getElementById('badgeUnlockOverlay').classList.remove('open')" style="width:100%;">Super! 🎉</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+  $('badgePopupIcon').textContent = badge.icon;
+  $('badgePopupName').textContent = badge.name;
+  $('badgePopupDesc').textContent = badge.desc;
+  overlay.classList.add('open');
+  // Chiudi cliccando fuori
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.classList.remove('open'); };
+}
+
+/* Aggancia renderBadgesPage alla navigazione */
+const _openPageOrig = typeof openPage === 'function' ? openPage : null;
+function openPage(pageName) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pageEl = $(`page-${pageName}`);
+  if (pageEl) pageEl.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageName));
+  if (window.innerWidth < 769) { $('sidebar').classList.remove('open'); $('sidebarBackdrop').classList.remove('open'); }
+  if (pageName === 'leaderboard') refreshLeaderboards();
+  if (pageName === 'stats') renderStats();
+  if (pageName === 'badges') renderBadgesPage();
+}
+
 /* ===== FINAL SCREEN ===== */
-function verdictFor(score) {
-  return ['Lettore distratto', 'Apprendista cronista', 'Cronista di nera', 'Caporedattore', 'Vicedirettore', 'Direttore emerito'][score];
-}
-
-function satiricalComment(score, total) {
-  const against = total - score;
-  if (score === total) return 'Edizione speciale: hai asfaltato le redazioni. Domani ti chiamano in direzione.';
-  if (score >= total - 1) return 'Titolo di apertura: prestazione quasi perfetta, l\'edicola applaude in piedi.';
-  if (score >= Math.ceil(total / 2)) return 'Cronaca politica: partita solida, qualche svista da conferenza stampa del lunedi.';
-  if (score > 0) return 'Ultim\'ora: giornata complicata, ma hai comunque strappato una notizia al caos.';
-  return 'Breaking news: blackout editoriale totale. Serve caffe forte e rassegna stampa.';
-}
-
-function finishQuiz() {
-  $('quizRunning').classList.add('hidden');
-  $('finalScreen').classList.remove('hidden');
-  $('finalScoreVersus').textContent = `${state.score}:${state.questions.length - state.score}`;
-  $('verdict').textContent = verdictFor(state.score);
-  $('resultCommentary').textContent = satiricalComment(state.score, state.questions.length);
 
   let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
   state.questions.forEach((q, i) => {
@@ -2998,6 +2815,23 @@ function finishQuiz() {
   if (state.score === state.questions.length) {
     setTimeout(() => launchConfetti(), 450);
   }
+
+  // Controlla e sblocca badge
+  const newBadges = checkAndUnlockBadges();
+  announceBadges(newBadges);
+}
+
+function animateScoreCountUp(el, target, duration) {
+  if (!el) return;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
 }
 
 function launchConfetti() {
@@ -3018,36 +2852,25 @@ function launchConfetti() {
 }
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
+
+/* ===== CONDIVISIONE RISULTATI ===== */
 $('shareResultBtn').addEventListener('click', async () => {
-  // Costruisce stringa con pallini colorati per ogni risposta (✅ giusta / ❌ sbagliata)
-  const dots = state.questions.map(q => (q.given === q.paper.id) ? '🟢' : '🔴').join('');
-  const url = (location.origin || '') + (location.pathname || '/api/quiz');
-  const lines = [
-    `📰 NEWSGUESS — ${state.score}/${state.questions.length}`,
-    dots,
-    verdictFor(state.score) + '.',
-    '',
-    `Riesci a fare meglio? 👉 ${url}`
-  ];
-  const text = lines.join('\n');
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: 'NEWSGUESS', text });
-      localStorage.setItem(SHARE_BADGE_KEY, '1');
-      if (document.querySelector('#page-badge.active')) renderBadges();
-      return;
-    } catch {}
-  }
+  const score = state.score;
+  const total = state.questions.length;
+  const verdict = verdictFor(score);
+  const emoji = ['😶','🙁','😐','🙂','😊','🏆'][score];
+  const dots = state.questions.map(q =>
+    q.given === q.paper.id ? '🟢' : '🔴'
+  ).join('');
+  const text = `Newsguess ${fmtDateIT(todayISO())}\n${emoji} ${score}/${total} — ${verdict}\n${dots}\nnewsguess.it`;
   try {
-    await navigator.clipboard.writeText(text);
-    localStorage.setItem(SHARE_BADGE_KEY, '1');
-    if (document.querySelector('#page-badge.active')) renderBadges();
-    showToast('Risultato copiato negli appunti');
-  } catch {
-    // Fallback: apri WhatsApp Web direttamente
-    const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(wa, '_blank');
-  }
+    if (navigator.share) {
+      await navigator.share({ title: 'Newsguess', text });
+    } else {
+      await navigator.clipboard.writeText(text);
+      showToast('Risultato copiato negli appunti!');
+    }
+  } catch {}
 });
 
 function resetToMenu() {
@@ -3065,7 +2888,6 @@ window.resetToMenu = resetToMenu;
 
 /* ===== STATS ===== */
 const STATS_KEY = 'stats-history';
-const SHARE_BADGE_KEY = 'ng-shared-once';
 
 function loadStatsHistory() {
   try { return JSON.parse(localStorage.getItem(STATS_KEY) || '[]'); }
@@ -3150,92 +2972,6 @@ function renderStats() {
   });
   html2 += '</tbody>';
   $('stRecentTable').innerHTML = html2;
-}
-
-function collectBadgeStats(history) {
-  const totalGames = history.length;
-  const best = history.reduce((m, h) => Math.max(m, h.score || 0), 0);
-  const streak = computeStreak(history);
-  const hasBlackout = history.some(h => (h.total || 5) >= 5 && h.score === 0);
-  const hasCronista = history.some(h => h.score >= 3);
-  const hasCaporedattore = history.some(h => h.score >= 4);
-  const hasDirettore = history.some(h => h.score >= 5);
-  const hasShared = localStorage.getItem(SHARE_BADGE_KEY) === '1';
-  const perPaperCorrect = {};
-  history.forEach(h => {
-    (h.questions || []).forEach(q => {
-      if (!q.paperId) return;
-      if (!perPaperCorrect[q.paperId]) perPaperCorrect[q.paperId] = 0;
-      if (q.ok) perPaperCorrect[q.paperId] += 1;
-    });
-  });
-  return { totalGames, best, streak, hasBlackout, hasCronista, hasCaporedattore, hasDirettore, hasShared, perPaperCorrect };
-}
-
-function renderBadges() {
-  const grid = $('badgeGrid');
-  if (!grid) return;
-  const history = loadStatsHistory();
-  const st = collectBadgeStats(history);
-  const badges = [
-    { id: 'blackout', name: '💀 Blackout', icon: 'skull', ok: st.hasBlackout, desc: 'Fai 0/5', quote: '“La redazione ti ha chiesto di consegnare il tesserino.”' },
-    { id: 'cronista', name: '📝 Cronista', icon: 'notebook-pen', ok: st.hasCronista, desc: 'Fai almeno 3/5', quote: '“Non sei ancora in prima pagina, ma almeno ti fanno entrare in redazione.”' },
-    { id: 'caporedattore', name: '🧠 Caporedattore', icon: 'brain', ok: st.hasCaporedattore, desc: 'Fai almeno 4/5', quote: '“Il direttore ti guarda come se avessi appena salvato l’edizione.”' },
-    { id: 'direttore', name: '👑 Direttore', icon: 'crown', ok: st.hasDirettore, desc: 'Fai 5/5', quote: '“La redazione ti applaude, i tipografi ti offrono il caffè, il giornale è tuo.”' },
-    { id: 'abbonato', name: '📅 Abbonato', icon: 'calendar-check-2', ok: st.streak >= 5, desc: 'Gioca 5 giorni consecutivi', quote: '“Ti vedono così spesso che ti hanno fatto il badge del personale.”' },
-    { id: 'fedelissimo', name: '🔥 Fedelissimo', icon: 'flame', ok: st.streak >= 10, desc: 'Gioca 10 giorni consecutivi', quote: '“La tua presenza è più costante delle tirature del lunedì.”' },
-    { id: 'storico', name: '🏛️ Storico', icon: 'landmark', ok: st.streak >= 30, desc: 'Gioca 30 giorni consecutivi', quote: '“Hai sbloccato il livello ‘giornalista che non va mai in ferie’.”' },
-    { id: 'veterano', name: '🎖️ Veterano', icon: 'medal', ok: st.streak >= 60, desc: 'Gioca 60 giorni consecutivi', quote: '“Sei più affidabile della rassegna stampa del mattino.”' },
-    { id: 'leggenda', name: '👑 Leggenda', icon: 'crown', ok: st.streak >= 100, desc: 'Gioca 100 giorni consecutivi', quote: '“Cento giorni: hanno scritto un editoriale per celebrarti.”' },
-    { id: 'mito', name: '🌟 Mito', icon: 'star', ok: st.streak >= 365, desc: 'Gioca 365 giorni consecutivi', quote: '“Un anno intero. Ti hanno dedicato una pagina nella domenica del Corriere.”' },
-    { id: 'macinatore', name: '⚙️ Macinatore', icon: 'cog', ok: st.totalGames >= 50, desc: 'Gioca 50 partite totali', quote: '“Hai macinato più partite di un torchio in tipografia.”' },
-    { id: 'instancabile', name: '💪 Instancabile', icon: 'dumbbell', ok: st.totalGames >= 200, desc: 'Gioca 200 partite totali', quote: '“Duecento partite. Servirebbe un nuovo titolo onorifico.”' },
-    { id: 'portavoce', name: '📣 Portavoce', icon: 'megaphone', ok: st.hasShared, desc: 'Condividi il risultato almeno una volta', quote: '“Hai urlato la notizia più forte del megafono di un comizio.”' }
-  ];
-  const paperBadges = [
-  { id: 'fatto', name: '📰 Il Fattista', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina "Il Fatto Quotidiano" 10 volte', quote: '“Fiuti la polemica come un segugio da prima pagina.”' },
-  { id: 'sole', name: '🌞 L’Economo', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina "Il Sole 24 Ore" 10 volte', quote: '“Capisci i grafici anche senza un analista accanto.”' },
-  { id: 'avvenire', name: '⛪ Il Devoto', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina "Avvenire" 10 volte', quote: '“Hai ricevuto più illuminazioni tu che la redazione in un mese.”' },
-  { id: 'messaggero', name: '🏛️ Il Capitolino', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina "Il Messaggero" 10 volte', quote: '“Conosci Roma così bene che ti hanno dato le chiavi del raccordo.”' },
-  { id: 'corriere', name: '🗞️ Il Corrierista', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina "Corriere della Sera" 10 volte', quote: '“Riconosci il Corriere dal font come un vero milanese DOC.”' },
-  { id: 'stampa', name: '📰 Il Torinese', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina "La Stampa" 10 volte', quote: '“Individui Torino anche senza la Mole: sei un GPS editoriale.”' },
-  { id: 'libero', name: '📢 Il Provocatore', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina "Libero" 10 volte', quote: '“Fiuti la polemica prima ancora che venga scritta.”' },
-  { id: 'manifesto', name: '✊ Il Militante', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina "Il Manifesto" 10 volte', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
-  { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
-  { id: 'repubblica', name: '📕 Il Repubblicano', icon: 'book', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
-];
-  const allBadges = [...badges, ...paperBadges];
-  // Estrae l'emoji dal name (primo carattere prima dello spazio)
-  const extractEmoji = (name) => {
-    const m = name.match(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)/u);
-    return m ? m[1] : '🏅';
-  };
-  const cleanName = (name) => name.replace(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)\s*/u, '');
-  // Render della striscia "Stories" dei badge sbloccati
-  const stories = $('badgeStories');
-  if (stories) {
-    const unlocked = allBadges.filter(b => b.ok);
-    if (!unlocked.length) {
-      stories.innerHTML = '<div class="badge-stories-empty">Gioca per sbloccare i tuoi primi badge!</div>';
-    } else {
-      stories.innerHTML = unlocked.map(b => `
-        <div class="badge-story" title="${escapeHtml(b.desc || '')}">
-          <div class="badge-story-circle"><div class="badge-story-inner">${extractEmoji(b.name)}</div></div>
-          <div class="badge-story-name">${escapeHtml(cleanName(b.name))}</div>
-        </div>`).join('');
-    }
-  }
-  // Render della griglia completa con nuovo stile
-  grid.innerHTML = allBadges.map(b => `
-    <div class="badge-card-v2 ${b.ok ? 'unlocked' : 'locked'}">
-      <span class="badge-emoji">${extractEmoji(b.name)}</span>
-      <div class="badge-title">${escapeHtml(cleanName(b.name))}</div>
-      <div class="badge-desc">${escapeHtml(b.desc || '')}</div>
-      <div class="badge-quote">${escapeHtml(b.quote || '')}</div>
-      <div class="badge-state">${b.ok ? '✓ Sbloccato' : 'Bloccato'}</div>
-    </div>
-  `).join('');
-  if (typeof createLucideIcons === 'function') createLucideIcons();
 }
 
 $('stResetBtn').addEventListener('click', () => {
@@ -3458,7 +3194,7 @@ function renderGroupPills() {
   state.user.groups.forEach(g => {
     const pill = document.createElement('div');
     pill.className = 'pill' + (g.code === state.user.activeGroupCode ? ' active' : '');
-    pill.innerHTML = `<span>${escapeHtml(g.name)} <span style="opacity: 0.7;">(${g.code})</span></span><div class="pill-close"><i data-lucide="x"></i></div>`;
+    pill.innerHTML = `<span>${escapeHtml(g.name)} <span style="opacity: 0.7;">(${g.code})</span></span><div class="pill-close">×</div>`;
     pill.addEventListener('click', (e) => {
       if (e.target !== pill.querySelector('.pill-close')) {
         state.user.activeGroupCode = g.code;
@@ -3482,16 +3218,15 @@ function renderGroupPills() {
   });
   const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
   $('lbActiveGroup').textContent = active ? `${active.name}` : '—';
-  createLucideIcons();
 }
 
 document.querySelectorAll('[data-lbtab]').forEach(b => {
   b.addEventListener('click', () => {
+    const t = b.dataset.lbtab;
     document.querySelectorAll('[data-lbtab]').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
-    const t = b.dataset.lbtab;
-    $('lbPane-join').classList.toggle('hidden', t !== 'join');
-    $('lbPane-create').classList.toggle('hidden', t !== 'create');
+    $('lbPane-join').classList.toggle('active', t === 'join');
+    $('lbPane-create').classList.toggle('active', t === 'create');
     $('lbJoinErr').style.display = 'none';
     $('lbCreateErr').style.display = 'none';
   });
@@ -3607,7 +3342,7 @@ async function refreshLeaderboards() {
   const today = todayISO();
   const mk = monthKey(today);
   $('lbDayDate').textContent = fmtDateIT(today);
-  $('lbMonthLabel').textContent = mk;
+  $('lbMonthLabel').textContent = formatMonthLabel(mk);
 
   const code = state.user.activeGroupCode;
   _lbDayUnsub = fbDb.collection('scores')
@@ -3619,6 +3354,80 @@ async function refreshLeaderboards() {
     .where('groupCode', '==', code)
     .where('monthKey', '==', mk)
     .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+
+  // Carica mesi precedenti
+  loadPastMonths(code, mk);
+}
+
+function formatMonthLabel(mk) {
+  const [y, m] = mk.split('-');
+  const months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  return `${months[parseInt(m,10)-1]} ${y}`;
+}
+
+async function loadPastMonths(code, currentMk) {
+  try {
+    // Cerca tutti gli score del gruppo, raggruppa per mese
+    const snap = await fbDb.collection('scores')
+      .where('groupCode', '==', code)
+      .orderBy('monthKey', 'desc')
+      .limit(500)
+      .get();
+
+    const byMonth = {};
+    snap.docs.forEach(d => {
+      const row = d.data();
+      if (row.monthKey === currentMk) return; // mese corrente già mostrato sopra
+      if (!byMonth[row.monthKey]) byMonth[row.monthKey] = [];
+      byMonth[row.monthKey].push(row);
+    });
+
+    const pastMonths = Object.keys(byMonth).sort().reverse();
+    const histSection = $('lbHistorySection');
+    const histTabs = $('lbHistoryTabs');
+    const histContent = $('lbHistoryContent');
+
+    if (!pastMonths.length) {
+      histSection.style.display = 'none';
+      return;
+    }
+
+    histSection.style.display = '';
+    histTabs.innerHTML = pastMonths.map((mk, i) =>
+      `<button class="tab-btn ${i===0?'active':''}" data-histmk="${mk}">${formatMonthLabel(mk)}</button>`
+    ).join('');
+
+    function showMonthHistory(mk) {
+      histTabs.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.histmk === mk));
+      const rows = byMonth[mk] || [];
+      const byName = {};
+      rows.forEach(r => {
+        if (!byName[r.name]) byName[r.name] = { name: r.name, points: 0, games: 0 };
+        byName[r.name].points += r.score;
+        byName[r.name].games += 1;
+      });
+      const list = Object.values(byName).sort((a,b) => b.points - a.points || b.games - a.games);
+      if (!list.length) { histContent.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic;text-align:center;">Nessun dato.</p>'; return; }
+      let html = '<table class="data-table" style="margin-top:12px"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody>';
+      list.forEach((r, i) => {
+        const medals = ['🥇','🥈','🥉'];
+        html += `<tr ${r.name === state.user?.name ? 'class="highlight"' : ''}><td>${medals[i]||i+1}</td><td>${escapeHtml(r.name)}</td><td><strong>${r.points} pt</strong></td><td>${r.games}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      histContent.innerHTML = html;
+    }
+
+    histTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-histmk]');
+      if (btn) showMonthHistory(btn.dataset.histmk);
+    });
+
+    showMonthHistory(pastMonths[0]);
+  } catch(e) {
+    console.warn('storico mesi:', e);
+    const histSection = $('lbHistorySection');
+    if (histSection) histSection.style.display = 'none';
+  }
 }
 
 function renderDayTable(rows) {
@@ -3631,10 +3440,11 @@ function renderDayTable(rows) {
   tbody.innerHTML = '';
   if (!list.length) { $('lbDayEmpty').style.display = ''; return; }
   $('lbDayEmpty').style.display = 'none';
+  const medals = ['🥇','🥈','🥉'];
   list.forEach((r, i) => {
     const tr = document.createElement('tr');
     if (r.name === state.user.name) tr.classList.add('highlight');
-    tr.innerHTML = `<td><span class="table-medal">${i+1}</span></td><td>${escapeHtml(r.name)}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
+    tr.innerHTML = `<td><span class="table-medal">${medals[i]||(i+1)}</span></td><td>${escapeHtml(r.name)}</td><td>${Math.round(r.pct*100)}%</td><td>${r.score}/${r.total}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -3651,59 +3461,14 @@ function renderMonthTable(rows) {
   tbody.innerHTML = '';
   if (!list.length) { $('lbMonthEmpty').style.display = ''; return; }
   $('lbMonthEmpty').style.display = 'none';
+  const medals = ['🥇','🥈','🥉'];
   list.forEach((r, i) => {
     const tr = document.createElement('tr');
     if (r.name === state.user.name) tr.classList.add('highlight');
-    tr.innerHTML = `<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td><strong>${r.points} pt</strong></td><td>${r.games} ${r.games === 1 ? 'partita' : 'partite'}</td>`;
-    tbody.appendChild(tr);
-  });
-  renderMembersTable(list);
-}
-
-function renderMembersTable(rows) {
-  const tbody = $('lbMembersTable')?.querySelector('tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  rows.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${escapeHtml(r.name)}</td><td>${r.games}</td><td><strong>${r.points}</strong></td>`;
+    tr.innerHTML = `<td>${medals[i]||i+1}</td><td>${escapeHtml(r.name)}</td><td><strong>${r.points} pt</strong></td><td>${r.games} ${r.games === 1 ? 'partita' : 'partite'}</td>`;
     tbody.appendChild(tr);
   });
 }
-
-function openRenameGroupModal() {
-  if (!state.user?.activeGroupCode) return;
-  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
-  if (!active) return;
-  $('renameGroupInput').value = active.name;
-  $('renameGroupErr').classList.remove('show');
-  openModal('renameGroupModal');
-}
-
-$('lbRenameGroupBtn').addEventListener('click', openRenameGroupModal);
-$('renameGroupCancel').addEventListener('click', () => closeModal('renameGroupModal'));
-$('renameGroupConfirm').addEventListener('click', async () => {
-  const val = $('renameGroupInput').value.trim().slice(0, 32);
-  const err = $('renameGroupErr');
-  err.classList.remove('show');
-  if (!val) {
-    err.textContent = 'Inserisci un nome gruppo valido.';
-    err.classList.add('show');
-    return;
-  }
-  const active = state.user.groups.find(g => g.code === state.user.activeGroupCode);
-  if (!active) return;
-  active.name = val;
-  saveUser();
-  try {
-    initFirebase();
-    if (fbReady) await fbDb.collection('groups').doc(active.code).update({ name: val });
-  } catch {}
-  closeModal('renameGroupModal');
-  renderGroupPills();
-  refreshLeaderboards();
-  showToast('Nome gruppo aggiornato');
-});
 
 /* ===== POPSTATE & HISTORY ===== */
 const NG_HISTORY = {
@@ -3716,8 +3481,195 @@ const NG_HISTORY = {
 };
 
 function isQuizInProgress() {
-  return !$('quizRunning').classList.contains('hidden') && !!state.mode && state.questions.length && state.current < state.questions.length;
+  return !!state.mode && !$('quizRunning').classList.contains('hidden') && state.questions.length > 0 && state.current < state.questions.length && !state.questions[state.current]?.given;
 }
+
+/* ===== PUSH NOTIFICATIONS ===== */
+function enableNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    showToast('Notifiche non supportate su questo dispositivo');
+    return;
+  }
+
+  navigator.serviceWorker.ready.then(async (registration) => {
+    try {
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+
+      const resp = await fetch('/api/push-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscription }),
+      });
+
+      if (resp.ok) {
+        localStorage.setItem('ng-notif-enabled', 'true');
+        showToast('✓ Notifiche attivate!');
+      }
+    } catch (error) {
+      console.error('Errore notifiche:', error);
+      showToast('Errore: ' + error.message);
+    }
+  });
+}
+
+function disableNotifications() {
+  navigator.serviceWorker.ready.then(async (registration) => {
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+      await fetch('/api/push-unsubscribe', { method: 'POST' });
+      localStorage.removeItem('ng-notif-enabled');
+      showToast('Notifiche disattivate');
+    }
+  });
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
+
+// Registra Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/api/sw.js').then(() => {
+    console.log('✓ Service Worker registrato');
+  }).catch((err) => console.warn('SW non disponibile:', err));
+}
+
+const VAPID_PUBLIC_KEY = 'YOUR_VAPID_PUBLIC_KEY_HERE';
+
+/* ===== SETTINGS PAGE ===== */
+function updateSettingsGroupSection() {
+  const sect = $('groupSettingsSection');
+  if (!sect) return;
+  const groupId = userState.group;
+  sect.style.display = groupId ? 'block' : 'none';
+  if (groupId && userState.groupName) {
+    $('groupNameInput').value = userState.groupName;
+  }
+}
+
+// Theme buttons in settings
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const theme = btn.dataset.theme;
+    setTheme(theme);
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Carica tema salvato in settings
+setTimeout(() => {
+  const saved = localStorage.getItem('ng-theme') || 'auto';
+  document.querySelector(`[data-theme="${saved}"]`)?.classList.add('active');
+}, 100);
+
+// Notifiche: pulsante attiva/disattiva
+$('settingsNotifBtn').addEventListener('click', async () => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    disableNotifications();
+    updateSettingsNotifStatus();
+  } else if ('Notification' in window) {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      enableNotifications();
+      updateSettingsNotifStatus();
+    }
+  }
+});
+
+function updateSettingsNotifStatus() {
+  const status = $('settingsNotifStatus');
+  if (!status) return;
+  const isEnabled = localStorage.getItem('ng-notif-enabled') === 'true';
+  if (isEnabled) {
+    status.textContent = '✓ Notifiche attive. Riceverai un promemoria ogni mattina alle 8:00.';
+    status.style.color = 'var(--success)';
+    $('settingsNotifBtn').textContent = '📭 Disattiva promemoria';
+    $('settingsNotifBtn').classList.remove('btn-outline');
+  } else {
+    status.textContent = isEnabled ? '' : '';
+    $('settingsNotifBtn').textContent = '📬 Attiva promemoria';
+    $('settingsNotifBtn').classList.add('btn-outline');
+  }
+}
+
+// Rinomina gruppo (in settings)
+$('groupNameSaveBtn').addEventListener('click', async () => {
+  const newName = $('groupNameInput').value.trim();
+  if (!newName) {
+    $('groupNameStatus').textContent = 'Inserisci un nome';
+    return;
+  }
+  try {
+    const resp = await fetch('/api/group-rename', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ groupId: userState.group, name: newName }),
+    });
+    if (resp.ok) {
+      userState.groupName = newName;
+      localStorage.setItem('ng-user-state', JSON.stringify(userState));
+      $('groupNameStatus').textContent = '✓ Gruppo rinominato con successo!';
+      $('groupNameStatus').style.color = 'var(--success)';
+      setTimeout(() => {
+        $('groupNameStatus').textContent = '';
+      }, 3000);
+    } else {
+      $('groupNameStatus').textContent = 'Errore nel salvataggio';
+      $('groupNameStatus').style.color = 'var(--error)';
+    }
+  } catch (e) {
+    $('groupNameStatus').textContent = 'Errore di connessione';
+    $('groupNameStatus').style.color = 'var(--error)';
+  }
+});
+
+// Esporta dati
+$('exportDataBtn').addEventListener('click', () => {
+  const data = {
+    stats: loadStatsHistory(),
+    badges: loadBadges(),
+    userState,
+    theme: localStorage.getItem('ng-theme'),
+    exportDate: new Date().toISOString(),
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `newsguess-data-${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 Dati esportati');
+});
+
+// Reset dati
+$('resetDataBtn').addEventListener('click', () => {
+  if (confirm('⚠️ Eliminare TUTTI i dati locali? Non si può tornare indietro.')) {
+    localStorage.clear();
+    location.reload();
+  }
+});
+
+// Aggiorna settings quando navighi lì
+const _origOpenPageFn = openPage;
+window.openPage = function(pageName) {
+  _origOpenPageFn(pageName);
+  if (pageName === 'settings') {
+    updateSettingsGroupSection();
+    updateSettingsNotifStatus();
+  }
+};
 
 function showConfirmExit(onYes) {
   openModal('confirmExit');
@@ -3730,57 +3682,37 @@ function showConfirmExit(onYes) {
 }
 
 window.addEventListener('popstate', (e) => {
-  // 1) Se c'è un modale aperto → chiudilo senza uscire
-  if ($('nameModal').classList.contains('open')) {
-    closeNameModal();
+  // 1) Modale aperto → chiudi
+  const openModalEl = document.querySelector('.modal-overlay.open');
+  if (openModalEl) {
+    openModalEl.classList.remove('open');
+    NG_HISTORY.push('modal-closed');
     return;
   }
-  if ($('saveModal').classList.contains('open')) {
-    closeSaveModal();
-    return;
-  }
-  if ($('confirmExit').classList.contains('open')) {
-    closeModal('confirmExit');
-    return;
-  }
-  if ($('renameGroupModal').classList.contains('open')) {
-    closeModal('renameGroupModal');
-    return;
-  }
-  if ($('iosInstallModal').classList.contains('open')) {
-    closeModal('iosInstallModal');
-    return;
-  }
-  
-  // 2) Se la sidebar è aperta (mobile) → chiudila
+  // 2) Sidebar aperta → chiudi
   if ($('sidebar').classList.contains('open')) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
-    if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
+    NG_HISTORY.push('home');
     return;
   }
-  
-  // 3) Se c'è un quiz daily in corso → chiedi conferma PRIMA di uscire
+  // 3) Quiz in corso → chiedi conferma
   if (isQuizInProgress()) {
-    const shouldConfirm = loadUiSettings().confirmExitDaily !== false;
-    if (!shouldConfirm) {
-      resetToMenu();
-      history.back();
-      return;
-    }
-    // Ripristina lo stato della navigazione così il prossimo back non esce
     NG_HISTORY.push('quiz-running');
     showConfirmExit(() => {
-      // Utente ha confermato uscita: resetta il quiz
       resetToMenu();
-      // Ora esce davvero (questo back non ritraggerà il popstate)
-      history.back();
     });
     return;
   }
-  
-  // 4) Altrimenti: navigazione normale (torna indietro nella storia)
-  // Non fare nulla di speciale - il browser gestisce il back normalmente
+  // 4) Qualsiasi altra pagina → torna alla schermata quiz
+  const quizPage = document.querySelector('#page-quiz');
+  const isOnQuiz = quizPage && quizPage.classList.contains('active');
+  if (!isOnQuiz) {
+    openPage('quiz');
+    NG_HISTORY.push('home');
+    return;
+  }
+  // 5) Già sulla home → lascia uscire
 });
 
 NG_HISTORY.push('home');
@@ -3790,29 +3722,6 @@ window.startQuiz = async function(mode, dateISO) {
   if (mode === 'daily') NG_HISTORY.push('quiz-running');
   return _origStartQuiz(mode, dateISO);
 };
-
-// Consenti il salvataggio daily (una volta per gruppo) anche dopo aver già giocato.
-function showDailyAlreadyPlayedResult() {
-  const done = JSON.parse(dailyDoneToday() || '{}');
-  if (!done || typeof done.score !== 'number') return;
-  state.mode = 'daily';
-  state.score = done.score;
-  state.questions = new Array(done.total || 5).fill({});
-  state.current = (done.total || 5) - 1;
-  $('modePicker').classList.add('hidden');
-  $('errorBox').classList.add('hidden');
-  $('quizRunning').classList.add('hidden');
-  $('loading').classList.add('hidden');
-  $('finalScreen').classList.remove('hidden');
-  $('finalScoreVersus').textContent = `${done.score}:${(done.total || 5) - done.score}`;
-  $('verdict').textContent = verdictFor(done.score);
-  $('resultCommentary').textContent = 'Sfida giornaliera già giocata: puoi comunque salvarla nei gruppi non ancora registrati.';
-  $('recapTable').innerHTML = '<tbody><tr><td colspan="4">Partita daily già conclusa oggi. Recap dettagliato disponibile solo nella sessione originale.</td></tr></tbody>';
-  $('saveScoreBtn').style.display = '';
-  $('trainAgainBtn').style.display = 'none';
-}
-
-createLucideIcons();
 </script>
 </body>
 </html>
