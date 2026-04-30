@@ -795,6 +795,29 @@
     margin-bottom: 20px;
   }
 
+  /* Etichetta data edizione (mostrata in modalità Allenamento Libero) */
+  .edition-date-label {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin: -4px 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border-color);
+    letter-spacing: 0.3px;
+  }
+  .edition-date-label .lbl-prefix {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    margin-right: 6px;
+    opacity: 0.85;
+  }
+
   .headline-tag {
     font-size: 11px;
     letter-spacing: 2px;
@@ -1909,6 +1932,7 @@
           </div>
 
           <div class="question-card">
+            <div class="edition-date-label" id="qDateLabel" style="display:none;"></div>
             <div class="extracted-headline">
               <div class="headline-tag" id="exSopra"></div>
               <div class="headline-title" id="exTitolo"></div>
@@ -2363,6 +2387,16 @@ function loadUser() {
 function saveUser() {
   if (state.user) localStorage.setItem(USER_KEY, JSON.stringify(state.user));
   else { localStorage.removeItem(USER_KEY); sessionStorage.removeItem(USER_KEY); }
+  // Se l'utente è loggato in Firebase, sincronizza i gruppi sul cloud (debounced)
+  try {
+    if (window.__userSyncTimer) clearTimeout(window.__userSyncTimer);
+    window.__userSyncTimer = setTimeout(() => {
+      if (typeof window._saveStatsToCloud === 'function' &&
+          typeof _authUser !== 'undefined' && _authUser) {
+        try { window._saveStatsToCloud(); } catch {}
+      }
+    }, 600);
+  } catch {}
 }
 
 /* Helpers */
@@ -2961,6 +2995,7 @@ async function buildQuestion(np, dateISO) {
     sotto: extracted.sottotitolo || null,
     choices,
     given: null,
+    dateISO,
   };
 }
 
@@ -3019,6 +3054,19 @@ function renderQuestion() {
   $('exTitolo').textContent = q.titolo || '(titolo non rilevato)';
   $('exSotto').textContent = q.sotto || '';
   $('exSotto').style.display = q.sotto ? '' : 'none';
+
+  // Mostra la data dell'edizione SOLO in modalità "Allenamento Libero"
+  // (nelle altre modalità — daily, past — la data è già evidente nell'header).
+  const dateLabel = $('qDateLabel');
+  if (dateLabel) {
+    if (state.mode === 'training' && q.dateISO) {
+      dateLabel.innerHTML = `<span class="lbl-prefix">Edizione del</span>${fmtDateIT(q.dateISO)}`;
+      dateLabel.style.display = '';
+    } else {
+      dateLabel.style.display = 'none';
+      dateLabel.textContent = '';
+    }
+  }
 
   const cont = $('choices');
   cont.innerHTML = '';
@@ -3604,7 +3652,11 @@ async function _migrateLocalToCloud(uid) {
   const cloudDoc = await userRef.get();
   const cloudData = cloudDoc.exists ? cloudDoc.data() : {};
   const localHistory = JSON.parse(localStorage.getItem('stats-history') || '[]');
-  const localUserName = (() => {
+  // Leggi i dati utente dalla chiave corretta `quizUser` (USER_KEY)
+  const localUser = (() => {
+    try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch { return null; }
+  })();
+  const localUserName = localUser?.name || (() => {
     try { return JSON.parse(localStorage.getItem('user') || '{}').name || ''; } catch { return ''; }
   })();
   const cloudHistory = cloudData.history || [];
@@ -3616,16 +3668,49 @@ async function _migrateLocalToCloud(uid) {
     return true;
   }).sort((a, b) => a.ts - b.ts);
 
+  // Merge gruppi: unione locali + cloud, dedup per code, mantenendo il name più aggiornato (locale prevale)
+  const localGroups = Array.isArray(localUser?.groups) ? localUser.groups : [];
+  const cloudGroups = Array.isArray(cloudData.groups) ? cloudData.groups : [];
+  const groupMap = new Map();
+  cloudGroups.forEach(g => { if (g && g.code) groupMap.set(g.code, { code: g.code, name: g.name || g.code }); });
+  localGroups.forEach(g => { if (g && g.code) groupMap.set(g.code, { code: g.code, name: g.name || g.code }); });
+  const mergedGroups = Array.from(groupMap.values());
+
+  // Active group: priorità a quello locale se presente nei merged, altrimenti cloud, altrimenti il primo
+  const localActive = localUser?.activeGroupCode;
+  const cloudActive = cloudData.activeGroupCode;
+  let mergedActive = null;
+  if (localActive && mergedGroups.find(g => g.code === localActive)) mergedActive = localActive;
+  else if (cloudActive && mergedGroups.find(g => g.code === cloudActive)) mergedActive = cloudActive;
+  else if (mergedGroups[0]) mergedActive = mergedGroups[0].code;
+
+  const finalName = (cloudData.name || localUserName || '').trim();
+
   const payload = {
     history: merged.slice(-500),
-    name: cloudData.name || localUserName || '',
+    name: finalName,
+    groups: mergedGroups,
+    activeGroupCode: mergedActive,
     last_sync: firebase.firestore.FieldValue.serverTimestamp(),
     email: _authUser?.email || cloudData.email || null,
   };
   await userRef.set(payload, { merge: true });
   localStorage.setItem('stats-history', JSON.stringify(merged));
+
+  // Aggiorna anche l'oggetto user locale con i gruppi mergiati
+  const updatedUser = {
+    name: finalName || localUserName || 'Utente',
+    groups: mergedGroups,
+    activeGroupCode: mergedActive,
+  };
+  localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+  state.user = updatedUser;
+
   localStorage.setItem(AUTH_MIGRATED_FLAG, '1');
-  if ($('authSyncStatus')) $('authSyncStatus').textContent = `Sincronizzato (${merged.length} partite)`;
+  if ($('authSyncStatus')) {
+    const grpCount = mergedGroups.length;
+    $('authSyncStatus').textContent = `Sincronizzato (${merged.length} partite, ${grpCount} ${grpCount === 1 ? 'gruppo' : 'gruppi'})`;
+  }
 }
 
 async function _loadFromCloud(uid) {
@@ -3634,6 +3719,31 @@ async function _loadFromCloud(uid) {
   if (doc.exists) {
     const d = doc.data();
     if (Array.isArray(d.history)) localStorage.setItem('stats-history', JSON.stringify(d.history));
+
+    // Ripristina nome + gruppi nell'oggetto USER_KEY (chiave canonica)
+    let localUser = null;
+    try { localUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch {}
+    const cloudGroups = Array.isArray(d.groups) ? d.groups : [];
+    if (cloudGroups.length || d.name) {
+      const updated = {
+        name: (d.name || localUser?.name || 'Utente').trim(),
+        groups: cloudGroups.length ? cloudGroups : (localUser?.groups || []),
+        activeGroupCode: d.activeGroupCode
+          || (cloudGroups[0] && cloudGroups[0].code)
+          || localUser?.activeGroupCode
+          || null,
+      };
+      localStorage.setItem(USER_KEY, JSON.stringify(updated));
+      state.user = updated;
+      // Aggiorna l'UI della classifica se la sezione è visibile
+      try {
+        if (state.user.groups?.length) {
+          if (typeof showLBLoggedIn === 'function') showLBLoggedIn();
+        }
+      } catch {}
+    }
+
+    // Mantengo anche la vecchia chiave 'user' per retro-compatibilità (solo nome)
     if (d.name) {
       try {
         const u = JSON.parse(localStorage.getItem('user') || '{}');
@@ -3647,11 +3757,25 @@ async function _saveStatsToCloud() {
   if (!_authUser || !fbDb) return;
   try {
     const arr = JSON.parse(localStorage.getItem('stats-history') || '[]');
-    await fbDb.collection('users').doc(_authUser.uid).set({
+    let localUser = null;
+    try { localUser = JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch {}
+    const payload = {
       history: arr.slice(-500),
       last_sync: firebase.firestore.FieldValue.serverTimestamp(),
-    }, { merge: true });
-    if ($('authSyncStatus')) $('authSyncStatus').textContent = `Sincronizzato (${arr.length} partite) ✓`;
+    };
+    if (localUser) {
+      if (localUser.name) payload.name = localUser.name;
+      if (Array.isArray(localUser.groups)) {
+        payload.groups = localUser.groups.map(g => ({ code: g.code, name: g.name || g.code }));
+      }
+      if (localUser.activeGroupCode) payload.activeGroupCode = localUser.activeGroupCode;
+      else payload.activeGroupCode = null;
+    }
+    await fbDb.collection('users').doc(_authUser.uid).set(payload, { merge: true });
+    if ($('authSyncStatus')) {
+      const grpCount = Array.isArray(payload.groups) ? payload.groups.length : 0;
+      $('authSyncStatus').textContent = `Sincronizzato (${arr.length} partite, ${grpCount} ${grpCount === 1 ? 'gruppo' : 'gruppi'}) ✓`;
+    }
   } catch (e) {
     console.warn('Cloud sync fail', e);
     if ($('authSyncStatus')) $('authSyncStatus').textContent = 'Sync in errore';
@@ -3699,6 +3823,7 @@ function _bindAuthListeners() {
   if (!fbAuth) return;
   fbAuth.onAuthStateChanged(async (user) => {
     _authUser = user;
+    window._authUserPresent = !!user;
     _renderAuthUI();
     if (user) {
       try {
@@ -3706,6 +3831,12 @@ function _bindAuthListeners() {
         await _loadFromCloud(user.uid);
         if (typeof renderStats === 'function') renderStats();
         if (typeof renderBadges === 'function') renderBadges();
+        // Aggiorna l'interfaccia della classifica con i gruppi sincronizzati
+        try {
+          if (state.user && state.user.groups?.length && typeof showLBLoggedIn === 'function') {
+            showLBLoggedIn();
+          }
+        } catch {}
         showToast('Accesso effettuato. Dati sincronizzati ✓');
       } catch (e) { console.error('Sync error:', e); }
     }
