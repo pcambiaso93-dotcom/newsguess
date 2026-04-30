@@ -40,7 +40,7 @@
     --radius: 8px;
   }
 
-  [data-theme="dark"] {
+  :root[data-theme="dark"] {
     --bg-primary: #101319;
     --bg-secondary: #171c24;
     --bg-tertiary: #212834;
@@ -138,8 +138,8 @@
     transition: filter .2s ease;
   }
   /* Inverti il logo nel sidebar in tema scuro per restare leggibile */
-  [data-theme="dark"] .sidebar-logo,
-  [data-theme="dark"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
+  :root[data-theme="dark"] .sidebar-logo,
+  :root[data-theme="dark"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
   @media (prefers-color-scheme: dark) {
     [data-theme="system"] .sidebar-logo,
     [data-theme="system"] .header-brand-mark { filter: invert(1) hue-rotate(180deg); }
@@ -263,20 +263,15 @@
   }
 
   .theme-btn.active {
-    background: var(--accent-primary);
-    color: #fff;
+    /* Sfondo leggermente colorato + bordo accent, MA testo rimane dello stesso colore degli altri */
+    background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+    color: var(--text-primary);
     border-color: var(--accent-primary);
     font-weight: 700;
   }
-  /* In dark mode l'accent è un azzurro chiaro: serve testo scuro per leggibilità */
-  [data-theme="dark"] .theme-btn.active {
-    color: #0a1220;
-  }
-  @media (prefers-color-scheme: dark) {
-    [data-theme="system"] .theme-btn.active,
-    html:not([data-theme]) .theme-btn.active {
-      color: #0a1220;
-    }
+  /* Fallback per browser senza color-mix (raro nel 2026) */
+  @supports not (background: color-mix(in srgb, red, blue)) {
+    .theme-btn.active { background: var(--bg-tertiary); }
   }
 
   .sidebar-backdrop {
@@ -1167,7 +1162,9 @@
   .badge-card-v2.locked {
     opacity: .55;
     background: var(--bg-tertiary);
+    cursor: not-allowed;
   }
+  .badge-card-v2.locked:hover { transform: none; box-shadow: none; }
   .badge-card-v2.locked .badge-emoji { filter: grayscale(.5); }
   .badge-card-v2.locked .badge-title { color: var(--text-secondary); }
   .badge-card-v2.unlocked {
@@ -1378,7 +1375,7 @@
     transition: filter .2s ease;
   }
   /* Logo invertito in tema scuro per restare leggibile su sfondo scuro */
-  [data-theme="dark"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
+  :root[data-theme="dark"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
   @media (prefers-color-scheme: dark) {
     [data-theme="system"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
   }
@@ -2315,6 +2312,10 @@
     <div style="text-align: left; background: var(--bg-tertiary); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;">
       <div id="bdmHowTitle" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 6px;">Come sbloccarlo</div>
       <div id="bdmHow" style="font-size: 14px; color: var(--text-primary); line-height: 1.4;">—</div>
+    </div>
+    <div id="bdmStats" class="bdm-stats" style="display:none; text-align: left; background: color-mix(in srgb, var(--accent-primary) 10%, transparent); border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; border: 1px solid var(--accent-primary);">
+      <div class="bdm-stats-label" style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; color: var(--accent-primary); margin-bottom: 6px;">Le tue statistiche</div>
+      <div class="bdm-stats-body" style="font-size: 14px; color: var(--text-primary); line-height: 1.5;">—</div>
     </div>
     <div id="bdmQuote" style="font-style: italic; color: var(--text-secondary); font-size: 13px; line-height: 1.5; padding: 0 8px; margin-bottom: 18px;">—</div>
     <div class="modal-row">
@@ -3651,6 +3652,8 @@ function renderBadges() {
   const grid = $('badgeGrid');
   if (!grid) return;
   const allBadges = getAllBadgesWithState();
+  const history = loadStatsHistory();
+  const stats = collectBadgeStats(history);
   // Estrae l'emoji dal name (primo carattere prima dello spazio)
   const extractEmoji = (name) => {
     const m = name.match(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)/u);
@@ -3669,12 +3672,12 @@ function renderBadges() {
           <div class="badge-story-circle"><div class="badge-story-inner">${extractEmoji(b.name)}</div></div>
           <div class="badge-story-name">${escapeHtml(cleanName(b.name))}</div>
         </div>`).join('');
-      // Click = apre la stessa modale dei badge nella griglia
+      // Click dalle stories = apre la modale SENZA statistiche (come richiesto)
       stories.querySelectorAll('.badge-story').forEach(el => {
         el.addEventListener('click', () => {
           const id = el.dataset.badgeId;
           const badge = allBadges.find(x => x.id === id);
-          if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName);
+          if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName, { showStats: false, history, stats });
         });
       });
     }
@@ -3689,20 +3692,64 @@ function renderBadges() {
       <div class="badge-state">${b.ok ? '✓ Sbloccato' : 'Da sbloccare'}</div>
     </div>
   `).join('');
-  // Apri modale al click
+  // Apri modale al click: DA GRIGLIA → include statistiche per i badge sbloccati
+  // I badge ancora da sbloccare NON sono cliccabili (evita di aprire la modale)
   grid.querySelectorAll('.badge-card-v2').forEach(card => {
     card.addEventListener('click', () => {
+      if (card.classList.contains('locked')) return;
       const id = card.dataset.badgeId;
       const badge = allBadges.find(x => x.id === id);
-      if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName);
+      if (badge) openBadgeDetailModal(badge, extractEmoji, cleanName, { showStats: true, history, stats });
     });
   });
   if (typeof createLucideIcons === 'function') createLucideIcons();
 }
 
-function openBadgeDetailModal(badge, extractEmoji, cleanName) {
+/* Calcola una stringa di statistica contestuale per un badge sbloccato.
+   Ritorna null se non c'è una stat sensata. */
+function computeBadgeStat(badgeId, history, st) {
+  const dailyCount = history.filter(h => h.mode === 'daily').length;
+  const totalGames = history.length;
+  // Punteggio mapping helper
+  const countAtLeast = (n) => history.filter(h => (h.score || 0) >= n && (h.total || 5) >= 5).length;
+  const countExact = (n) => history.filter(h => (h.score || 0) === n && (h.total || 5) >= 5).length;
+  const perPaper = st?.perPaperCorrect || {};
+  switch (badgeId) {
+    case 'blackout':    return `Hai totalizzato 0/5 in <strong>${countExact(0)}</strong> ${countExact(0) === 1 ? 'partita' : 'partite'}.`;
+    case 'cronista':    return `Hai superato i 3/5 in <strong>${countAtLeast(3)}</strong> ${countAtLeast(3) === 1 ? 'partita' : 'partite'} ${totalGames ? `(${Math.round(countAtLeast(3) / totalGames * 100)}%)` : ''}.`;
+    case 'caporedattore': return `Hai fatto almeno 4/5 in <strong>${countAtLeast(4)}</strong> ${countAtLeast(4) === 1 ? 'partita' : 'partite'} ${totalGames ? `(${Math.round(countAtLeast(4) / totalGames * 100)}%)` : ''}.`;
+    case 'direttore':   return `Hai fatto 5/5 ben <strong>${countAtLeast(5)}</strong> ${countAtLeast(5) === 1 ? 'volta' : 'volte'}.`;
+    case 'abbonato':
+    case 'fedelissimo':
+    case 'storico':
+    case 'veterano':
+    case 'leggenda':
+    case 'mito':        return `Striscia giornaliera attuale: <strong>${st.streak} ${st.streak === 1 ? 'giorno' : 'giorni'}</strong>. Partite daily totali: ${dailyCount}.`;
+    case 'macinatore':
+    case 'instancabile': return `Partite totali giocate: <strong>${totalGames}</strong>.`;
+    case 'portavoce':   return `Hai condiviso almeno un risultato con gli amici. 📣`;
+    // Badge per singolo giornale (key = badgeId)
+    case 'fatto':
+    case 'sole':
+    case 'avvenire':
+    case 'messaggero':
+    case 'corriere':
+    case 'stampa':
+    case 'libero':
+    case 'manifesto':
+    case 'giornale':
+    case 'repubblica': {
+      const n = perPaper[badgeId] || 0;
+      return `Hai indovinato questo giornale <strong>${n}</strong> ${n === 1 ? 'volta' : 'volte'}.`;
+    }
+    default: return null;
+  }
+}
+
+function openBadgeDetailModal(badge, extractEmoji, cleanName, opts) {
   const modal = document.getElementById('badgeDetailModal');
   if (!modal) return;
+  opts = opts || {};
   document.getElementById('bdmEmoji').textContent = extractEmoji(badge.name);
   document.getElementById('bdmTitle').textContent = cleanName(badge.name);
   document.getElementById('bdmState').textContent = badge.ok ? '✓ Sbloccato' : '🔒 Da sbloccare';
@@ -3710,6 +3757,21 @@ function openBadgeDetailModal(badge, extractEmoji, cleanName) {
   document.getElementById('bdmHowTitle').textContent = badge.ok ? 'Come l\'hai ottenuto' : 'Come sbloccarlo';
   document.getElementById('bdmHow').textContent = badge.desc || '';
   document.getElementById('bdmQuote').textContent = badge.quote || '';
+  // Mostra stats solo se showStats=true E badge sbloccato E c'è un testo sensato
+  const statsEl = document.getElementById('bdmStats');
+  if (statsEl) {
+    let statHtml = null;
+    if (opts.showStats && badge.ok) {
+      try { statHtml = computeBadgeStat(badge.id, opts.history || [], opts.stats || {}); } catch {}
+    }
+    const bodyEl = statsEl.querySelector('.bdm-stats-body');
+    if (statHtml && bodyEl) {
+      bodyEl.innerHTML = statHtml;
+      statsEl.style.display = '';
+    } else {
+      statsEl.style.display = 'none';
+    }
+  }
   modal.classList.add('open');
 }
 function closeBadgeDetailModal() {
