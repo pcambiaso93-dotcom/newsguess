@@ -20,18 +20,48 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from contextlib import asynccontextmanager
 
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Configure logging EARLY (needed by lifespan)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
-app = FastAPI()
+
+# Lifespan context manager: replaces deprecated @app.on_event("startup"|"shutdown").
+# Importante per il deploy su Render: con on_event deprecato, l'avvio può
+# entrare in race con la rilevazione della porta da parte della piattaforma.
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ----- STARTUP -----
+    try:
+        if not scheduler.running:
+            scheduler.add_job(_scheduled_check, "interval", minutes=1, id="push_check", replace_existing=True)
+            scheduler.start()
+            logger.info("Push scheduler started (every minute, sends at user-local 8:00)")
+    except Exception as e:
+        logger.warning(f"Scheduler startup non-blocking error: {e}")
+    yield
+    # ----- SHUTDOWN -----
+    try:
+        client.close()
+    except Exception:
+        pass
+
+
+# Create the main app with lifespan handler
+app = FastAPI(lifespan=lifespan)
 
 # Rate limiter: usa l'IP del client (X-Forwarded-For via ingress)
 def _client_ip(request: Request) -> str:
@@ -517,11 +547,9 @@ async def _scheduled_check():
 scheduler = AsyncIOScheduler()
 
 @app.on_event("startup")
-async def _startup_scheduler():
-    if not scheduler.running:
-        scheduler.add_job(_scheduled_check, "interval", minutes=1, id="push_check", replace_existing=True)
-        scheduler.start()
-        logger.info("Push scheduler started (every minute, sends at user-local 8:00)")
+async def _startup_scheduler_legacy():
+    # Stub mantenuto per retro-compatibilità: la logica reale è in `lifespan`.
+    pass
 
 
 @api_router.post("/status", response_model=StatusCheck)
@@ -547,13 +575,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+# NOTA: la logica di startup/shutdown è gestita dal `lifespan` context manager
+# definito all'inizio del file (sostituisce gli on_event deprecati di FastAPI).
