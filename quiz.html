@@ -248,13 +248,14 @@
   .theme-btn {
     flex: 1;
     padding: 8px 10px;
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
     border-radius: 4px;
-    color: var(--text-secondary);
-    transition: background-color 0.2s, color 0.2s;
+    color: var(--text-primary);
+    transition: background-color 0.2s, color 0.2s, border-color .2s;
     min-height: 32px;
     display: flex;
     align-items: center;
@@ -262,8 +263,10 @@
   }
 
   .theme-btn.active {
-    background: var(--bg-secondary);
-    color: var(--accent-primary);
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    border-color: var(--accent-primary);
+    font-weight: 700;
   }
 
   .sidebar-backdrop {
@@ -1934,7 +1937,7 @@
 
             <table class="data-table" id="recapTable"></table>
 
-            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+            <div class="quiz-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; padding-bottom: 60px;">
               <button class="btn" id="saveScoreBtn">Salva punteggio</button>
               <button class="btn btn-outline" id="shareResultBtn">Condividi</button>
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
@@ -2117,6 +2120,49 @@
       <!-- PAGE: SETTINGS -->
       <div class="page" id="page-settings">
         <h2>Impostazioni</h2>
+
+        <!-- ACCOUNT & BACKUP CLOUD -->
+        <div class="card" id="authCard">
+          <p class="small-caps">Account & backup cloud</p>
+          <div id="authLoggedOut">
+            <p style="margin-top: 8px; color: var(--text-secondary); font-size: 14px;">
+              Accedi con email o Google per <strong>salvare i tuoi dati nel cloud</strong> e ritrovarli su qualunque dispositivo.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
+              <button class="btn" id="authSignInGoogleBtn" style="display: inline-flex; align-items: center; gap: 10px; background: #fff; color: #3c4043; border: 1px solid #dadce0;">
+                <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                  <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z" fill="#4285F4"/>
+                  <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/>
+                  <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                  <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+                </svg>
+                Accedi con Google
+              </button>
+              <button class="btn btn-outline" id="authShowEmailBtn">📧 Email / Password</button>
+            </div>
+            <div id="authEmailForm" class="hidden" style="margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border-color);">
+              <input type="email" id="authEmailInput" placeholder="email@esempio.it" autocomplete="email" style="width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+              <input type="password" id="authPasswordInput" placeholder="password (min 6 caratteri)" autocomplete="current-password" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
+              <p id="authError" style="color: var(--error); font-size: 13px; display: none; margin-bottom: 8px;"></p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn" id="authLoginBtn">Accedi</button>
+                <button class="btn btn-outline" id="authSignupBtn">Registrati</button>
+                <button class="btn btn-outline" id="authResetPwdBtn">Password dimenticata?</button>
+              </div>
+            </div>
+          </div>
+          <div id="authLoggedIn" class="hidden">
+            <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--accent-primary); color: var(--bg-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;" id="authAvatar">👤</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700;" id="authUserEmail">—</div>
+                <div style="font-size: 12px; color: var(--text-secondary);" id="authSyncStatus">Dati sincronizzati ✓</div>
+              </div>
+            </div>
+            <button class="btn btn-outline" id="authLogoutBtn" style="margin-top: 12px; width: 100%;">Esci</button>
+          </div>
+        </div>
+
         <div class="card">
           <p class="small-caps">Tema</p>
           <div class="theme-toggle" id="settingsThemeToggle">
@@ -2255,6 +2301,7 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
 <script>
 /* =========================================================
@@ -3236,6 +3283,10 @@ function loadStatsHistory() {
 
 function saveStatsHistory(arr) {
   try { localStorage.setItem(STATS_KEY, JSON.stringify(arr.slice(-500))); } catch {}
+  // Sync con cloud se l'utente è loggato (best-effort, non blocca UI)
+  if (typeof window._saveStatsToCloud === 'function') {
+    setTimeout(() => window._saveStatsToCloud(), 100);
+  }
 }
 
 function trackGameInStats(entry) {
@@ -3536,6 +3587,156 @@ $('saveModalConfirm').addEventListener('click', async () => {
 /* ===== FIREBASE LEADERBOARD ===== */
 let fbDb = null;
 let fbReady = false;
+let fbAuth = null;
+
+/* =========================================================
+   AUTH MODULE: login email/password, Google, sync con cloud
+   - Login OPZIONALE (puoi giocare senza)
+   - Quando fai login: migra localStorage → Firestore (priorità ai dati più recenti)
+   - Da quel momento: cloud è la fonte di verità, localStorage è solo cache
+========================================================= */
+let _authUser = null;
+const AUTH_MIGRATED_FLAG = 'ng-auth-migrated-v1';
+
+async function _migrateLocalToCloud(uid) {
+  if (!fbDb) return;
+  const userRef = fbDb.collection('users').doc(uid);
+  const cloudDoc = await userRef.get();
+  const cloudData = cloudDoc.exists ? cloudDoc.data() : {};
+  const localHistory = JSON.parse(localStorage.getItem('stats-history') || '[]');
+  const localUserName = (() => {
+    try { return JSON.parse(localStorage.getItem('user') || '{}').name || ''; } catch { return ''; }
+  })();
+  const cloudHistory = cloudData.history || [];
+  const seen = new Set();
+  const merged = [...cloudHistory, ...localHistory].filter(h => {
+    if (!h || !h.ts) return false;
+    if (seen.has(h.ts)) return false;
+    seen.add(h.ts);
+    return true;
+  }).sort((a, b) => a.ts - b.ts);
+
+  const payload = {
+    history: merged.slice(-500),
+    name: cloudData.name || localUserName || '',
+    last_sync: firebase.firestore.FieldValue.serverTimestamp(),
+    email: _authUser?.email || cloudData.email || null,
+  };
+  await userRef.set(payload, { merge: true });
+  localStorage.setItem('stats-history', JSON.stringify(merged));
+  localStorage.setItem(AUTH_MIGRATED_FLAG, '1');
+  if ($('authSyncStatus')) $('authSyncStatus').textContent = `Sincronizzato (${merged.length} partite)`;
+}
+
+async function _loadFromCloud(uid) {
+  if (!fbDb) return;
+  const doc = await fbDb.collection('users').doc(uid).get();
+  if (doc.exists) {
+    const d = doc.data();
+    if (Array.isArray(d.history)) localStorage.setItem('stats-history', JSON.stringify(d.history));
+    if (d.name) {
+      try {
+        const u = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!u.name || u.name !== d.name) { u.name = d.name; localStorage.setItem('user', JSON.stringify(u)); }
+      } catch {}
+    }
+  }
+}
+
+async function _saveStatsToCloud() {
+  if (!_authUser || !fbDb) return;
+  try {
+    const arr = JSON.parse(localStorage.getItem('stats-history') || '[]');
+    await fbDb.collection('users').doc(_authUser.uid).set({
+      history: arr.slice(-500),
+      last_sync: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    if ($('authSyncStatus')) $('authSyncStatus').textContent = `Sincronizzato (${arr.length} partite) ✓`;
+  } catch (e) {
+    console.warn('Cloud sync fail', e);
+    if ($('authSyncStatus')) $('authSyncStatus').textContent = 'Sync in errore';
+  }
+}
+window._saveStatsToCloud = _saveStatsToCloud;
+
+function _showAuthError(msg) {
+  const el = $('authError');
+  if (el) { el.textContent = msg; el.style.display = msg ? '' : 'none'; }
+}
+
+function _renderAuthUI() {
+  const u = _authUser;
+  if (u) {
+    if ($('authLoggedOut')) $('authLoggedOut').classList.add('hidden');
+    if ($('authLoggedIn')) $('authLoggedIn').classList.remove('hidden');
+    if ($('authUserEmail')) $('authUserEmail').textContent = u.email || u.displayName || 'Utente';
+    if ($('authAvatar')) {
+      if (u.photoURL) $('authAvatar').innerHTML = `<img src="${u.photoURL}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover" />`;
+      else $('authAvatar').textContent = (u.email || u.displayName || '?').charAt(0).toUpperCase();
+    }
+  } else {
+    if ($('authLoggedOut')) $('authLoggedOut').classList.remove('hidden');
+    if ($('authLoggedIn')) $('authLoggedIn').classList.add('hidden');
+    if ($('authEmailForm')) $('authEmailForm').classList.add('hidden');
+    _showAuthError('');
+  }
+}
+
+function _authErrorMsg(e) {
+  const map = {
+    'auth/email-already-in-use': 'Email già registrata. Usa "Accedi" o "Password dimenticata".',
+    'auth/invalid-email': 'Email non valida.',
+    'auth/weak-password': 'Password troppo debole (min 6 caratteri).',
+    'auth/user-not-found': 'Utente non trovato. Vuoi registrarti?',
+    'auth/wrong-password': 'Password errata.',
+    'auth/popup-closed-by-user': 'Login annullato.',
+    'auth/network-request-failed': 'Connessione internet assente o instabile.',
+  };
+  return map[e?.code] || (e?.message || 'Errore sconosciuto.');
+}
+
+function _bindAuthListeners() {
+  if (!fbAuth) return;
+  fbAuth.onAuthStateChanged(async (user) => {
+    _authUser = user;
+    _renderAuthUI();
+    if (user) {
+      try {
+        await _migrateLocalToCloud(user.uid);
+        await _loadFromCloud(user.uid);
+        if (typeof renderStats === 'function') renderStats();
+        if (typeof renderBadges === 'function') renderBadges();
+        showToast('Accesso effettuato. Dati sincronizzati ✓');
+      } catch (e) { console.error('Sync error:', e); }
+    }
+  });
+  if ($('authShowEmailBtn')) $('authShowEmailBtn').addEventListener('click', () => $('authEmailForm').classList.toggle('hidden'));
+  if ($('authSignInGoogleBtn')) $('authSignInGoogleBtn').addEventListener('click', async () => {
+    _showAuthError(''); const provider = new firebase.auth.GoogleAuthProvider();
+    try { await fbAuth.signInWithPopup(provider); } catch (e) { _showAuthError(_authErrorMsg(e)); }
+  });
+  if ($('authLoginBtn')) $('authLoginBtn').addEventListener('click', async () => {
+    _showAuthError('');
+    try { await fbAuth.signInWithEmailAndPassword($('authEmailInput').value.trim(), $('authPasswordInput').value); }
+    catch (e) { _showAuthError(_authErrorMsg(e)); }
+  });
+  if ($('authSignupBtn')) $('authSignupBtn').addEventListener('click', async () => {
+    _showAuthError('');
+    try { await fbAuth.createUserWithEmailAndPassword($('authEmailInput').value.trim(), $('authPasswordInput').value); }
+    catch (e) { _showAuthError(_authErrorMsg(e)); }
+  });
+  if ($('authResetPwdBtn')) $('authResetPwdBtn').addEventListener('click', async () => {
+    _showAuthError(''); const email = $('authEmailInput').value.trim();
+    if (!email) { _showAuthError('Inserisci la tua email.'); return; }
+    try { await fbAuth.sendPasswordResetEmail(email); showToast('Email di reset inviata.'); }
+    catch (e) { _showAuthError(_authErrorMsg(e)); }
+  });
+  if ($('authLogoutBtn')) $('authLogoutBtn').addEventListener('click', async () => {
+    if (confirm('Vuoi davvero uscire? I dati locali resteranno sul telefono ma non saranno più sincronizzati col cloud.')) {
+      await fbAuth.signOut(); showToast('Disconnesso.');
+    }
+  });
+}
 
 function initFirebase() {
   if (fbReady) return;
@@ -3543,7 +3744,12 @@ function initFirebase() {
   try {
     firebase.initializeApp(firebaseConfig);
     fbDb = firebase.firestore();
+    if (firebase.auth) {
+      fbAuth = firebase.auth();
+      fbAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+    }
     fbReady = true;
+    _bindAuthListeners();
   } catch (e) { console.error('Firebase init error', e); }
 }
 initFirebase();
@@ -3774,40 +3980,53 @@ async function refreshLeaderboards() {
   const today = todayISO();
   const currentMk = monthKey(today);
   $('lbDayDate').textContent = fmtDateIT(today);
-  // Popola il selettore mese: ultimi 24 mesi (puoi sempre andare indietro)
-  populateMonthSelect(currentMk);
-  const selectedMk = $('lbMonthSelect').value || currentMk;
-  $('lbMonthLabel').textContent = selectedMk;
 
   const code = state.user.activeGroupCode;
+
+  // Recupera tutti i mesi giocati nel gruppo (una sola volta) e popola il select
+  fbDb.collection('scores')
+    .where('groupCode', '==', code)
+    .get()
+    .then(snap => {
+      const months = new Set();
+      snap.forEach(d => { const mk = d.data().monthKey; if (mk) months.add(mk); });
+      // Aggiungi sempre il mese corrente, anche se vuoto
+      months.add(currentMk);
+      const sorted = [...months].sort().reverse();
+      populateMonthSelect(sorted, currentMk);
+      const selectedMk = $('lbMonthSelect').value || currentMk;
+      $('lbMonthLabel').textContent = selectedMk;
+
+      _lbMonthUnsub = fbDb.collection('scores')
+        .where('groupCode', '==', code)
+        .where('monthKey', '==', selectedMk)
+        .onSnapshot(s => renderMonthTable(s.docs.map(d => d.data())));
+    })
+    .catch(err => {
+      console.error('Errore caricamento mesi:', err);
+      populateMonthSelect([currentMk], currentMk);
+    });
+
   _lbDayUnsub = fbDb.collection('scores')
     .where('groupCode', '==', code)
     .where('dateISO', '==', today)
     .onSnapshot(snap => renderDayTable(snap.docs.map(d => d.data())));
-
-  _lbMonthUnsub = fbDb.collection('scores')
-    .where('groupCode', '==', code)
-    .where('monthKey', '==', selectedMk)
-    .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
 }
 
-function populateMonthSelect(currentMk) {
+function populateMonthSelect(monthKeys, currentMk) {
   const sel = $('lbMonthSelect');
   if (!sel) return;
-  // Genera ultimi 24 mesi a partire da quello corrente
-  const months = [];
-  const now = new Date();
-  for (let i = 0; i < 24; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const mk = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  // Converti i mk in "Aprile 2026" etc.
+  const items = monthKeys.map(mk => {
+    const [y, m] = mk.split('-').map(Number);
+    const d = new Date(y, m - 1, 1);
     const itName = d.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
-    months.push({ mk, label: itName.charAt(0).toUpperCase() + itName.slice(1) });
-  }
-  // Salva il valore precedentemente selezionato (se esiste)
+    const label = itName.charAt(0).toUpperCase() + itName.slice(1);
+    return { mk, label: label + (mk === currentMk ? ' (attuale)' : '') };
+  });
   const prev = sel.value;
-  sel.innerHTML = months.map(m => `<option value="${m.mk}">${m.label}${m.mk === currentMk ? ' (attuale)' : ''}</option>`).join('');
-  sel.value = (prev && months.some(m => m.mk === prev)) ? prev : currentMk;
-  // Listener per cambio mese (solo una volta)
+  sel.innerHTML = items.map(m => `<option value="${m.mk}">${m.label}</option>`).join('');
+  sel.value = (prev && items.some(m => m.mk === prev)) ? prev : currentMk;
   if (!sel._ngBound) {
     sel._ngBound = true;
     sel.addEventListener('change', () => {
