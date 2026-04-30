@@ -431,12 +431,12 @@
   .app-content {
     flex: 1;
     overflow-y: auto;
-    /* bottom-nav 68px + safe-area + 100px margine sicurezza per pulsanti */
-    padding: 18px 20px calc(170px + env(safe-area-inset-bottom, 0px));
+    /* Garantisce sempre 40px di margine sopra la bottom-nav */
+    padding: 18px 20px calc(var(--bn-height) + 40px);
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
-    scroll-padding-bottom: 200px;
+    scroll-padding-bottom: calc(var(--bn-height) + 60px);
   }
   /* Pulsanti sticky in fondo al quiz: extra margine per non finire mai sotto bottom-nav */
   .quiz-actions, #nextBtn, .final .row {
@@ -1224,6 +1224,105 @@
   }
 
   /* Logo nella masthead */
+  /* (definito sotto dopo i popup) */
+
+  /* =========================================================
+     POPUP "NUOVO BADGE SBLOCCATO"
+  ========================================================= */
+  .badge-unlock-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9998;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .badge-unlock-overlay.show { display: flex; animation: ngFadeInUp .25s ease both; }
+  .badge-unlock-card {
+    background: var(--bg-secondary, #fff);
+    color: var(--text-primary);
+    border: 2px solid var(--accent-primary);
+    border-radius: var(--radius);
+    padding: 28px 22px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    animation: ngBadgePop .55s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative;
+    overflow: hidden;
+  }
+  .badge-unlock-rays {
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(rgba(251,191,36,0.05) 0deg 6deg, transparent 6deg 14deg);
+    animation: ngRaysSpin 30s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes ngRaysSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .badge-unlock-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 18px;
+    color: var(--accent-primary);
+    position: relative;
+  }
+  .badge-unlock-item {
+    display: flex; gap: 14px; align-items: center;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .badge-unlock-emoji { font-size: 50px; line-height: 1; flex-shrink: 0; }
+  .badge-unlock-info { flex: 1; min-width: 0; }
+  .badge-unlock-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+  }
+  .badge-unlock-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+  .badge-unlock-quote {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  #badgeUnlockClose { width: 100%; margin-top: 14px; position: relative; }
+
+  /* Selettore mese classifica */
+  .month-picker {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .month-picker label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .month-picker select {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+  }
+
+  /* Logo nella masthead (continua) */
   .masthead-logo {
     width: 56px;
     height: 56px;
@@ -1237,7 +1336,6 @@
   [data-theme="dark"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
   @media (prefers-color-scheme: dark) {
     [data-theme="system"] .masthead-logo { filter: invert(1) hue-rotate(180deg); box-shadow: 0 2px 8px rgba(255,255,255,0.06); }
-  }
   }
 
   .table-error {
@@ -1284,20 +1382,24 @@
     box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
   }
 
-  /* ===== BOTTOM NAV ===== */
+  /* ===== BOTTOM NAV (fissa, intoccabile dal contenuto) ===== */
+  :root {
+    --bn-height: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
   .bottom-nav {
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 68px;
+    height: var(--bn-height);
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-around;
     z-index: 1400;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
   }
 
   .bottom-nav-item {
@@ -1923,6 +2025,10 @@
 
           <div class="section">
             <h2>Classifica mensile</h2>
+            <div class="month-picker">
+              <label for="lbMonthSelect">Mese:</label>
+              <select id="lbMonthSelect"></select>
+            </div>
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
@@ -2953,6 +3059,9 @@ function satiricalComment(score, total) {
 }
 
 function finishQuiz() {
+  // Snapshot dei badge sbloccati prima di salvare la nuova partita
+  const beforeBadges = computeUnlockedBadgeIds();
+
   $('quizRunning').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
   $('finalScoreVersus').textContent = `${state.score}:${state.questions.length - state.score}`;
@@ -2998,6 +3107,59 @@ function finishQuiz() {
   if (state.score === state.questions.length) {
     setTimeout(() => launchConfetti(), 450);
   }
+
+  // Calcola nuovi badge sbloccati DOPO aver tracciato la partita e mostra popup
+  setTimeout(() => {
+    const afterBadges = computeUnlockedBadgeIds();
+    const newlyUnlocked = afterBadges.filter(id => !beforeBadges.includes(id));
+    if (newlyUnlocked.length) {
+      showBadgeUnlockPopup(newlyUnlocked);
+    }
+  }, 600);
+}
+
+/* Calcola gli ID di tutti i badge attualmente sbloccati */
+function computeUnlockedBadgeIds() {
+  if (typeof getAllBadgesWithState !== 'function') return [];
+  return getAllBadgesWithState().filter(b => b.ok).map(b => b.id);
+}
+
+/* Popup per nuovi badge sbloccati */
+function showBadgeUnlockPopup(badgeIds) {
+  if (typeof getAllBadgesWithState !== 'function') return;
+  const all = getAllBadgesWithState();
+  const unlocked = all.filter(b => badgeIds.includes(b.id));
+  if (!unlocked.length) return;
+  const extractEmoji = (n) => { const m = n.match(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)/u); return m ? m[1] : '🏅'; };
+  const cleanName = (n) => n.replace(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)\s*/u, '');
+
+  let modal = document.getElementById('badgeUnlockModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'badgeUnlockModal';
+    modal.className = 'badge-unlock-overlay';
+    modal.innerHTML = `
+      <div class="badge-unlock-card">
+        <div class="badge-unlock-rays"></div>
+        <div class="badge-unlock-title">🎉 NUOVO BADGE!</div>
+        <div id="badgeUnlockList"></div>
+        <button class="btn btn-primary" id="badgeUnlockClose">Continua</button>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.querySelector('#badgeUnlockClose').addEventListener('click', () => modal.classList.remove('show'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('show'); });
+  }
+  modal.querySelector('#badgeUnlockList').innerHTML = unlocked.map(b => `
+    <div class="badge-unlock-item">
+      <div class="badge-unlock-emoji">${extractEmoji(b.name)}</div>
+      <div class="badge-unlock-info">
+        <div class="badge-unlock-name">${escapeHtml(cleanName(b.name))}</div>
+        <div class="badge-unlock-desc">${escapeHtml(b.desc || '')}</div>
+        ${b.quote ? `<div class="badge-unlock-quote">${escapeHtml(b.quote)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+  modal.classList.add('show');
 }
 
 function launchConfetti() {
@@ -3172,9 +3334,8 @@ function collectBadgeStats(history) {
   return { totalGames, best, streak, hasBlackout, hasCronista, hasCaporedattore, hasDirettore, hasShared, perPaperCorrect };
 }
 
-function renderBadges() {
-  const grid = $('badgeGrid');
-  if (!grid) return;
+/* Funzione helper: ritorna tutti i badge con il loro stato (sbloccato o meno) */
+function getAllBadgesWithState() {
   const history = loadStatsHistory();
   const st = collectBadgeStats(history);
   const badges = [
@@ -3193,18 +3354,24 @@ function renderBadges() {
     { id: 'portavoce', name: '📣 Portavoce', icon: 'megaphone', ok: st.hasShared, desc: 'Condividi il risultato almeno una volta', quote: '“Hai urlato la notizia più forte del megafono di un comizio.”' }
   ];
   const paperBadges = [
-  { id: 'fatto', name: '📰 Il Fattista', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina "Il Fatto Quotidiano" 10 volte', quote: '“Fiuti la polemica come un segugio da prima pagina.”' },
-  { id: 'sole', name: '🌞 L’Economo', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina "Il Sole 24 Ore" 10 volte', quote: '“Capisci i grafici anche senza un analista accanto.”' },
-  { id: 'avvenire', name: '⛪ Il Devoto', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina "Avvenire" 10 volte', quote: '“Hai ricevuto più illuminazioni tu che la redazione in un mese.”' },
-  { id: 'messaggero', name: '🏛️ Il Capitolino', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina "Il Messaggero" 10 volte', quote: '“Conosci Roma così bene che ti hanno dato le chiavi del raccordo.”' },
-  { id: 'corriere', name: '🗞️ Il Corrierista', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina "Corriere della Sera" 10 volte', quote: '“Riconosci il Corriere dal font come un vero milanese DOC.”' },
-  { id: 'stampa', name: '📰 Il Torinese', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina "La Stampa" 10 volte', quote: '“Individui Torino anche senza la Mole: sei un GPS editoriale.”' },
-  { id: 'libero', name: '📢 Il Provocatore', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina "Libero" 10 volte', quote: '“Fiuti la polemica prima ancora che venga scritta.”' },
-  { id: 'manifesto', name: '✊ Il Militante', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina "Il Manifesto" 10 volte', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
-  { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
-  { id: 'repubblica', name: '📕 Il Repubblicano', icon: 'book', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
-];
-  const allBadges = [...badges, ...paperBadges];
+    { id: 'fatto', name: '📰 Il Fattista', icon: 'newspaper', ok: (st.perPaperCorrect.fatto || 0) >= 10, desc: 'Indovina "Il Fatto Quotidiano" 10 volte', quote: '“Fiuti la polemica come un segugio da prima pagina.”' },
+    { id: 'sole', name: '🌞 L’Economo', icon: 'sun', ok: (st.perPaperCorrect.sole || 0) >= 10, desc: 'Indovina "Il Sole 24 Ore" 10 volte', quote: '“Capisci i grafici anche senza un analista accanto.”' },
+    { id: 'avvenire', name: '⛪ Il Devoto', icon: 'church', ok: (st.perPaperCorrect.avvenire || 0) >= 10, desc: 'Indovina "Avvenire" 10 volte', quote: '“Hai ricevuto più illuminazioni tu che la redazione in un mese.”' },
+    { id: 'messaggero', name: '🏛️ Il Capitolino', icon: 'building-2', ok: (st.perPaperCorrect.messaggero || 0) >= 10, desc: 'Indovina "Il Messaggero" 10 volte', quote: '“Conosci Roma così bene che ti hanno dato le chiavi del raccordo.”' },
+    { id: 'corriere', name: '🗞️ Il Corrierista', icon: 'scroll-text', ok: (st.perPaperCorrect.corriere || 0) >= 10, desc: 'Indovina "Corriere della Sera" 10 volte', quote: '“Riconosci il Corriere dal font come un vero milanese DOC.”' },
+    { id: 'stampa', name: '📰 Il Torinese', icon: 'file-text', ok: (st.perPaperCorrect.stampa || 0) >= 10, desc: 'Indovina "La Stampa" 10 volte', quote: '“Individui Torino anche senza la Mole: sei un GPS editoriale.”' },
+    { id: 'libero', name: '📢 Il Provocatore', icon: 'megaphone', ok: (st.perPaperCorrect.libero || 0) >= 10, desc: 'Indovina "Libero" 10 volte', quote: '“Fiuti la polemica prima ancora che venga scritta.”' },
+    { id: 'manifesto', name: '✊ Il Militante', icon: 'flag', ok: (st.perPaperCorrect.manifesto || 0) >= 10, desc: 'Indovina "Il Manifesto" 10 volte', quote: '“Hai colto la linea editoriale più rossa del titolo stesso.”' },
+    { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
+    { id: 'repubblica', name: '📕 Il Repubblicano', icon: 'book', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
+  ];
+  return [...badges, ...paperBadges];
+}
+
+function renderBadges() {
+  const grid = $('badgeGrid');
+  if (!grid) return;
+  const allBadges = getAllBadgesWithState();
   // Estrae l'emoji dal name (primo carattere prima dello spazio)
   const extractEmoji = (name) => {
     const m = name.match(/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)/u);
@@ -3228,9 +3395,9 @@ function renderBadges() {
   // Render della griglia completa con nuovo stile
   grid.innerHTML = allBadges.map(b => `
     <div class="badge-card-v2 ${b.ok ? 'unlocked' : 'locked'}">
-      <span class="badge-emoji">${extractEmoji(b.name)}</span>
-      <div class="badge-title">${escapeHtml(cleanName(b.name))}</div>
-      <div class="badge-desc">${escapeHtml(b.desc || '')}</div>
+      <span class="badge-emoji">${b.ok ? extractEmoji(b.name) : '🔒'}</span>
+      <div class="badge-title">${b.ok ? escapeHtml(cleanName(b.name)) : '???'}</div>
+      ${b.ok ? `<div class="badge-desc">${escapeHtml(b.desc || '')}</div>` : '<div class="badge-desc">Continua a giocare per scoprirlo</div>'}
       <div class="badge-quote">${escapeHtml(b.quote || '')}</div>
       <div class="badge-state">${b.ok ? '✓ Sbloccato' : 'Bloccato'}</div>
     </div>
@@ -3605,9 +3772,12 @@ async function refreshLeaderboards() {
   if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
 
   const today = todayISO();
-  const mk = monthKey(today);
+  const currentMk = monthKey(today);
   $('lbDayDate').textContent = fmtDateIT(today);
-  $('lbMonthLabel').textContent = mk;
+  // Popola il selettore mese: ultimi 24 mesi (puoi sempre andare indietro)
+  populateMonthSelect(currentMk);
+  const selectedMk = $('lbMonthSelect').value || currentMk;
+  $('lbMonthLabel').textContent = selectedMk;
 
   const code = state.user.activeGroupCode;
   _lbDayUnsub = fbDb.collection('scores')
@@ -3617,8 +3787,41 @@ async function refreshLeaderboards() {
 
   _lbMonthUnsub = fbDb.collection('scores')
     .where('groupCode', '==', code)
-    .where('monthKey', '==', mk)
+    .where('monthKey', '==', selectedMk)
     .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+}
+
+function populateMonthSelect(currentMk) {
+  const sel = $('lbMonthSelect');
+  if (!sel) return;
+  // Genera ultimi 24 mesi a partire da quello corrente
+  const months = [];
+  const now = new Date();
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mk = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const itName = d.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' });
+    months.push({ mk, label: itName.charAt(0).toUpperCase() + itName.slice(1) });
+  }
+  // Salva il valore precedentemente selezionato (se esiste)
+  const prev = sel.value;
+  sel.innerHTML = months.map(m => `<option value="${m.mk}">${m.label}${m.mk === currentMk ? ' (attuale)' : ''}</option>`).join('');
+  sel.value = (prev && months.some(m => m.mk === prev)) ? prev : currentMk;
+  // Listener per cambio mese (solo una volta)
+  if (!sel._ngBound) {
+    sel._ngBound = true;
+    sel.addEventListener('change', () => {
+      const newMk = sel.value;
+      $('lbMonthLabel').textContent = newMk;
+      if (_lbMonthUnsub) { _lbMonthUnsub(); _lbMonthUnsub = null; }
+      const code = state.user?.activeGroupCode;
+      if (!code) return;
+      _lbMonthUnsub = fbDb.collection('scores')
+        .where('groupCode', '==', code)
+        .where('monthKey', '==', newMk)
+        .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+    });
+  }
 }
 
 function renderDayTable(rows) {
@@ -3779,8 +3982,13 @@ window.addEventListener('popstate', (e) => {
     return;
   }
   
-  // 4) Altrimenti: navigazione normale (torna indietro nella storia)
-  // Non fare nulla di speciale - il browser gestisce il back normalmente
+  // 4) Altrimenti: torna alla schermata Quiz (se non ci sei già)
+  const currentPage = document.querySelector('.page.active')?.id;
+  if (currentPage && currentPage !== 'page-quiz') {
+    if (typeof openPage === 'function') openPage('quiz');
+    NG_HISTORY.push('quiz-page');
+  }
+  // Se sei già in quiz e premi back → il browser fa il default (esce)
 });
 
 NG_HISTORY.push('home');
