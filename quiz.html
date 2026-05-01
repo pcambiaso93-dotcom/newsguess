@@ -1350,6 +1350,7 @@
     flex-wrap: wrap;
   }
   .month-picker label {
+    font-family: 'Libre Baskerville', Georgia, serif;
     font-size: 13px;
     color: var(--text-secondary);
     font-weight: 600;
@@ -1360,8 +1361,15 @@
     border-radius: 6px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-family: 'Libre Baskerville', serif;
+    font-family: 'Libre Baskerville', Georgia, serif;
     font-size: 14px;
+  }
+  /* Le <option> in Chrome Android ereditano il font di sistema: forziamo il font custom. */
+  .month-picker select option {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 14px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
   }
 
   /* Logo nella masthead (continua) */
