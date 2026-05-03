@@ -1361,15 +1361,94 @@
     border-radius: 6px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-family: 'Libre Baskerville', Georgia, serif;
+    font-family: 'Libre Baskerville', Georgia, serif !important;
     font-size: 14px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
   }
-  /* Le <option> in Chrome Android ereditano il font di sistema: forziamo il font custom. */
   .month-picker select option {
     font-family: 'Libre Baskerville', Georgia, serif;
     font-size: 14px;
     background: var(--bg-secondary);
     color: var(--text-primary);
+  }
+  /* Custom dropdown: riproduce un select ma con controllo totale sul font.
+     Usato quando vogliamo garantire il font custom anche su browser mobile
+     che ignorano font-family su <select>. */
+  .cdd {
+    position: relative;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 14px;
+  }
+  .cdd-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    text-align: left;
+    padding: 8px 34px 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+    position: relative;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .cdd-trigger::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 1.6px solid var(--text-secondary);
+    border-bottom: 1.6px solid var(--text-secondary);
+    transform: translateY(-65%) rotate(45deg);
+    transition: transform .15s;
+  }
+  .cdd.open .cdd-trigger::after { transform: translateY(-30%) rotate(-135deg); }
+  .cdd-menu {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: var(--shadow-md);
+    padding: 4px 0;
+    font-family: 'Libre Baskerville', Georgia, serif;
+  }
+  .cdd.open .cdd-menu { display: block; }
+  .cdd-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: 'Libre Baskerville', Georgia, serif;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    display: block;
+  }
+  .cdd-option:hover, .cdd-option.focus { background: var(--bg-tertiary); }
+  .cdd-option.selected {
+    background: color-mix(in srgb, var(--accent-primary) 15%, transparent);
+    font-weight: 700;
   }
 
   /* Logo nella masthead (continua) */
@@ -2078,7 +2157,12 @@
             <h2>Classifica mensile</h2>
             <div class="month-picker">
               <label for="lbMonthSelect">Mese:</label>
-              <select id="lbMonthSelect"></select>
+              <div class="cdd" id="lbMonthCdd" style="min-width: 180px;">
+                <button type="button" class="cdd-trigger" id="lbMonthTrigger" aria-haspopup="listbox" aria-expanded="false">—</button>
+                <div class="cdd-menu" role="listbox" id="lbMonthMenu"></div>
+              </div>
+              <!-- Select nascosto per mantenere l'API value/change -->
+              <select id="lbMonthSelect" style="display:none;" aria-hidden="true" tabindex="-1"></select>
             </div>
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
@@ -4482,6 +4566,58 @@ function populateMonthSelect(monthKeys, currentMk) {
         .where('groupCode', '==', code)
         .where('monthKey', '==', newMk)
         .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+    });
+  }
+
+  // Sincronizza il custom dropdown (.cdd) così da avere il font coerente
+  const cdd = document.getElementById('lbMonthCdd');
+  const trigger = document.getElementById('lbMonthTrigger');
+  const menu = document.getElementById('lbMonthMenu');
+  if (!cdd || !trigger || !menu) return;
+
+  const renderTrigger = () => {
+    const curr = items.find(x => x.mk === sel.value) || items[0];
+    if (curr) trigger.textContent = curr.label;
+  };
+  renderTrigger();
+
+  menu.innerHTML = items.map(m =>
+    `<button type="button" class="cdd-option${m.mk === sel.value ? ' selected' : ''}" role="option" data-mk="${m.mk}">${escapeHtml(m.label)}</button>`
+  ).join('');
+
+  menu.querySelectorAll('.cdd-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const mk = opt.dataset.mk;
+      sel.value = mk;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      renderTrigger();
+      menu.querySelectorAll('.cdd-option').forEach(o => o.classList.toggle('selected', o.dataset.mk === mk));
+      cdd.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  if (!cdd._ngBound) {
+    cdd._ngBound = true;
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = !cdd.classList.contains('open');
+      // Chiudi altri dropdown aperti
+      document.querySelectorAll('.cdd.open').forEach(c => c.classList.remove('open'));
+      cdd.classList.toggle('open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!cdd.contains(e.target)) {
+        cdd.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && cdd.classList.contains('open')) {
+        cdd.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 }
