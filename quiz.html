@@ -1767,18 +1767,6 @@
   .archive-month-body {
     padding-top: 6px;
   }
-  /* banner legacy (usato in showPaperDetail, rimane piatto) */
-  .archive-month-banner {
-    font-family: 'Playfair Display', serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    border-bottom: 1px solid var(--border-color);
-    padding: 14px 0 6px;
-    margin: 8px 0 10px;
-  }
   .archive-holiday-note {
     display: inline-flex;
     align-items: center;
@@ -3175,35 +3163,68 @@ function loadArchiveBrowserPapers() {
 
 async function showPaperDetail(np) {
   const cont = $('abPapersList');
-  cont.innerHTML = `<div><button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${np.name}</h3><p>Caricamento…</p></div>`;
+  cont.innerHTML = `<div><button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${escapeHtml(np.name)}</h3><p>Caricamento…</p></div>`;
   try {
     const r = await fetch(`/api/archive-paper-dates?slug=${np.slug}`);
     const data = await r.json();
-    let html = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${np.name}</h3>`;
+
+    // Header fisso con tasto indietro
+    cont.innerHTML = '';
+    const header = document.createElement('div');
+    header.style.marginBottom = '16px';
+    header.innerHTML = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserPapers()">← Indietro</button><h3 style="margin-top: 16px;">${escapeHtml(np.name)}</h3>`;
+    cont.appendChild(header);
+
     if (!data.items?.length) {
-      html += '<p style="color:var(--text-tertiary);font-style:italic">Nessuna edizione archiviata.</p>';
-    } else {
-      let currentMonth = null;
-      data.items.forEach(it => {
-        const monthKey = it.date.slice(0, 7);
-        if (monthKey !== currentMonth) {
-          currentMonth = monthKey;
-          html += `<div class="archive-month-banner">${escapeHtml(fmtMonthIT(monthKey))}</div>`;
-        }
+      const empty = document.createElement('p');
+      empty.style.cssText = 'color:var(--text-tertiary);font-style:italic';
+      empty.textContent = 'Nessuna edizione archiviata.';
+      cont.appendChild(empty);
+      return;
+    }
+
+    // Raggruppa per mese
+    const byMonth = {};
+    const monthOrder = [];
+    const currentMonth = todayISO().slice(0, 7);
+    data.items.forEach(it => {
+      const mk = it.date.slice(0, 7);
+      if (!byMonth[mk]) { byMonth[mk] = []; monthOrder.push(mk); }
+      byMonth[mk].push(it);
+    });
+
+    monthOrder.forEach(mk => {
+      const details = document.createElement('details');
+      details.className = 'archive-month-accordion';
+      if (mk === currentMonth) details.open = true;
+
+      const summary = document.createElement('summary');
+      summary.textContent = fmtMonthIT(mk);
+      details.appendChild(summary);
+
+      const body = document.createElement('div');
+      body.className = 'archive-month-body';
+
+      byMonth[mk].forEach(it => {
         const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
-        const holiday = getHolidayName(it.date);
-        html += `<div class="card card-small archive-row" onclick="openLightbox('${imgUrl}')">
+        const row = document.createElement('div');
+        row.className = 'card card-small archive-row';
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', () => openLightbox(imgUrl));
+        row.innerHTML = `
           <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
           <div class="archive-info">
-            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}${holiday ? ` <span style="font-size:11px; color: var(--warning); font-style: italic; font-weight: 400;">(${escapeHtml(holiday)})</span>` : ''}</div>
+            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
             ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
             <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
             ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>
-        </div>`;
+          </div>`;
+        body.appendChild(row);
       });
-    }
-    cont.innerHTML = html;
+
+      details.appendChild(body);
+      cont.appendChild(details);
+    });
   } catch (e) { cont.innerHTML = `<p style="color:var(--error)">Errore: ${e.message}</p>`; }
 }
 
