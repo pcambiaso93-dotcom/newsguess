@@ -2200,11 +2200,12 @@
           <div class="section">
             <p class="small-caps">I tuoi gruppi</p>
             <div class="pills-container" id="groupPills"></div>
-            <div style="display: flex; gap: 10px; margin-top: 16px;">
-              <button class="btn btn-outline" id="lbAddJoinBtn">+ Unisciti a un altro</button>
-              <button class="btn btn-outline" id="lbAddCreateBtn">+ Crea nuovo</button>
+            <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+              <button class="btn btn-outline" id="lbAddJoinBtn">+ Aggiungi gruppo</button>
               <button class="btn btn-outline" id="lbRenameGroupBtn">Rinomina gruppo</button>
-              <button class="btn" id="lbShareInviteBtn" style="gap: 6px;"><i data-lucide="share-2"></i> Invita</button>
+            </div>
+            <div style="margin-top: 10px;">
+              <button class="btn btn-outline" id="lbShareInviteBtn" style="gap: 6px; display: inline-flex; align-items: center;"><i data-lucide="share-2"></i> Invita amici al gruppo</button>
             </div>
           </div>
 
@@ -4743,14 +4744,11 @@ $('lbJoinBtn').addEventListener('click', async () => {
   }
 });
 
+// "+ Aggiungi gruppo" → apre il form con le tab Unisciti / Crea
 $('lbAddJoinBtn').addEventListener('click', () => {
   showLBLogin();
-  document.querySelector('[data-lbtab="join"]').click();
-});
-
-$('lbAddCreateBtn').addEventListener('click', () => {
-  showLBLogin();
-  document.querySelector('[data-lbtab="create"]').click();
+  // mostra di default la tab "unisciti", l'utente può switchare a "crea"
+  document.querySelector('[data-lbtab="join"]')?.click();
 });
 
 /* ===== SHARE INVITO GRUPPO ===== */
