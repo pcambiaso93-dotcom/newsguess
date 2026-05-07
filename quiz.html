@@ -1730,6 +1730,42 @@
     margin-bottom: 14px;
   }
 
+  /* ===== BANNER MESI ARCHIVIO ===== */
+  .archive-month-banner {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 0 6px;
+    margin: 8px 0 10px;
+  }
+  .archive-holiday-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--warning);
+    margin-top: 4px;
+  }
+
+  /* ===== RIGHE RECAP CLICCABILI ===== */
+  .recap-row-click {
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .recap-row-click:hover {
+    background: var(--bg-tertiary) !important;
+  }
+  .recap-row-click td:last-child::after {
+    content: ' 🔍';
+    font-size: 11px;
+    opacity: 0.5;
+  }
+
   /* ===== UTILITIES ===== */
   .hidden {
     display: none !important;
@@ -2143,6 +2179,7 @@
               <button class="btn btn-outline" id="lbAddJoinBtn">+ Unisciti a un altro</button>
               <button class="btn btn-outline" id="lbAddCreateBtn">+ Crea nuovo</button>
               <button class="btn btn-outline" id="lbRenameGroupBtn">Rinomina gruppo</button>
+              <button class="btn" id="lbShareInviteBtn" style="gap: 6px;"><i data-lucide="share-2"></i> Invita</button>
             </div>
           </div>
 
@@ -2367,6 +2404,18 @@
     <div class="modal-row">
       <button class="btn btn-outline" id="saveModalCancel">Annulla</button>
       <button class="btn" id="saveModalConfirm">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECAP DETAIL MODAL (click su riga riepilogo) -->
+<div class="modal-overlay" id="recapDetailModal">
+  <div class="modal">
+    <p class="small-caps" id="rdmPaperLabel" style="margin-bottom: 6px;"></p>
+    <div id="rdmOutcome" style="font-size: 17px; font-weight: 700; margin-bottom: 16px;"></div>
+    <div id="rdmHeadline"></div>
+    <div class="modal-row" style="margin-top: 20px;">
+      <button class="btn" onclick="closeModal('recapDetailModal')">Chiudi</button>
     </div>
   </div>
 </div>
@@ -2865,6 +2914,29 @@ if (!isStandalone() && (isIosDevice() || isAndroidDevice())) {
 }
 
 /* ===== ARCHIVIO ===== */
+// Festività italiane in cui i quotidiani non escono (chiave 'MM-DD')
+const ITALIAN_HOLIDAYS = {
+  '01-01': 'Capodanno',
+  '01-06': 'Epifania',
+  '04-25': 'Festa della Liberazione',
+  '05-01': 'Festa dei Lavoratori',
+  '06-02': 'Festa della Repubblica',
+  '08-15': 'Ferragosto',
+  '11-01': 'Ognissanti',
+  '12-08': 'Immacolata Concezione',
+  '12-25': 'Natale',
+  '12-26': 'Santo Stefano',
+};
+function getHolidayName(dateISO) {
+  return ITALIAN_HOLIDAYS[dateISO.slice(5)] || null;
+}
+
+// Formatta 'YYYY-MM' in 'Mese YYYY' in italiano
+function fmtMonthIT(ym) {
+  const [y, m] = ym.split('-');
+  const months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  return `${months[parseInt(m,10)-1]} ${y}`;
+}
 async function loadArchive() {
   try {
     const r = await fetch('/api/archive-dates');
@@ -2914,11 +2986,22 @@ async function loadArchiveBrowserDates() {
     const cont = $('abDatesList');
     if (!dates.length) { cont.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic">Archivio ancora vuoto.</p>'; return; }
     cont.innerHTML = '';
+    let currentMonth = null;
     dates.forEach(d => {
+      // Banner divisore per mese
+      const monthKey = d.date.slice(0, 7);
+      if (monthKey !== currentMonth) {
+        currentMonth = monthKey;
+        const banner = document.createElement('div');
+        banner.className = 'archive-month-banner';
+        banner.textContent = fmtMonthIT(monthKey);
+        cont.appendChild(banner);
+      }
+      const holiday = getHolidayName(d.date);
       const item = document.createElement('div');
       item.className = 'card card-small';
       item.style.cursor = 'pointer';
-      item.innerHTML = `<h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3><div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali archiviati</div>`;
+      item.innerHTML = `<h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3><div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali archiviati</div>${holiday ? `<div class="archive-holiday-note">📅 ${escapeHtml(holiday)}</div>` : ''}`;
       item.addEventListener('click', () => showDateDetail(d.date));
       cont.appendChild(item);
     });
@@ -2933,7 +3016,16 @@ async function showDateDetail(date) {
     const data = await r.json();
     let html = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserDates()">← Indietro</button><h3 style="margin-top: 16px;">${fmtDateIT(date)}</h3>`;
     if (!data.items?.length) {
-      html += '<p style="color:var(--text-tertiary);font-style:italic">Nessun titolo per questa data.</p>';
+      const holiday = getHolidayName(date);
+      if (holiday) {
+        html += `<div class="card" style="border-color: var(--warning); background: rgba(217,168,54,0.07); text-align: center; padding: 28px 20px;">
+          <div style="font-size: 36px; margin-bottom: 10px;">📅</div>
+          <div style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: var(--warning); margin-bottom: 6px;">Edizione non presente</div>
+          <div style="color: var(--text-secondary); font-size: 14px; font-style: italic;">${escapeHtml(holiday)} — i quotidiani non escono.</div>
+        </div>`;
+      } else {
+        html += '<p style="color:var(--text-tertiary);font-style:italic">Nessun titolo per questa data.</p>';
+      }
     } else {
       data.items.forEach(it => {
         const np = NEWSPAPERS.find(n => n.slug === it.slug);
@@ -2976,12 +3068,19 @@ async function showPaperDetail(np) {
     if (!data.items?.length) {
       html += '<p style="color:var(--text-tertiary);font-style:italic">Nessuna edizione archiviata.</p>';
     } else {
+      let currentMonth = null;
       data.items.forEach(it => {
+        const monthKey = it.date.slice(0, 7);
+        if (monthKey !== currentMonth) {
+          currentMonth = monthKey;
+          html += `<div class="archive-month-banner">${escapeHtml(fmtMonthIT(monthKey))}</div>`;
+        }
         const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
+        const holiday = getHolidayName(it.date);
         html += `<div class="card card-small archive-row" onclick="openLightbox('${imgUrl}')">
           <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
           <div class="archive-info">
-            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
+            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}${holiday ? ` <span style="font-size:11px; color: var(--warning); font-style: italic; font-weight: 400;">(${escapeHtml(holiday)})</span>` : ''}</div>
             ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
             <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
             ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
@@ -3073,7 +3172,10 @@ async function startQuiz(mode, dateISO) {
       if (!r.ok) throw new Error('Archivio non disponibile.');
       const data = await r.json();
       const today = todayISO();
-      const eligibleDates = (data.dates || []).filter(d => d.papers >= 1 && d.date !== today);
+      // Se la sfida giornaliera di oggi è già stata disputata, includiamo anche i
+      // quotidiani di oggi nell'allenamento libero (non c'è più rischio di spoiler).
+      const dailyAlreadyPlayed = !!dailyDoneToday();
+      const eligibleDates = (data.dates || []).filter(d => d.papers >= 1 && (d.date !== today || dailyAlreadyPlayed));
       if (!eligibleDates.length) {
         throw new Error('Allenamento non ancora disponibile: serve almeno una giornata archiviata. Gioca prima il livello del giorno.');
       }
@@ -3397,13 +3499,14 @@ function finishQuiz() {
   state.questions.forEach((q, i) => {
     const ok = q.given === q.paper.id;
     const givenName = q.choices.find(c => c.id === q.given)?.name || '—';
-    html += `<tr ${ok ? 'class="highlight"' : ''}><td>${i+1}</td><td><em>${q.paper.name}</em></td><td>${givenName}</td><td class="${ok ? 'table-success' : 'table-error'}">${ok ? '✓' : '✗'}</td></tr>`;
+    html += `<tr class="recap-row-click${ok ? ' highlight' : ''}" data-q-idx="${i}" title="Clicca per rivedere il titolo"><td>${i+1}</td><td><em>${q.paper.name}</em></td><td>${givenName}</td><td class="${ok ? 'table-success' : 'table-error'}">${ok ? '✓' : '✗'}</td></tr>`;
   });
   html += '</tbody>';
   $('recapTable').innerHTML = html;
 
   $('trainAgainBtn').style.display = state.mode === 'training' ? '' : 'none';
-  $('saveScoreBtn').style.display = state.mode === 'training' ? 'none' : '';
+  // Il salvataggio in classifica è riservato esclusivamente alla sfida giornaliera
+  $('saveScoreBtn').style.display = state.mode === 'daily' ? '' : 'none';
 
   trackGameInStats({
     mode: state.mode,
@@ -3424,7 +3527,23 @@ function finishQuiz() {
     loadArchive();
   }
   if (state.mode === 'daily') {
-    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({ score: state.score, total: state.questions.length, ts: Date.now() }));
+    localStorage.setItem(dailyDoneKey(todayISO()), JSON.stringify({
+      score: state.score,
+      total: state.questions.length,
+      ts: Date.now(),
+      questions: state.questions.map(q => ({
+        paperId: q.paper.id,
+        paperName: q.paper.name,
+        paperSlug: q.paper.slug || '',
+        given: q.given,
+        givenName: q.choices?.find(c => c.id === q.given)?.name || '—',
+        choices: q.choices || [],
+        titolo: q.titolo || '',
+        sopra: q.sopra || '',
+        sotto: q.sotto || '',
+        dateISO: q.dateISO || todayISO(),
+      })),
+    }));
     refreshDailyStatus();
     loadArchive();
   }
@@ -3505,6 +3624,28 @@ function launchConfetti() {
 }
 
 $('trainAgainBtn').addEventListener('click', () => startQuiz('training'));
+
+/* Click su riga del riepilogo → mostra il titolo originale */
+$('recapTable').addEventListener('click', (e) => {
+  const tr = e.target.closest('tr[data-q-idx]');
+  if (!tr) return;
+  const idx = parseInt(tr.dataset.qIdx, 10);
+  const q = state.questions[idx];
+  if (!q) return;
+  const ok = q.given === q.paper.id;
+  const givenName = q.choices.find(c => c.id === q.given)?.name || '—';
+  $('rdmPaperLabel').textContent = q.paper.name;
+  $('rdmOutcome').innerHTML = ok
+    ? `<span style="color: var(--success);">✓ Risposta esatta!</span>`
+    : `<span style="color: var(--error);">✗ Hai risposto: ${escapeHtml(givenName)}</span>`;
+  $('rdmHeadline').innerHTML = [
+    q.sopra ? `<div class="headline-tag">${escapeHtml(q.sopra)}</div>` : '',
+    `<div class="headline-title" style="font-size: clamp(18px, 4vw, 26px); margin-top: 4px;">${escapeHtml(q.titolo || '(titolo non disponibile)')}</div>`,
+    q.sotto ? `<div class="headline-subtitle" style="margin-top: 8px; font-size: 14px;">${escapeHtml(q.sotto)}</div>` : '',
+    q.dateISO ? `<div style="font-size: 11px; color: var(--text-tertiary); margin-top: 14px; letter-spacing: 1px; text-transform: uppercase;">Edizione del ${fmtDateIT(q.dateISO)}</div>` : '',
+  ].join('');
+  openModal('recapDetailModal');
+});
 
 /* Condivisione risultati: modale con 2 formati (compatta / estesa) */
 function _buildShareText(mode) {
@@ -4476,6 +4617,50 @@ $('lbAddCreateBtn').addEventListener('click', () => {
   document.querySelector('[data-lbtab="create"]').click();
 });
 
+/* ===== SHARE INVITO GRUPPO ===== */
+$('lbShareInviteBtn').addEventListener('click', async () => {
+  const code = state.user?.activeGroupCode;
+  if (!code) { showToast('Nessun gruppo attivo selezionato.'); return; }
+  const groupName = state.user.groups.find(g => g.code === code)?.name || code;
+  const url = `${location.origin}${location.pathname}?join=${code}`;
+  const text = `Unisciti al mio gruppo "${groupName}" su Newsguess!\nUsa il codice: ${code}\n👉 ${url}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Newsguess – Unisciti al mio gruppo', text }); return; } catch {}
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Link di invito copiato negli appunti!');
+  } catch {
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  }
+});
+
+/* ===== DEEP-LINK ?join=CODE ===== */
+// Se l'URL contiene ?join=CODICE, naviga alla pagina classifica e pre-popola il campo
+(function handleJoinDeepLink() {
+  const code = new URLSearchParams(location.search).get('join');
+  if (!code) return;
+  // Pulisce l'URL senza ricaricare la pagina
+  try { history.replaceState({}, '', location.pathname); } catch {}
+  // Aspetta che il DOM sia pronto (già lo è, ma usiamo setTimeout per sicurezza)
+  setTimeout(() => {
+    // Naviga alla pagina classifica
+    document.querySelector('[data-page="leaderboard"]')?.click();
+    if (state.user?.groups?.length) {
+      // Già loggato: mostra il form "unisciti a un altro" con il codice pre-compilato
+      showLBLogin();
+      document.querySelector('[data-lbtab="join"]')?.click();
+    }
+    // Pre-compila il codice nel campo join
+    const joinInput = $('lbJoinCode');
+    if (joinInput) {
+      joinInput.value = code.toUpperCase().slice(0, 8);
+      joinInput.focus();
+    }
+    showToast(`Codice gruppo "${code.toUpperCase()}" inserito. Aggiungi il tuo nome e premi Entra!`);
+  }, 200);
+})();
+
 $('lbLogoutBtn').addEventListener('click', () => {
   if (!confirm('Vuoi davvero uscire? Tutti i tuoi gruppi verranno dimenticati.')) return;
   state.user = null;
@@ -4801,19 +4986,59 @@ window.startQuiz = async function(mode, dateISO) {
 function showDailyAlreadyPlayedResult() {
   const done = JSON.parse(dailyDoneToday() || '{}');
   if (!done || typeof done.score !== 'number') return;
+
+  // Ripristina lo stato minimo necessario per la schermata finale
   state.mode = 'daily';
   state.score = done.score;
-  state.questions = new Array(done.total || 5).fill({});
-  state.current = (done.total || 5) - 1;
+  state.dateISO = todayISO();
+
+  if (Array.isArray(done.questions) && done.questions.length) {
+    // Dati ricchi salvati dalla v2 → ricostruiamo le domande nel formato atteso
+    state.questions = done.questions.map(q => ({
+      paper: { id: q.paperId, name: q.paperName, slug: q.paperSlug || '' },
+      given: q.given,
+      choices: Array.isArray(q.choices) && q.choices.length
+        ? q.choices
+        : [{ id: q.paperId, name: q.paperName }, { id: q.given, name: q.givenName }],
+      titolo: q.titolo || '',
+      sopra: q.sopra || '',
+      sotto: q.sotto || '',
+      dateISO: q.dateISO || todayISO(),
+    }));
+  } else {
+    // Dati legacy (solo score+total) → segnaposto senza dettaglio
+    state.questions = new Array(done.total || 5).fill(null).map(() => ({
+      paper: { id: '_unknown', name: '—', slug: '' },
+      given: '_unknown',
+      choices: [],
+      titolo: '', sopra: '', sotto: '', dateISO: todayISO(),
+    }));
+  }
+
   $('modePicker').classList.add('hidden');
   $('errorBox').classList.add('hidden');
   $('quizRunning').classList.add('hidden');
   $('loading').classList.add('hidden');
   $('finalScreen').classList.remove('hidden');
+
   $('finalScoreVersus').textContent = `${done.score}:${(done.total || 5) - done.score}`;
   $('verdict').textContent = verdictFor(done.score);
-  $('resultCommentary').textContent = 'Sfida giornaliera già giocata: puoi comunque salvarla nei gruppi non ancora registrati.';
-  $('recapTable').innerHTML = '<tbody><tr><td colspan="4">Partita daily già conclusa oggi. Recap dettagliato disponibile solo nella sessione originale.</td></tr></tbody>';
+  $('resultCommentary').textContent = 'Sfida giornaliera già disputata. Puoi ancora salvarla nei gruppi dove non l\'hai ancora registrata.';
+
+  // Recap table
+  if (Array.isArray(done.questions) && done.questions.length) {
+    let html = '<thead><tr><th>#</th><th>Giornale</th><th>Tua risposta</th><th>Esito</th></tr></thead><tbody>';
+    done.questions.forEach((q, i) => {
+      const ok = q.paperId === q.given;
+      const givenName = q.givenName || '—';
+      html += `<tr class="recap-row-click${ok ? ' highlight' : ''}" data-q-idx="${i}" title="Clicca per rivedere il titolo"><td>${i+1}</td><td><em>${escapeHtml(q.paperName)}</em></td><td>${escapeHtml(givenName)}</td><td class="${ok ? 'table-success' : 'table-error'}">${ok ? '✓' : '✗'}</td></tr>`;
+    });
+    html += '</tbody>';
+    $('recapTable').innerHTML = html;
+  } else {
+    $('recapTable').innerHTML = '<tbody><tr><td colspan="4" style="text-align:center; color: var(--text-tertiary); font-style: italic;">Dati di dettaglio non disponibili (partita giocata con versione precedente).</td></tr></tbody>';
+  }
+
   $('saveScoreBtn').style.display = '';
   $('trainAgainBtn').style.display = 'none';
 }
