@@ -2952,17 +2952,22 @@ if (!isStandalone() && (isIosDevice() || isAndroidDevice())) {
 
 /* ===== ARCHIVIO ===== */
 // Festività italiane in cui i quotidiani non escono (chiave 'MM-DD')
+// Giorni in cui i quotidiani NON escono (edicola chiusa)
 const ITALIAN_HOLIDAYS = {
   '01-01': 'Capodanno',
   '01-06': 'Epifania',
   '04-25': 'Festa della Liberazione',
-  '05-01': 'Festa dei Lavoratori',
   '06-02': 'Festa della Repubblica',
   '08-15': 'Ferragosto',
   '11-01': 'Ognissanti',
   '12-08': 'Immacolata Concezione',
   '12-25': 'Natale',
   '12-26': 'Santo Stefano',
+};
+// Giorni festivi in cui i giornali escono regolarmente,
+// ma il giorno SUCCESSIVO l'edicola è chiusa per recupero
+const ITALIAN_HOLIDAYS_NEXT_DAY_CLOSED = {
+  '05-01': 'Festa dei Lavoratori',
 };
 function getHolidayName(dateISO) {
   return ITALIAN_HOLIDAYS[dateISO.slice(5)] || null;
@@ -2979,7 +2984,7 @@ function getDayAfterHolidayName(dateISO) {
   d.setDate(d.getDate() - 1);
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
-  return ITALIAN_HOLIDAYS[`${mm}-${dd}`] || null;
+  return ITALIAN_HOLIDAYS_NEXT_DAY_CLOSED[`${mm}-${dd}`] || null;
 }
 
 // Formatta 'YYYY-MM' in 'Mese YYYY' in italiano
