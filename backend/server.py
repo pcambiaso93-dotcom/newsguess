@@ -48,8 +48,9 @@ async def lifespan(app: FastAPI):
     try:
         if not scheduler.running:
             scheduler.add_job(_scheduled_check, "interval", minutes=1, id="push_check", replace_existing=True)
+            scheduler.add_job(_scheduled_prefetch, "interval", minutes=1, id="prefetch_check", replace_existing=True)
             scheduler.start()
-            logger.info("Push scheduler started (every minute, sends at user-local 8:00)")
+            logger.info("Scheduler started: push ogni minuto (08:00 locale), prefetch alle 06/10/12 Roma")
     except Exception as e:
         logger.warning(f"Scheduler startup non-blocking error: {e}")
     yield
@@ -247,14 +248,27 @@ def _quiz_today() -> str:
         rome = rome - timedelta(days=1)
     return rome.strftime("%Y-%m-%d")
 
-@api_router.get("/extract-headlines")
-@limiter.limit("30/minute")
-async def extract_headlines(request: Request, slug: str = Query(...), date: str | None = Query(None)):
-    """Fetch front page from giornalone.it and ask Claude to extract sovratitolo/titolo/sottotitolo.
-    Caches extracted headlines in MongoDB so the archive grows over time."""
-    today = _quiz_today()
-    eff_date = date or today
-    cache_key = {"slug": slug, "date": eff_date}
+# Lista degli slug dei 10 quotidiani supportati (identica all'array NEWSPAPERS del frontend).
+# Usata dal prefetch schedulato alle 06:00, 10:00 e 12:00 ora di Roma.
+NEWSPAPER_SLUGS = [
+    "corriere-della-sera",
+    "la-repubblica",
+    "la-stampa",
+    "il-fatto-quotidiano",
+    "il-messaggero",
+    "il-giornale",
+    "libero",
+    "il-manifesto",
+    "il-sole-24-ore",
+    "avvenire",
+]
+
+
+async def _do_extract_headlines(slug: str, date: str) -> dict:
+    """Logica interna di estrazione/caching dei titoli.
+    Usata sia dall'endpoint HTTP /extract-headlines sia dal prefetch schedulato.
+    Ritorna il dict con sopratitolo/titolo_principale/sottotitolo oppure solleva HTTPException."""
+    cache_key = {"slug": slug, "date": date}
     cached = await db.headlines_archive.find_one(cache_key, {"_id": 0})
     if cached:
         return {
@@ -264,8 +278,9 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
             "from_archive": True,
         }
 
-    if eff_date != today:
-        raise HTTPException(404, f"Edizione del {eff_date} per {slug} non in archivio")
+    today = _quiz_today()
+    if date != today:
+        raise HTTPException(404, f"Edizione del {date} per {slug} non in archivio")
 
     img_bytes, _ct = _fetch_frontpage_bytes(slug, None)  # always fetch today
     try:
@@ -290,11 +305,12 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
 
     chat = LlmChat(
         api_key=api_key,
-        session_id=f"headlines-{slug}-{eff_date}-{uuid.uuid4().hex[:6]}",
+        session_id=f"headlines-{slug}-{date}-{uuid.uuid4().hex[:6]}",
         system_message="Sei un assistente che estrae titoli da prime pagine di giornali italiani."
     ).with_model("anthropic", "claude-sonnet-4-5-20250929")
 
-    msg = UserMessage(text=PROMPT_HEADLINES, file_contents=[ImageContent(image_base64=b64)])
+    from emergentintegrations.llm.chat import UserMessage, ImageContent as _IC
+    msg = UserMessage(text=PROMPT_HEADLINES, file_contents=[_IC(image_base64=b64)])
     try:
         resp = await chat.send_message(msg)
     except Exception as e:
@@ -311,7 +327,7 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
 
     record = {
         "slug": slug,
-        "date": eff_date,
+        "date": date,
         "sopratitolo": data.get("sopratitolo"),
         "titolo_principale": data.get("titolo_principale", ""),
         "sottotitolo": data.get("sottotitolo"),
@@ -335,6 +351,15 @@ async def extract_headlines(request: Request, slug: str = Query(...), date: str 
         "sottotitolo": record["sottotitolo"],
         "from_archive": False,
     }
+
+@api_router.get("/extract-headlines")
+@limiter.limit("30/minute")
+async def extract_headlines(request: Request, slug: str = Query(...), date: str | None = Query(None)):
+    """Fetch front page from giornalone.it and ask Claude to extract sovratitolo/titolo/sottotitolo.
+    Caches extracted headlines in MongoDB so the archive grows over time."""
+    today = _quiz_today()
+    eff_date = date or today
+    return await _do_extract_headlines(slug, eff_date)
 
 
 @api_router.get("/archive-dates")
@@ -543,6 +568,33 @@ async def _scheduled_check():
                     await _send_push(sub)
         except Exception as e:
             logger.warning(f"check err: {e}")
+
+async def _scheduled_prefetch():
+    """Eseguito ogni minuto: alle 06:00, 10:00 e 12:00 ora di Roma effettua il prefetch
+    di tutti i quotidiani del giorno non ancora in cache.
+    In questo modo, se alcuni giornali non erano disponibili alle 6, vengono recuperati
+    automaticamente nelle finestre successive senza aspettare il primo utente."""
+    now_rome = datetime.now(timezone.utc) + timedelta(hours=2)  # approssimazione CEST/CET
+    if now_rome.hour not in (6, 10, 12) or now_rome.minute >= 5:
+        return  # esegue solo nei primi 5 minuti di ciascuna delle tre ore target
+    today = _quiz_today()
+    try:
+        cached_slugs = set(await db.headlines_archive.distinct("slug", {"date": today}))
+    except Exception as e:
+        logger.warning(f"[prefetch] distinct query failed: {e}")
+        return
+    missing = [s for s in NEWSPAPER_SLUGS if s not in cached_slugs]
+    if not missing:
+        logger.info(f"[prefetch] {now_rome.hour}:00 Roma — tutti i quotidiani già in cache, skip")
+        return
+    logger.info(f"[prefetch] {now_rome.hour}:00 Roma — avvio prefetch per {len(missing)} quotidiano/i: {missing}")
+    for slug in missing:
+        try:
+            await _do_extract_headlines(slug, today)
+            logger.info(f"[prefetch] OK: {slug}")
+        except Exception as e:
+            logger.warning(f"[prefetch] FAIL {slug}: {e}")
+
 
 scheduler = AsyncIOScheduler()
 
