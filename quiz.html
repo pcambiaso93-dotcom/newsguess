@@ -1730,7 +1730,44 @@
     margin-bottom: 14px;
   }
 
-  /* ===== BANNER MESI ARCHIVIO ===== */
+  /* ===== BANNER MESI ARCHIVIO (accordion) ===== */
+  .archive-month-accordion {
+    margin: 8px 0 4px;
+  }
+  .archive-month-accordion > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 4px 8px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+  }
+  .archive-month-accordion > summary::-webkit-details-marker { display: none; }
+  .archive-month-accordion > summary::after {
+    content: '▸';
+    font-size: 11px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .archive-month-accordion[open] > summary::after {
+    transform: rotate(90deg);
+  }
+  .archive-month-accordion > summary:hover {
+    color: var(--accent-primary);
+  }
+  .archive-month-body {
+    padding-top: 6px;
+  }
+  /* banner legacy (usato in showPaperDetail, rimane piatto) */
   .archive-month-banner {
     font-family: 'Playfair Display', serif;
     font-size: 13px;
@@ -2931,6 +2968,20 @@ function getHolidayName(dateISO) {
   return ITALIAN_HOLIDAYS[dateISO.slice(5)] || null;
 }
 
+/**
+ * Se il giorno precedente a dateISO era una festività nazionale,
+ * restituisce il nome della festa. Usato per marcare le date in cui
+ * l'edicola è chiusa "per recupero" del giorno festivo precedente
+ * (es. il 2 maggio non escono i giornali perché il 1° era festa).
+ */
+function getDayAfterHolidayName(dateISO) {
+  const d = new Date(dateISO + 'T12:00:00');
+  d.setDate(d.getDate() - 1);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return ITALIAN_HOLIDAYS[`${mm}-${dd}`] || null;
+}
+
 // Formatta 'YYYY-MM' in 'Mese YYYY' in italiano
 function fmtMonthIT(ym) {
   const [y, m] = ym.split('-');
@@ -2986,24 +3037,67 @@ async function loadArchiveBrowserDates() {
     const cont = $('abDatesList');
     if (!dates.length) { cont.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic">Archivio ancora vuoto.</p>'; return; }
     cont.innerHTML = '';
-    let currentMonth = null;
-    dates.forEach(d => {
-      // Banner divisore per mese
-      const monthKey = d.date.slice(0, 7);
-      if (monthKey !== currentMonth) {
-        currentMonth = monthKey;
-        const banner = document.createElement('div');
-        banner.className = 'archive-month-banner';
-        banner.textContent = fmtMonthIT(monthKey);
-        cont.appendChild(banner);
-      }
-      const holiday = getHolidayName(d.date);
-      const item = document.createElement('div');
-      item.className = 'card card-small';
-      item.style.cursor = 'pointer';
-      item.innerHTML = `<h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3><div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali archiviati</div>${holiday ? `<div class="archive-holiday-note">📅 ${escapeHtml(holiday)}</div>` : ''}`;
-      item.addEventListener('click', () => showDateDetail(d.date));
-      cont.appendChild(item);
+
+    // Raggruppa per mese
+    const byMonth = {};
+    const monthOrder = [];
+    const currentMonth = todayISO().slice(0, 7);
+
+    // Aggiungi sempre la data di oggi se non è già presente (per mostrare il mese corrente anche vuoto)
+    const allDates = [...dates];
+
+    allDates.forEach(d => {
+      const mk = d.date.slice(0, 7);
+      if (!byMonth[mk]) { byMonth[mk] = []; monthOrder.push(mk); }
+      byMonth[mk].push(d);
+    });
+
+    // monthOrder è già ordinato per data (discendente dal server), più recente prima
+    monthOrder.forEach(mk => {
+      const isCurrentMonth = (mk === currentMonth);
+      const details = document.createElement('details');
+      details.className = 'archive-month-accordion';
+      if (isCurrentMonth) details.open = true;
+
+      const summary = document.createElement('summary');
+      summary.textContent = fmtMonthIT(mk);
+      details.appendChild(summary);
+
+      const body = document.createElement('div');
+      body.className = 'archive-month-body';
+
+      byMonth[mk].forEach(d => {
+        const holiday = getHolidayName(d.date);
+        const dayAfterHoliday = getDayAfterHolidayName(d.date);
+
+        const item = document.createElement('div');
+        item.className = 'card card-small';
+        item.style.cursor = 'pointer';
+
+        if (holiday) {
+          // Giorno festivo: mostra etichetta ma non i giornali
+          item.innerHTML = `
+            <h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3>
+            <div class="archive-holiday-note">🔒 Edicola chiusa — ${escapeHtml(holiday)}</div>`;
+          item.addEventListener('click', () => showDateDetail(d.date));
+        } else if (dayAfterHoliday) {
+          // Giorno dopo la festa: edicola chiusa per recupero
+          item.innerHTML = `
+            <h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3>
+            <div class="archive-holiday-note">🔒 Edicola chiusa per la festa del giorno prima — ${escapeHtml(dayAfterHoliday)}</div>`;
+          item.addEventListener('click', () => showDateDetail(d.date));
+        } else {
+          item.innerHTML = `
+            <h3 style="margin: 0 0 6px; font-size: 18px;">${fmtDateIT(d.date)}</h3>
+            <div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali archiviati</div>`;
+          item.addEventListener('click', () => showDateDetail(d.date));
+        }
+
+        body.appendChild(item);
+      });
+
+      details.appendChild(body);
+      cont.appendChild(details);
     });
   } catch (e) { console.warn(e); }
 }
@@ -3015,17 +3109,33 @@ async function showDateDetail(date) {
     const r = await fetch(`/api/archive-papers?date=${date}`);
     const data = await r.json();
     let html = `<button class="btn btn-outline btn-sm" onclick="loadArchiveBrowserDates()">← Indietro</button><h3 style="margin-top: 16px;">${fmtDateIT(date)}</h3>`;
+    const holiday = getHolidayName(date);
+    const dayAfterHoliday = getDayAfterHolidayName(date);
+
+    // Se la data è festiva o è il giorno dopo una festa, mostriamo il banner
+    // indipendentemente da ciò che è in archivio (i giornali eventualmente presenti
+    // non vengono mostrati perché in quel giorno l'edicola era chiusa).
+    if (holiday) {
+      html += `<div class="card" style="border-color: var(--warning); background: rgba(217,168,54,0.07); text-align: center; padding: 28px 20px;">
+        <div style="font-size: 36px; margin-bottom: 10px;">🔒</div>
+        <div style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: var(--warning); margin-bottom: 6px;">Edicola chiusa</div>
+        <div style="color: var(--text-secondary); font-size: 14px; font-style: italic;">${escapeHtml(holiday)} — i quotidiani non escono.</div>
+      </div>`;
+      cont.innerHTML = html;
+      return;
+    }
+    if (dayAfterHoliday) {
+      html += `<div class="card" style="border-color: var(--warning); background: rgba(217,168,54,0.07); text-align: center; padding: 28px 20px;">
+        <div style="font-size: 36px; margin-bottom: 10px;">🔒</div>
+        <div style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: var(--warning); margin-bottom: 6px;">Edicola chiusa per la festa del giorno prima</div>
+        <div style="color: var(--text-secondary); font-size: 14px; font-style: italic;">${escapeHtml(dayAfterHoliday)} — i quotidiani non sono usciti.</div>
+      </div>`;
+      cont.innerHTML = html;
+      return;
+    }
+
     if (!data.items?.length) {
-      const holiday = getHolidayName(date);
-      if (holiday) {
-        html += `<div class="card" style="border-color: var(--warning); background: rgba(217,168,54,0.07); text-align: center; padding: 28px 20px;">
-          <div style="font-size: 36px; margin-bottom: 10px;">📅</div>
-          <div style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; color: var(--warning); margin-bottom: 6px;">Edizione non presente</div>
-          <div style="color: var(--text-secondary); font-size: 14px; font-style: italic;">${escapeHtml(holiday)} — i quotidiani non escono.</div>
-        </div>`;
-      } else {
-        html += '<p style="color:var(--text-tertiary);font-style:italic">Nessun titolo per questa data.</p>';
-      }
+      html += '<p style="color:var(--text-tertiary);font-style:italic">Nessun titolo per questa data.</p>';
     } else {
       data.items.forEach(it => {
         const np = NEWSPAPERS.find(n => n.slug === it.slug);
