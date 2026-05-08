@@ -58,6 +58,24 @@
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
   }
 
+  :root[data-theme="sepia"] {
+    --bg-primary: #f2e8d5;
+    --bg-secondary: #faf4e8;
+    --bg-tertiary: #e8d9c0;
+    --text-primary: #1e120a;
+    --text-secondary: #4a3728;
+    --text-tertiary: #7a6050;
+    --border-color: #c9a87c;
+    --accent-primary: #7b3f00;
+    --accent-secondary: #a0522d;
+    --success: #3a6b2e;
+    --error: #b03030;
+    --warning: #c47f00;
+    --shadow-sm: 0 2px 4px rgba(80, 40, 0, 0.08);
+    --shadow-md: 0 4px 12px rgba(80, 40, 0, 0.12);
+    --shadow-lg: 0 12px 32px rgba(80, 40, 0, 0.18);
+  }
+
   * {
     box-sizing: border-box;
     margin: 0;
@@ -1730,7 +1748,79 @@
     margin-bottom: 14px;
   }
 
-  /* ===== BANNER MESI ARCHIVIO (accordion) ===== */
+  /* ===== STATISTICHE AVANZATE ===== */
+  .stat-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .stat-bar-label {
+    width: 130px;
+    flex-shrink: 0;
+    font-style: italic;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .stat-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--bg-tertiary);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent-primary);
+    transition: width 0.6s ease;
+  }
+  .stat-bar-pct {
+    width: 36px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+  }
+  .stat-callout {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat-callout-item {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-callout-emoji { font-size: 22px; margin-bottom: 4px; }
+  .stat-callout-label { font-size: 11px; color: var(--text-tertiary); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .stat-callout-value { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; }
+
+  .trend-svg { width: 100%; overflow: visible; display: block; }
+
+  /* ===== PUSH NOTIFICATIONS ===== */
+  .push-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .push-toggle-label { font-size: 14px; color: var(--text-primary); }
+  .push-toggle-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  .push-status-dot {
+    width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px;
+  }
+  .push-status-dot.active { background: var(--success); }
+  .push-status-dot.inactive { background: var(--text-tertiary); }
   .archive-month-accordion {
     margin: 8px 0 4px;
   }
@@ -2014,6 +2104,7 @@
         <button class="theme-btn active" data-theme="light">Chiaro</button>
         <button class="theme-btn" data-theme="auto">Default</button>
         <button class="theme-btn" data-theme="dark">Scuro</button>
+        <button class="theme-btn" data-theme="sepia">Carta</button>
       </div>
     </div>
   </aside>
@@ -2269,9 +2360,19 @@
             </div>
           </div>
 
+          <!-- Callout migliore/peggiore giornale -->
+          <div class="section">
+            <div class="stat-callout" id="stCallout"></div>
+          </div>
+
+          <div class="section">
+            <h2>Andamento ultime 8 settimane</h2>
+            <div id="stTrendChart" style="margin-top: 10px;"></div>
+          </div>
+
           <div class="section">
             <h2>Precisione per giornale</h2>
-            <table class="data-table" id="stPaperTable"><thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody></tbody></table>
+            <div id="stPaperBars"></div>
           </div>
 
           <div class="section">
@@ -2364,6 +2465,7 @@
             <button class="theme-btn active" data-theme="light">Chiaro</button>
             <button class="theme-btn" data-theme="auto">Default</button>
             <button class="theme-btn" data-theme="dark">Scuro</button>
+            <button class="theme-btn" data-theme="sepia">Carta</button>
           </div>
         </div>
         <div class="card">
@@ -2387,6 +2489,18 @@
           <p class="small-caps">Installazione iOS</p>
           <p>Su iPhone/iPad puoi installare l'app dalla condivisione di Safari.</p>
           <button class="btn btn-outline" id="iosInstallHelpBtn"><i data-lucide="smartphone"></i> Guida installazione iOS</button>
+        </div>
+
+        <div class="card" id="pushCard">
+          <p class="small-caps">Notifiche mattutine</p>
+          <p style="font-size: 13px; color: var(--text-secondary); margin: 8px 0 14px;">Ricevi una notifica ogni mattina alle 08:00 con il titolo più interessante del giorno.</p>
+          <div class="push-toggle-row">
+            <div>
+              <div class="push-toggle-label"><span class="push-status-dot inactive" id="pushDot"></span><span id="pushStatusText">Non attive</span></div>
+              <div class="push-toggle-sub" id="pushStatusSub">Clicca per abilitare le notifiche</div>
+            </div>
+            <button class="btn" id="pushToggleBtn">Attiva</button>
+          </div>
         </div>
       </div>
     </div>
@@ -2466,6 +2580,34 @@
     <p>3) Seleziona "Aggiungi a Home"</p>
     <div class="modal-row">
       <button class="btn" id="iosInstallModalClose">Ho capito</button>
+    </div>
+  </div>
+</div>
+
+<!-- PUSH PROMPT MODAL (primo avvio) -->
+<div class="modal-overlay" id="pushPromptModal">
+  <div class="modal" style="max-width: 360px; text-align: center;">
+    <div style="font-size: 40px; margin-bottom: 12px;">🔔</div>
+    <h2 style="margin-bottom: 8px;">Notifiche mattutine</h2>
+    <p id="pushPromptText" style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+      Vuoi ricevere ogni mattina alle 08:00 un titolo di prima pagina e il link alla sfida del giorno?
+    </p>
+    <div id="pushPromptActions" class="modal-row" style="gap: 10px;">
+      <button class="btn btn-outline" id="pushPromptNoBtn">No grazie</button>
+      <button class="btn" id="pushPromptYesBtn">Sì, attiva</button>
+    </div>
+    <div id="pushPromptIOSSteps" class="hidden" style="text-align: left; margin-top: 4px;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 10px;">Per ricevere notifiche su iPhone devi prima installare l'app sulla schermata Home:</p>
+      <ol style="font-size: 13px; color: var(--text-secondary); padding-left: 18px; line-height: 1.8; margin: 0 0 16px;">
+        <li>Apri questo sito in <strong>Safari</strong></li>
+        <li>Tocca l'icona <strong>Condividi</strong> <span style="font-size:16px;">⎋</span></li>
+        <li>Seleziona <strong>"Aggiungi a schermata Home"</strong></li>
+        <li>Apri l'app dalla schermata Home e torna qui</li>
+      </ol>
+      <div class="modal-row">
+        <button class="btn btn-outline" id="pushPromptIOSLaterBtn">Forse dopo</button>
+        <button class="btn" id="pushPromptIOSDoneBtn">Ho installato, attiva</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3935,30 +4077,120 @@ function renderStats() {
   $('stStreak').textContent = streak;
   $('stBestScore').textContent = best;
 
+  // ---- Per-paper accuracy con barre colorate ----
   const perPaper = {};
   history.forEach(h => {
     (h.questions || []).forEach(q => {
-      if (!perPaper[q.paperId]) perPaper[q.paperId] = { name: q.paperName, slug: q.paperSlug, ok: 0, tot: 0 };
+      if (!q.paperId) return;
+      if (!perPaper[q.paperId]) perPaper[q.paperId] = { name: q.paperName || q.paperId, ok: 0, tot: 0 };
       perPaper[q.paperId].tot += 1;
       if (q.ok) perPaper[q.paperId].ok += 1;
     });
   });
-  const rows = Object.values(perPaper).sort((a,b) => (b.ok/b.tot) - (a.ok/a.tot));
-  let html = '<thead><tr><th>Giornale</th><th>Precisione</th><th>Su</th></tr></thead><tbody>';
-  rows.forEach(r => {
-    const pct = r.tot ? Math.round(r.ok / r.tot * 100) : 0;
-    html += `<tr><td><em>${escapeHtml(r.name)}</em></td><td><strong>${pct}%</strong></td><td>${r.ok}/${r.tot}</td></tr>`;
-  });
-  html += '</tbody>';
-  $('stPaperTable').innerHTML = html;
+  const rows = Object.values(perPaper).filter(r => r.tot >= 2).sort((a,b) => (b.ok/b.tot) - (a.ok/a.tot));
 
+  // Callout migliore / peggiore
+  const calloutEl = $('stCallout');
+  if (rows.length >= 2) {
+    const best_p = rows[0];
+    const worst_p = rows[rows.length - 1];
+    calloutEl.innerHTML = `
+      <div class="stat-callout-item">
+        <div class="stat-callout-emoji">🏆</div>
+        <div class="stat-callout-label">Punto di forza</div>
+        <div class="stat-callout-value">${escapeHtml(best_p.name)}</div>
+        <div style="font-size:12px;color:var(--success);margin-top:3px;">${Math.round(best_p.ok/best_p.tot*100)}% corretto</div>
+      </div>
+      <div class="stat-callout-item">
+        <div class="stat-callout-emoji">📉</div>
+        <div class="stat-callout-label">Da migliorare</div>
+        <div class="stat-callout-value">${escapeHtml(worst_p.name)}</div>
+        <div style="font-size:12px;color:var(--error);margin-top:3px;">${Math.round(worst_p.ok/worst_p.tot*100)}% corretto</div>
+      </div>`;
+    calloutEl.parentElement.classList.remove('hidden');
+  } else {
+    calloutEl.parentElement.classList.add('hidden');
+  }
+
+  // Barre per giornale
+  const barsEl = $('stPaperBars');
+  if (rows.length) {
+    barsEl.innerHTML = rows.map(r => {
+      const pct = Math.round(r.ok / r.tot * 100);
+      const color = pct >= 70 ? 'var(--success)' : pct >= 40 ? 'var(--accent-primary)' : 'var(--error)';
+      return `<div class="stat-bar-row">
+        <div class="stat-bar-label" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pct}%;background:${color};"></div></div>
+        <div class="stat-bar-pct">${pct}%</div>
+      </div>`;
+    }).join('');
+  } else {
+    barsEl.innerHTML = '<p style="color:var(--text-tertiary);font-style:italic;font-size:13px;">Gioca almeno 2 volte con ogni giornale per vedere le statistiche.</p>';
+  }
+
+  // ---- Trend ultime 8 settimane (grafico SVG) ----
+  const trendEl = $('stTrendChart');
+  const now = new Date();
+  const weeks = [];
+  for (let w = 7; w >= 0; w--) {
+    const wStart = new Date(now);
+    wStart.setDate(now.getDate() - now.getDay() - w * 7);
+    wStart.setHours(0,0,0,0);
+    const wEnd = new Date(wStart);
+    wEnd.setDate(wStart.getDate() + 7);
+    const wGames = history.filter(h => {
+      const t = new Date(h.ts);
+      return t >= wStart && t < wEnd;
+    });
+    const wAvg = wGames.length
+      ? wGames.reduce((s,h) => s + (h.score / (h.total||5) * 5), 0) / wGames.length
+      : null;
+    const label = wStart.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+    weeks.push({ label, avg: wAvg, games: wGames.length });
+  }
+
+  const W = 300, H = 80, padL = 8, padR = 8, padT = 10, padB = 24;
+  const innerW = W - padL - padR;
+  const innerH = H - padT - padB;
+  const xStep = innerW / (weeks.length - 1);
+  const toY = v => padT + innerH - (v / 5 * innerH);
+
+  // Polyline solo per i punti non null
+  const points = weeks.map((wk, i) => wk.avg !== null ? `${padL + i*xStep},${toY(wk.avg)}` : null).filter(Boolean);
+  const polyline = points.length >= 2 ? `<polyline points="${points.join(' ')}" fill="none" stroke="var(--accent-primary)" stroke-width="2" stroke-linejoin="round"/>` : '';
+
+  const dots = weeks.map((wk, i) => {
+    if (wk.avg === null) return `<circle cx="${padL + i*xStep}" cy="${padT + innerH/2}" r="3" fill="var(--bg-tertiary)" stroke="var(--border-color)" stroke-width="1"/>`;
+    const cy = toY(wk.avg);
+    return `<circle cx="${padL + i*xStep}" cy="${cy}" r="4" fill="var(--accent-primary)"/>
+      <title>${wk.label}: ${wk.avg.toFixed(1)}/5 (${wk.games} partite)</title>`;
+  }).join('');
+
+  const labels = weeks.map((wk, i) => {
+    if (i % 2 !== 0 && i !== weeks.length - 1) return '';
+    return `<text x="${padL + i*xStep}" y="${H - 4}" text-anchor="middle" font-size="9" fill="var(--text-tertiary)">${wk.label}</text>`;
+  }).join('');
+
+  // Linee guida orizzontali
+  const guides = [0,1,2,3,4,5].map(v => {
+    const y = toY(v);
+    return `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--border-color)" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+  }).join('');
+
+  trendEl.innerHTML = `<svg class="trend-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${guides}${polyline}${dots}${labels}
+  </svg>
+  <div style="font-size:11px;color:var(--text-tertiary);text-align:center;margin-top:4px;">Ogni punto = media punteggio nella settimana. Punti grigi = settimane senza partite.</div>`;
+
+  // ---- Ultime partite ----
   const recent = history.slice().reverse().slice(0, 10);
   let html2 = '<thead><tr><th>Quando</th><th>Modalità</th><th>Punti</th></tr></thead><tbody>';
   recent.forEach(h => {
     const dt = new Date(h.ts);
     const when = dt.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) + ' ' + dt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const modeName = h.mode === 'daily' ? 'Giorno' : (h.mode === 'training' ? 'Allenamento' : 'Archivio');
-    html2 += `<tr><td>${when}</td><td>${modeName}</td><td><strong>${h.score}/${h.total}</strong></td></tr>`;
+    const modeName = h.mode === 'daily' ? 'Sfida' : (h.mode === 'training' ? 'Allenamento' : 'Archivio');
+    const scoreColor = h.score === 5 ? 'var(--success)' : h.score <= 1 ? 'var(--error)' : 'var(--text-primary)';
+    html2 += `<tr><td>${when}</td><td>${modeName}</td><td style="color:${scoreColor};font-weight:700;">${h.score}/${h.total}</td></tr>`;
   });
   html2 += '</tbody>';
   $('stRecentTable').innerHTML = html2;
@@ -4149,6 +4381,183 @@ function closeBadgeDetailModal() {
   if (modal) modal.classList.remove('open');
 }
 window.closeBadgeDetailModal = closeBadgeDetailModal;
+
+$('stResetBtn').addEventListener('click', () => {
+
+/* ===== PUSH NOTIFICATIONS ===== */
+(function initPush() {
+  const PUSH_KEY = 'ng-push-subscribed';
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const rawData = atob(base64);
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+  }
+
+  function updatePushUI(active) {
+    const dot = $('pushDot');
+    const text = $('pushStatusText');
+    const sub = $('pushStatusSub');
+    const btn = $('pushToggleBtn');
+    if (!dot) return;
+    if (active) {
+      dot.className = 'push-status-dot active';
+      text.textContent = 'Notifiche attive';
+      sub.textContent = 'Riceverai la sfida ogni mattina alle 08:00';
+      btn.textContent = 'Disattiva';
+      btn.className = 'btn btn-outline';
+    } else {
+      dot.className = 'push-status-dot inactive';
+      text.textContent = 'Non attive';
+      sub.textContent = 'Clicca per abilitare le notifiche';
+      btn.textContent = 'Attiva';
+      btn.className = 'btn';
+    }
+  }
+
+  async function checkCurrentSub() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      const card = $('pushCard');
+      if (card) card.style.display = 'none';
+      return;
+    }
+    if (Notification.permission === 'denied') {
+      updatePushUI(false);
+      const sub = $('pushStatusSub');
+      if (sub) sub.textContent = 'Notifiche bloccate dal browser. Abilitale nelle impostazioni.';
+      const btn = $('pushToggleBtn');
+      if (btn) btn.disabled = true;
+      return;
+    }
+    const reg = await navigator.serviceWorker.ready.catch(() => null);
+    if (!reg) return;
+    const existing = await reg.pushManager.getSubscription();
+    updatePushUI(!!existing);
+    localStorage.setItem(PUSH_KEY, existing ? '1' : '0');
+  }
+
+  async function subscribePush() {
+    const btn = $('pushToggleBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') {
+        showToast('Permesso notifiche negato.');
+        updatePushUI(false);
+        return;
+      }
+      const keyRes = await fetch('/api/push-vapid-key');
+      if (!keyRes.ok) throw new Error('VAPID key non disponibile');
+      const { publicKey } = await keyRes.json();
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      await fetch('/api/push-subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: sub.toJSON(),
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
+          hour: 8,
+        }),
+      });
+      localStorage.setItem(PUSH_KEY, '1');
+      updatePushUI(true);
+      showToast('Notifiche attivate! Ti avviseremo alle 08:00 ogni mattina.');
+    } catch (e) {
+      showToast('Errore durante l\'attivazione: ' + e.message);
+      updatePushUI(false);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function unsubscribePush() {
+    const btn = $('pushToggleBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+      const reg = await navigator.serviceWorker.ready.catch(() => null);
+      if (reg) {
+        const sub = await reg.pushManager.getSubscription();
+        if (sub) {
+          await fetch('/api/push-unsubscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ endpoint: sub.endpoint }),
+          });
+          await sub.unsubscribe();
+        }
+      }
+      localStorage.setItem(PUSH_KEY, '0');
+      updatePushUI(false);
+      showToast('Notifiche disattivate.');
+    } catch (e) {
+      showToast('Errore: ' + e.message);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  // Init: controlla stato attuale
+  checkCurrentSub();
+
+  // Handler pulsante
+  document.addEventListener('click', async (e) => {
+    if (e.target.id !== 'pushToggleBtn') return;
+    const reg = await navigator.serviceWorker.ready.catch(() => null);
+    const existing = reg ? await reg.pushManager.getSubscription() : null;
+    if (existing) { await unsubscribePush(); } else { await subscribePush(); }
+  });
+
+  // ---- Primo avvio: chiedi le notifiche dopo 3 secondi ----
+  const ASKED_KEY = 'ng-push-asked';
+
+  async function maybeShowPushPrompt() {
+    if (localStorage.getItem(ASKED_KEY)) return;
+    if (Notification.permission === 'granted') { localStorage.setItem(ASKED_KEY, 'yes'); return; }
+    await new Promise(r => setTimeout(r, 3000));
+    if (document.querySelector('.modal-overlay.open')) return;
+
+    const ios = isIosDevice();
+    if (ios && !isStandalone()) {
+      $('pushPromptText').textContent = 'Su iPhone le notifiche funzionano solo dall\'app installata sulla schermata Home. Vuoi scoprire come fare?';
+      $('pushPromptActions').classList.add('hidden');
+      $('pushPromptIOSSteps').classList.remove('hidden');
+    } else {
+      $('pushPromptText').textContent = 'Vuoi ricevere ogni mattina alle 08:00 un titolo di prima pagina e il link alla sfida del giorno?';
+      $('pushPromptActions').classList.remove('hidden');
+      $('pushPromptIOSSteps').classList.add('hidden');
+    }
+    openModal('pushPromptModal');
+  }
+
+  $('pushPromptNoBtn').addEventListener('click', () => {
+    localStorage.setItem(ASKED_KEY, 'no');
+    closeModal('pushPromptModal');
+  });
+
+  $('pushPromptYesBtn').addEventListener('click', async () => {
+    localStorage.setItem(ASKED_KEY, 'yes');
+    closeModal('pushPromptModal');
+    await subscribePush();
+  });
+
+  $('pushPromptIOSLaterBtn').addEventListener('click', () => {
+    closeModal('pushPromptModal'); // non setta il flag → riappare alla prossima apertura
+  });
+
+  $('pushPromptIOSDoneBtn').addEventListener('click', async () => {
+    localStorage.setItem(ASKED_KEY, 'yes');
+    closeModal('pushPromptModal');
+    if (isStandalone()) { await subscribePush(); }
+    else { showToast('Apri l\'app dalla schermata Home e torna nelle Impostazioni per attivare le notifiche.'); }
+  });
+
+  if ('Notification' in window || isIosDevice()) maybeShowPushPrompt();
+})();
 
 $('stResetBtn').addEventListener('click', () => {
   if (confirm('Sei sicuro di voler azzerare tutte le statistiche? Questa azione non può essere annullata.')) {
