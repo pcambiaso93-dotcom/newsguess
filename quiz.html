@@ -1805,6 +1805,73 @@
 
   .trend-svg { width: 100%; overflow: visible; display: block; }
 
+  /* ===== DROPDOWN EDIZIONI PRECEDENTI ===== */
+  .past-dropdown-wrapper { position: relative; }
+  .past-dropdown-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: left;
+    transition: border-color 0.15s;
+  }
+  .past-dropdown-trigger:hover { border-color: var(--accent-primary); }
+  .past-dropdown-trigger.open::after { transform: rotate(180deg); }
+  .past-dropdown-trigger::after { content: '▾'; font-size: 13px; color: var(--text-tertiary); transition: transform 0.2s; flex-shrink: 0; }
+  .past-dropdown-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    z-index: 200;
+    max-height: 320px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .past-dropdown-list.open { display: block; }
+  .past-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.1s;
+    gap: 10px;
+  }
+  .past-dropdown-item:last-child { border-bottom: none; }
+  .past-dropdown-item:hover { background: var(--bg-tertiary); }
+  .past-dropdown-item.played { opacity: 0.6; }
+  .past-dropdown-item-date { font-family: 'Playfair Display', serif; font-weight: 700; }
+  .past-dropdown-item-meta { font-size: 12px; color: var(--text-tertiary); flex: 1; }
+  .past-dropdown-item-score { font-size: 12px; font-weight: 700; color: var(--accent-primary); white-space: nowrap; }
+  .past-dropdown-see-all {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    font-size: 13px;
+    color: var(--accent-primary);
+    cursor: pointer;
+    font-weight: 600;
+    background: var(--bg-tertiary);
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .past-dropdown-see-all:hover { text-decoration: underline; }
+
   /* ===== PUSH NOTIFICATIONS ===== */
   .push-toggle-row {
     display: flex;
@@ -2162,7 +2229,12 @@
 
           <div id="archiveSection" class="section hidden">
             <p class="small-caps">Edizioni precedenti</p>
-            <div class="card-grid" id="pastGrid"></div>
+            <div class="past-dropdown-wrapper">
+              <button class="past-dropdown-trigger" id="pastDropdownTrigger">Seleziona un'edizione…</button>
+              <div class="past-dropdown-list" id="pastDropdownList">
+                <!-- popolato da loadArchive() -->
+              </div>
+            </div>
           </div>
         </div>
 
@@ -3130,26 +3202,57 @@ async function loadArchive() {
     const r = await fetch('/api/archive-dates');
     if (!r.ok) return;
     const data = await r.json();
-    const dates = (data.dates || []).filter(d => d.papers >= 5).slice(0, 12);
+    const today = todayISO();
+    // Escludi oggi, festività, e giorno-dopo-festività; prendi le 15 più recenti
+    const dates = (data.dates || [])
+      .filter(d => d.papers >= 3 && d.date !== today && !getHolidayName(d.date) && !getDayAfterHolidayName(d.date))
+      .slice(0, 15);
     const sec = $('archiveSection');
-    const grid = $('pastGrid');
-    grid.innerHTML = '';
+    const list = $('pastDropdownList');
     if (!dates.length) { sec.classList.add('hidden'); return; }
     sec.classList.remove('hidden');
-    dates.forEach((d, i) => {
+
+    list.innerHTML = '';
+    dates.forEach(d => {
       const saved = localStorage.getItem('past-score-' + d.date);
-      const card = document.createElement('div');
-      card.className = 'card card-small';
-      if (saved) card.style.opacity = '0.7';
-      card.innerHTML = `
-        <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 22px; margin-bottom: 8px;">${fmtDateIT(d.date)}</div>
-        <div style="font-size: 13px; color: var(--text-secondary);">${d.papers} giornali</div>
-        ${saved ? `<div style="font-weight: 700; color: var(--accent-primary); margin-top: 8px;">${saved}/5 ✓</div>` : ''}
-      `;
-      card.addEventListener('click', () => startQuiz('past', d.date));
-      grid.appendChild(card);
+      const item = document.createElement('div');
+      item.className = 'past-dropdown-item' + (saved ? ' played' : '');
+      item.innerHTML = `
+        <span class="past-dropdown-item-date">${fmtDateIT(d.date)}</span>
+        <span class="past-dropdown-item-meta">${d.papers} giornali</span>
+        ${saved ? `<span class="past-dropdown-item-score">${saved}/5 ✓</span>` : ''}`;
+      item.addEventListener('click', () => {
+        closePastDropdown();
+        $('pastDropdownTrigger').textContent = fmtDateIT(d.date);
+        startQuiz('past', d.date);
+      });
+      list.appendChild(item);
     });
+
+    // Link "Vedi tutte" che porta al tab Archivio
+    const seeAll = document.createElement('div');
+    seeAll.className = 'past-dropdown-see-all';
+    seeAll.textContent = '📂 Vedi tutto l\'archivio →';
+    seeAll.addEventListener('click', () => {
+      closePastDropdown();
+      document.querySelector('[data-page="archive"]')?.click();
+    });
+    list.appendChild(seeAll);
+
+    // Toggle dropdown
+    $('pastDropdownTrigger').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = list.classList.contains('open');
+      list.classList.toggle('open', !isOpen);
+      $('pastDropdownTrigger').classList.toggle('open', !isOpen);
+    });
+    document.addEventListener('click', closePastDropdown);
   } catch (e) { console.warn('archive load failed', e); }
+}
+
+function closePastDropdown() {
+  $('pastDropdownList')?.classList.remove('open');
+  $('pastDropdownTrigger')?.classList.remove('open');
 }
 loadArchive();
 
@@ -3352,17 +3455,32 @@ async function showPaperDetail(np) {
       byMonth[mk].forEach(it => {
         const imgUrl = `/api/archive-image?slug=${encodeURIComponent(np.slug)}&date=${it.date}`;
         const row = document.createElement('div');
-        row.className = 'card card-small archive-row';
-        row.style.cursor = 'pointer';
-        row.addEventListener('click', () => openLightbox(imgUrl));
-        row.innerHTML = `
-          <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
-          <div class="archive-info">
-            <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
-            ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
-            <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
-            ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
-          </div>`;
+        row.className = 'card card-small';
+
+        const holiday = getHolidayName(it.date);
+        const dayAfterHoliday = getDayAfterHolidayName(it.date);
+
+        if (holiday) {
+          row.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 6px;">${fmtDateIT(it.date)}</div>
+            <div class="archive-holiday-note">🔒 Edicola chiusa — ${escapeHtml(holiday)}</div>`;
+        } else if (dayAfterHoliday) {
+          row.innerHTML = `
+            <div style="font-weight: 700; margin-bottom: 6px;">${fmtDateIT(it.date)}</div>
+            <div class="archive-holiday-note">🔒 Edicola chiusa per la festa del giorno prima — ${escapeHtml(dayAfterHoliday)}</div>`;
+        } else {
+          row.className += ' archive-row';
+          row.style.cursor = 'pointer';
+          row.addEventListener('click', () => openLightbox(imgUrl));
+          row.innerHTML = `
+            <img src="${imgUrl}" class="archive-thumb" alt="" loading="lazy" onerror="this.style.display='none'" />
+            <div class="archive-info">
+              <div style="font-weight: 700; margin-bottom: 8px;">${fmtDateIT(it.date)}</div>
+              ${it.sopratitolo ? `<div style="font-size: 11px; letter-spacing: 1px; color: var(--accent-primary); margin-bottom: 4px;">${escapeHtml(it.sopratitolo)}</div>` : ''}
+              <div style="font-family: 'Playfair Display', serif; font-weight: 900; font-size: 16px; margin-bottom: 4px; line-height: 1.2;">${escapeHtml(it.titolo_principale || '')}</div>
+              ${it.sottotitolo ? `<div style="font-style: italic; color: var(--text-secondary); font-size: 13px;">${escapeHtml(it.sottotitolo)}</div>` : ''}
+            </div>`;
+        }
         body.appendChild(row);
       });
 
