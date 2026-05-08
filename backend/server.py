@@ -527,20 +527,40 @@ async def push_unsubscribe(payload: dict):
         await db.push_subs.delete_one({"endpoint": endpoint})
     return {"ok": True}
 
+async def _get_push_headline() -> str:
+    """Pesca un titolo casuale di oggi dall'archivio per il corpo della notifica."""
+    today = _quiz_today()
+    try:
+        docs = await db.headlines_archive.find(
+            {"date": today},
+            {"titolo_principale": 1}
+        ).to_list(length=20)
+        docs = [d for d in docs if d.get("titolo_principale")]
+        if docs:
+            import random
+            pick = random.choice(docs)
+            return f"\u00ab{pick['titolo_principale'][:80]}\u00bb"
+    except Exception as e:
+        logger.warning(f"push headline fetch failed: {e}")
+    return "La nuova sfida del giorno \u00e8 pronta. Sei pronto?"
+
+
 async def _send_push(sub_doc):
     v = _load_vapid()
     if not v:
         return
+    headline = await _get_push_headline()
     try:
         webpush(
             subscription_info=sub_doc["subscription"],
             data=json.dumps({
-                "title": "Newsguess · È utile essere aggiornati",
-                "body": "La nuova sfida del giorno è pronta. Sei un Direttore emerito o un Lettore distratto?",
+                "title": "\ud83d\udcf0 Newsguess \u2014 Sfida del giorno",
+                "body": headline,
                 "url": "/api/quiz",
+                "icon": "/api/icon-192.png",
             }),
             vapid_private_key=v["private_pem"],
-            vapid_claims={"sub": "mailto:newsguess@example.com"},
+            vapid_claims={"sub": f"mailto:{os.environ.get('VAPID_CONTACT_EMAIL', 'newsguess@example.com')}"},
             ttl=3600,
         )
         await db.push_subs.update_one(
@@ -548,7 +568,7 @@ async def _send_push(sub_doc):
             {"$set": {"lastSentDate": datetime.now(timezone.utc).strftime("%Y-%m-%d")}}
         )
     except WebPushException as e:
-        logger.warning(f"push failed for {sub_doc['endpoint'][:60]}…: {e}")
+        logger.warning(f"push failed for {sub_doc['endpoint'][:60]}\u2026: {e}")
         # 410 Gone = sottoscrizione scaduta, rimuoviamola
         if "410" in str(e) or "404" in str(e):
             await db.push_subs.delete_one({"endpoint": sub_doc["endpoint"]})
