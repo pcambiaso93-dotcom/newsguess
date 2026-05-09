@@ -489,6 +489,18 @@ def _load_vapid():
             _vapid = json.load(f)
     return _vapid
 
+@api_router.get("/historical-image/{filename}")
+async def historical_image(filename: str):
+    """Serve le immagini storiche dalla cartella static/historical."""
+    import re
+    # Valida il nome file per sicurezza
+    if not re.match(r'^[\w\-]+\.jpg$', filename):
+        raise HTTPException(400, "Nome file non valido")
+    path = Path(__file__).parent.parent / "static" / filename
+    if not path.exists():
+        raise HTTPException(404, f"Immagine non trovata: {filename}")
+    from fastapi.responses import FileResponse
+    return FileResponse(str(path), media_type="image/jpeg")
 @api_router.get("/push-vapid-key")
 async def push_vapid_key():
     v = _load_vapid()
