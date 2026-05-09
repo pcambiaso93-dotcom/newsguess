@@ -406,8 +406,30 @@
       padding: 10px;
     }
 
+    /* Scroll mobile: position absolute bypassa i bug flex di Safari */
+    .app-root {
+      position: relative;
+    }
+    .app-main {
+      position: absolute;
+      inset: 0;
+    }
     .app-content {
-      padding-top: 52px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: var(--bn-height);
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      flex: unset;
+      min-height: unset;
+      max-width: unset;
+      margin: 0;
+      width: 100%;
+      padding: 60px 16px calc(40px);
     }
   }
 
@@ -2175,7 +2197,8 @@
   /* ===== RESPONSIVE ===== */
   @media (max-width: 640px) {
     .app-content {
-      padding: 16px 16px calc(var(--bn-height) + 80px);
+      padding-left: 12px;
+      padding-right: 12px;
     }
 
     .card-grid {
