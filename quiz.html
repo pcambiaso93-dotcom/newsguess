@@ -1805,7 +1805,132 @@
 
   .trend-svg { width: 100%; overflow: visible; display: block; }
 
-  /* ===== DROPDOWN EDIZIONI PRECEDENTI ===== */
+  /* ===== SFIDE STORICHE ===== */
+  .historical-intro-modal .modal {
+    max-width: 480px;
+  }
+  .historical-context-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    font-style: italic;
+    border-left: 3px solid var(--accent-primary);
+    padding-left: 14px;
+  }
+  .historical-rules {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .historical-rules li {
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+  }
+  .historical-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--warning);
+    background: rgba(217,168,54,0.12);
+    border: 1px solid var(--warning);
+    border-radius: 99px;
+    padding: 3px 10px;
+    margin-bottom: 14px;
+  }
+  .historical-feedback {
+    margin-top: 14px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    transition: border-color 0.2s;
+  }
+  .historical-feedback.correct { border-color: var(--success); }
+  .historical-feedback.wrong   { border-color: var(--error); }
+  .historical-feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .historical-feedback.correct .historical-feedback-header { background: rgba(74,179,102,0.1); color: var(--success); }
+  .historical-feedback.wrong   .historical-feedback-header { background: rgba(193,66,74,0.1);  color: var(--error); }
+  .historical-frontpage-img {
+    width: 100%;
+    max-height: 340px;
+    object-fit: contain;
+    background: var(--bg-tertiary);
+    display: block;
+  }
+  .historical-score-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .historical-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .historical-dot.correct { background: var(--success); color: #fff; }
+  .historical-dot.wrong   { background: var(--error);   color: #fff; }
+  .historical-dot.pending { background: var(--bg-tertiary); border: 2px solid var(--border-color); }
+  .historical-recap-img {
+    width: 60px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  /* Card sfida storica in home */
+  .mode-card.historical-card {
+    border: 2px solid var(--warning);
+    background: linear-gradient(135deg, rgba(217,168,54,0.06) 0%, var(--bg-secondary) 100%);
+    position: relative;
+  }
+  .mode-card.historical-card .historical-week-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--warning);
+    background: rgba(217,168,54,0.15);
+    border-radius: 99px;
+    padding: 2px 8px;
+  }
+
+  /* Sezione classifica storica */
+  .lb-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin: 0 0 12px;
+  }
   .past-dropdown-wrapper { position: relative; }
   .past-dropdown-trigger {
     width: 100%;
@@ -2227,7 +2352,18 @@
             </div>
           </div>
 
-          <div id="archiveSection" class="section hidden">
+          <div id="historicalChallengeSection" class="hidden" style="margin-top: 16px;">
+            <p class="small-caps">Sfida storica della settimana</p>
+            <div class="mode-card historical-card" id="historicalModeCard" style="cursor:pointer;">
+              <span class="historical-week-badge">📰 Archivio</span>
+              <div class="mode-card-content">
+                <h3 id="historicalCardTitle">—</h3>
+                <p id="historicalCardDate" style="font-size:12px; color: var(--warning); font-weight:700; margin-bottom:6px;"></p>
+                <p id="historicalCardDesc" style="font-size:13px;"></p>
+                <div id="historicalCardStatus" style="margin-top:8px; font-size:13px;"></div>
+              </div>
+            </div>
+          </div>
             <p class="small-caps">Edizioni precedenti</p>
             <div class="past-dropdown-wrapper">
               <button class="past-dropdown-trigger" id="pastDropdownTrigger">Seleziona un'edizione…</button>
@@ -2393,6 +2529,13 @@
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
+          </div>
+
+          <div class="section" id="lbHistoricalSection">
+            <p class="lb-section-title">🏛️ Sfide storiche</p>
+            <div id="lbHistoricalPicker" style="margin-bottom: 12px;"></div>
+            <table class="data-table" id="lbHistoricalTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Sfida</th></tr></thead><tbody></tbody></table>
+            <p id="lbHistoricalEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio per questa sfida.</p>
           </div>
 
           <div class="section">
@@ -2617,6 +2760,29 @@
     <div class="modal-row">
       <button class="btn btn-outline" id="saveModalCancel">Annulla</button>
       <button class="btn" id="saveModalConfirm">Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORICAL INTRO MODAL -->
+<div class="modal-overlay historical-intro-modal" id="historicalIntroModal">
+  <div class="modal">
+    <div class="historical-badge">📰 Sfida storica settimanale</div>
+    <h2 id="himTitle" style="margin-bottom: 6px;"></h2>
+    <p id="himDate" style="font-size: 12px; color: var(--warning); font-weight: 700; letter-spacing: 1px; margin-bottom: 14px;"></p>
+    <div class="historical-context-text" id="himContext"></div>
+    <div class="historical-rules">
+      <p style="font-family:'Playfair Display',serif; font-weight:700; margin-bottom:8px;">Come funziona</p>
+      <ul style="padding-left: 16px; margin: 0;">
+        <li>Tutte le prime pagine disponibili per questa data (<span id="himCount">—</span> giornali)</li>
+        <li>Dopo ogni risposta vedi subito se hai indovinato e la prima pagina originale</li>
+        <li>Puoi rigiocare quante volte vuoi — il punteggio si salva solo alla prima partita</li>
+        <li>Classifica separata dalla sfida quotidiana</li>
+      </ul>
+    </div>
+    <div class="modal-row" style="gap: 10px;">
+      <button class="btn btn-outline" onclick="closeModal('historicalIntroModal')">Annulla</button>
+      <button class="btn" id="himStartBtn">Inizia la sfida</button>
     </div>
   </div>
 </div>
@@ -3154,6 +3320,347 @@ if (!isStandalone() && (isIosDevice() || isAndroidDevice())) {
   $('installBtn').style.display = '';
 }
 
+/* ===== SFIDE STORICHE ===== */
+const HISTORICAL_EXTRA_PAPERS = {
+  unita:         { id: 'unita',         name: "L'Unità" },
+  secolo_xix:    { id: 'secolo_xix',    name: "Il Secolo XIX" },
+  tuttosport:    { id: 'tuttosport',    name: "Tuttosport" },
+  gazzetta:      { id: 'gazzetta',      name: "La Gazzetta dello Sport" },
+  corriere_sport:{ id: 'corriere_sport',name: "Corriere dello Sport" },
+  centro:        { id: 'centro',        name: "Il Centro" },
+  tirreno:       { id: 'tirreno',       name: "Il Tirreno" },
+  mattino:       { id: 'mattino',       name: "Il Mattino" },
+  osservatore:   { id: 'osservatore',   name: "L'Osservatore Romano" },
+  verita:        { id: 'verita',        name: "La Verità" },
+  resto_carlino: { id: 'resto_carlino', name: "Il Resto del Carlino" },
+  stampa_sera:   { id: 'stampa_sera',   name: "Stampa Sera" },
+};
+
+function getHistoricalPaperName(paperId) {
+  const std = NEWSPAPERS.find(n => n.id === paperId);
+  if (std) return std.name;
+  return HISTORICAL_EXTRA_PAPERS[paperId]?.name || paperId;
+}
+
+function getCurrentHistoricalChallenge() {
+  const today = new Date(todayISO());
+  // Trova la sfida attiva: la più recente il cui sabato è già passato o è oggi
+  let active = null;
+  for (const c of HISTORICAL_CHALLENGES) {
+    const sat = new Date(c.scheduledSaturday);
+    if (sat <= today) active = c;
+  }
+  return active;
+}
+
+function getHistoricalChallengeById(id) {
+  return HISTORICAL_CHALLENGES.find(c => c.id === id) || null;
+}
+
+function historicalDoneKey(id) { return `ng-hist-done-${id}`; }
+function historicalDoneData(id) {
+  try { return JSON.parse(localStorage.getItem(historicalDoneKey(id)) || 'null'); } catch { return null; }
+}
+
+const HISTORICAL_CHALLENGES = [
+  {
+    id: 'lockdown-2020', date: '2020-03-10', scheduledSaturday: '2026-05-10',
+    title: 'L\'Italia in lockdown — Covid-19',
+    context: 'Nella sera del 9 marzo 2020, il premier Giuseppe Conte annunciò in diretta televisiva le nuove misure: tutta l\'Italia veniva chiusa come la Lombardia. I divieti di spostamento furono estesi all\'intero territorio nazionale: si usciva solo per comprovata necessità, lavoro o salute. Era la prima volta dall\'Unità d\'Italia che il Paese veniva fermato con un provvedimento così radicale.\n\nScuole, bar, ristoranti, gran parte dei negozi: tutto chiuso fino al 3 aprile. La Borsa crollò dell\'11%. La frase «Restate a casa» di Conte restò scolpita nella memoria collettiva di un\'intera generazione.\n\nI giornali del 10 marzo reagirono in modi molto diversi: da chi celebrò la svolta come necessaria e inevitabile, a chi attaccò con ironia chi aveva minimizzato il virus nelle settimane precedenti con la formula «è poco più di un\'influenza».',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',  sopra:'Le nuove misure per frenare i contagi',                            titolo:'Ora è chiusa tutta l\'Italia',                              sotto:'Divieti in ogni regione. Conte: restare a casa. Scuole e sport, stop fino al 3 aprile. Piazza Affari a -11%',                              img:'/static/2020-03-10_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',         sopra:'Cura shock',                                                       titolo:'Tutti in casa',                                             sotto:'Crollano le Borse, Milano perde l\'11%. Torna l\'incubo del 2008',                                                                      img:'/static/2020-03-10_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'Ulteriore giro di vite di Palazzo Chigi per arginare l\'epidemia', titolo:'Coronavirus, il governo blinda tutto l\'Italia',             sotto:'Conte: «Chiudiamo il Paese, ognuno faccia la sua parte»',                                                                               img:'/static/2020-03-10_stampa.jpg' },
+      { paperId:'fatto',      name:'Il Fatto Quotidiano',   sopra:'Tutta l\'Italia diventa arancione',                                titolo:'La grande fuga: 20mila in 2 giorni',                        sotto:'Folle esodo dalla Lombardia. Conte estende i divieti all\'intero Paese',                                                                   img:'/static/2020-03-10_fatto.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'Lettera a Conte: cambi il decreto',                                titolo:'Bloccate tutto (ma davvero)',                                sotto:'Misure da zona rossa estese a tutto il Paese. Scuole chiuse fino al 3 aprile',                                                             img:'/static/2020-03-10_messaggero.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',           sopra:'Altri 1.598 infetti e 97 morti',                                   titolo:'SI CHIUDE TUTTO (E GUARDATE QUESTA FOTO)',                  sotto:'Zona rossa da Nord a Sud. La Borsa crolla: -11%',                                                                                          img:'/static/2020-03-10_giornale.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',          sopra:'Violenze e sette morti per le misure anti epidemia',               titolo:'Tutti a casa',                                              sotto:'Spostamenti consentiti solo per gravi motivi. Scuole chiuse fino al 3 aprile',                                                             img:'/static/2020-03-10_manifesto.jpg' },
+      { paperId:'avvenire',   name:'Avvenire',              sopra:'Il coronavirus non si arresta',                                    titolo:'Totale protezione',                                         sotto:'Il governo estende chiusure e restrizioni all\'intero Paese',                                                                              img:'/static/2020-03-10_avvenire.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',        sopra:'Effetto virus e petrolio a picco, Borse ko',                       titolo:'Tutta Italia zona arancione e deficit al 2,9%',             sotto:'Vaccino italiano messo al test',                                                                                                           img:'/static/2020-03-10_sole.jpg' },
+      { paperId:'libero',     name:'Libero',                sopra:'Le ultime parole famose — Quelli che dicevano:',                   titolo:'è poco più di un\'influenza',                               sotto:'Conte ci ripensa: tutta Italia bloccata come la Lombardia',                                                                                img:'/static/2020-03-10_libero.jpg' },
+    ],
+  },
+  {
+    id: 'aquila-2009', date: '2009-04-07', scheduledSaturday: '2026-05-17',
+    title: 'Terremoto de L\'Aquila',
+    context: 'Nella notte tra il 5 e il 6 aprile 2009, alle 3:32, una scossa di magnitudo 6.3 colpì l\'Abruzzo con epicentro nei pressi de L\'Aquila. Il bilancio fu devastante: 309 morti, oltre 1.500 feriti e circa 70.000 sfollati. Il centro storico fu ridotto in macerie in pochi secondi.\n\nL\'evento sollevò polemiche sulla prevedibilità del sisma: sei giorni prima la Commissione Grandi Rischi aveva escluso rischi imminenti. Nel 2012 sette suoi membri furono condannati in primo grado — sentenza poi ribaltata in appello — in un caso che divise profondamente l\'opinione pubblica e la comunità scientifica.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'Sisma devastante: più di 150 vittime, 70 mila sfollati', titolo:'Macerie e morte in Abruzzo',       sotto:'Berlusconi: non vi abbandoniamo',                                          img:'/static/2009-04-07_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'Si scava, si salvano',                                  titolo:'Abruzzo in ginocchio, 150 morti', sotto:'Il terremoto devasta L\'Aquila, 70mila senzatetto',                          img:'/static/2009-04-07_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Un terremoto devastante ha colpito l\'Abruzzo alle 3.32',titolo:'Si scava, già 150 morti',          sotto:'Ancora centinaia di dispersi tra le macerie',                            img:'/static/2009-04-07_stampa.jpg' },
+      { paperId:'messaggero',name:'Il Messaggero',       sopra:'Tragedia in Abruzzo',                                   titolo:'Siamo tutti con voi',               sotto:'Oltre 150 morti, 1500 feriti, 70 mila sfollati',                          img:'/static/2009-04-07_messaggero.jpg' },
+      { paperId:'giornale',  name:'Il Giornale',         sopra:'Terremoto in Abruzzo: oltre 150 morti, 230 dispersi',   titolo:'L\'urlo',                           sotto:'Si scava ancora sotto le macerie: già cento le persone estratte vive',    img:'/static/2009-04-07_giornale.jpg' },
+      { paperId:'libero',    name:'Libero',              sopra:'Terremoto in Abruzzo',                                  titolo:'Aiutiamo noi i bambini',            sotto:'Centinaia di morti, quasi 100 mila i senza tetto',                        img:'/static/2009-04-07_libero.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'',                                                      titolo:'Catastrofe umana',                  sotto:'',                                                                        img:'/static/2009-04-07_manifesto.jpg' },
+      { paperId:'avvenire',  name:'Avvenire',            sopra:'Alle 3:32 una scossa di magnitudo 5,8',                 titolo:'Inchiniamoci al dolore',            sotto:'Interi paesi semidistrutti. La preghiera del Papa',                        img:'/static/2009-04-07_avvenire.jpg' },
+      { paperId:'unita',     name:"L'Unità",             sopra:'Centinaia di morti',                                    titolo:'Calvario d\'Abruzzo',               sotto:'Alle 3 e 32 il sisma: già 150 vittime',                                   img:'/static/2009-04-07_unita.jpg' },
+      { paperId:'centro',    name:'Il Centro',           sopra:'L\'Aquila distrutta dal terremoto',                     titolo:'Catastrofe in Abruzzo',             sotto:'Centinaia di vittime, 70mila sfollati',                                   img:'/static/2009-04-07_centro.jpg' },
+    ],
+  },
+  {
+    id: 'concordia-2012', date: '2012-01-14', scheduledSaturday: '2026-05-24',
+    title: 'Naufragio Costa Concordia',
+    context: 'Nella sera del 13 gennaio 2012 la Costa Concordia — 4.229 persone a bordo — urtò uno scoglio vicino all\'isola del Giglio durante una manovra non autorizzata. La nave si inclinò e affondò parzialmente: 32 le vittime.\n\nIl comandante Francesco Schettino fu accusato di aver abbandonato la nave prima di tutti i passeggeri. La telefonata in cui il comandante della Capitaneria De Falco gli urlò "Vada a bordo, cazzo!" divenne iconica. Schettino fu poi condannato a 16 anni di carcere.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'La Costa Concordia si rovescia di fronte al Giglio',     titolo:'Trappola mortale nella nave dei sogni',    sotto:'Mancano all\'appello decine. Arrestato il comandante',           img:'/static/2012-01-14_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'Il comandante sbatte la costa per il "saluto" all\'isola',titolo:'La crociera della morte, 41 dispersi',     sotto:'"Venite a salvare". Arrestato il capitano della Concordia',     img:'/static/2012-01-14_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Il naufragio della Concordia vicino all\'isola del Giglio',titolo:'Tragedia al Giglio, mancano in 40',        sotto:'Arrestato il capitano: "Omicidio colposo"',                      img:'/static/2012-01-14_stampa.jpg' },
+      { paperId:'messaggero',name:'Il Messaggero',       sopra:'Nave da crociera affonda al Giglio: 3 morti',            titolo:'«Come il Titanic»',                          sotto:'Comandante arrestato. Angoscia per i 40 dispersi',               img:'/static/2012-01-14_messaggero.jpg' },
+      { paperId:'giornale',  name:'Il Giornale',         sopra:'Naufragio al Giglio',                                    titolo:'Capitano criminale',                         sotto:'Affonda la Costa Concordia: 3 morti e 41 dispersi',              img:'/static/2012-01-14_giornale.jpg' },
+      { paperId:'libero',    name:'Libero',              sopra:'Naufragio Costa Concordia',                              titolo:'Una manovra da bulli fa strage in crociera', sotto:'',                                                               img:'/static/2012-01-14_libero.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'"Titanic" italiano al Giglio',                           titolo:'3 morti, decine di dispersi',                sotto:'',                                                               img:'/static/2012-01-14_manifesto.jpg' },
+      { paperId:'fatto',     name:'Il Fatto Quotidiano', sopra:'I quarantuno scomparsi della nave Concordia',            titolo:'«Così faremo pagare gli evasori»',           sotto:'',                                                               img:'/static/2012-01-14_fatto.jpg' },
+      { paperId:'tirreno',   name:'Il Tirreno',          sopra:'Tre morti e 39 dispersi',                                titolo:'Arrestato il comandante',                    sotto:'Salvata nella notte dai sub una coppia intrappolata nel relitto',img:'/static/2012-01-14_tirreno.jpg' },
+    ],
+  },
+  {
+    id: 'benedetto-2013', date: '2013-02-12', scheduledSaturday: '2026-05-31',
+    title: 'Dimissioni di Papa Benedetto XVI',
+    context: 'L\'11 febbraio 2013, Benedetto XVI annunciò in latino le proprie dimissioni, efficaci dal 28 febbraio. Fu il primo Papa a rinunciare volontariamente al soglio di Pietro dal 1294, quando abdicò Celestino V. L\'annuncio scosse il mondo intero.\n\nJoseph Ratzinger, 85 anni, motivò la decisione con il venir meno delle forze fisiche e mentali necessarie per governare la Chiesa. Il cardinale decano lo definì "come un fulmine a ciel sereno". Benedetto XVI divenne Papa emerito, ritirandosi nel Monastero Mater Ecclesiae in Vaticano.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',    sopra:'La decisione di Benedetto XVI',                              titolo:'«Non ho più le forze, perdonatemi»',          sotto:'Il Papa annuncia a sorpresa le dimissioni dal 28 febbraio',          img:'/static/2013-02-12_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',          sopra:'Dimissioni shock, scattano dalle ore 20 del 28 febbraio',    titolo:'Il Papa lascia, addio storico',               sotto:'"Non ho più forza". Entro Pasqua il successore',                      img:'/static/2013-02-12_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',              sopra:'L\'unico precedente risale al 1294: Celestino V',            titolo:'L\'addio del Papa deciso un anno fa',         sotto:'"Sento la fatica dell\'età"',                                          img:'/static/2013-02-12_stampa.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',         sopra:'La rinuncia dal 28 febbraio, non avveniva da 700 anni',      titolo:'Lascia Papa Benedetto XVI «È per il bene della Chiesa»', sotto:'Conclave a marzo',                                        img:'/static/2013-02-12_sole24ore.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',            sopra:'Il Papa scende dalla croce',                                 titolo:'Amen',                                        sotto:'Benedetto XVI si è dimesso: lascerà il 28 febbraio',                  img:'/static/2013-02-12_giornale.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',           sopra:'Ratzinger',                                                  titolo:'Stasera esco',                                sotto:'Un pontefice rinuncia per la prima volta nella storia moderna',        img:'/static/2013-02-12_manifesto.jpg' },
+      { paperId:'libero',     name:'Libero',                 sopra:'Come anticipato da «Libero»',                                titolo:'Gli intrighi vaticani fanno dimettere il Papa', sotto:'Una decisione clamorosa mette fine a un pontificato segnato da scandali', img:'/static/2013-02-12_libero.jpg' },
+      { paperId:'avvenire',   name:'Avvenire',               sopra:'L\'annuncio di Benedetto XVI ai cardinali',                  titolo:'L\'umiltà di Pietro',                         sotto:'Lascia dal 28 febbraio. Conclave a marzo',                             img:'/static/2013-02-12_avvenire.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',          sopra:'Benedetto XVI lascia il pontificato a fine mese',            titolo:'Papa choc',                                   sotto:'"Sento l\'età, non ho più le forze". Conclave a marzo',                img:'/static/2013-02-12_messaggero.jpg' },
+      { paperId:'osservatore',name:"L'Osservatore Romano",   sopra:'L\'annuncio al termine del Concistoro ordinario',            titolo:'Benedetto XVI lascia il pontificato',          sotto:'La sede vacante a partire dalle ore 20 del prossimo 28 febbraio',      img:'/static/2013-02-12_osservatore.jpg' },
+    ],
+  },
+  {
+    id: 'francesco-2013', date: '2013-03-14', scheduledSaturday: '2026-06-07',
+    title: 'Elezione di Papa Francesco',
+    context: 'Il 13 marzo 2013, al quinto scrutinio, i cardinali elessero Jorge Mario Bergoglio, arcivescovo di Buenos Aires, 76 anni. Scelse il nome Francesco, in onore del santo di Assisi.\n\nPrimo Papa non europeo dal 741, primo gesuita, primo dell\'emisfero australe. Le parole "Vengo dalla fine del mondo" restarono scolpite nella memoria collettiva. Il suo primo gesto — chiedere la benedizione al popolo prima di impartirla — segnò immediatamente il tono di un pontificato incentrato sulla semplicità e sull\'attenzione ai più poveri.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',    sopra:'Il nuovo pontefice',                                         titolo:'La sorpresa di Francesco',                    sotto:'"Vengo dalla fine del mondo, pregate per me"',                        img:'/static/2013-03-14_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',          sopra:'Il cardinale argentino, 76 anni, eletto a sorpresa',         titolo:'La nuova Chiesa di Papa Francesco',           sotto:'Jorge Mario Bergoglio: vengo dalla fine del mondo',                   img:'/static/2013-03-14_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',              sopra:'L\'argentino Bergoglio Papa al quinto scrutinio',            titolo:'Francesco',                                   sotto:'',                                                                    img:'/static/2013-03-14_stampa.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',         sopra:'Eletto a sorpresa l\'argentino Jorge Mario Bergoglio',       titolo:'Francesco',                                   sotto:'Il Papa gesuita venuto "dalla fine del mondo"',                       img:'/static/2013-03-14_sole24ore.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',            sopra:'L\'argentino Bergoglio è il nuovo pontefice',                titolo:'Francesco, il Papa dell\'altro mondo',        sotto:'Primo gesuita e primo sudamericano della storia a essere eletto',     img:'/static/2013-03-14_giornale.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',           sopra:'',                                                           titolo:'Non è Francesco',                             sotto:'Il quinto scrutinio ha consacrato l\'elezione di Bergoglio',          img:'/static/2013-03-14_manifesto.jpg' },
+      { paperId:'libero',     name:'Libero',                 sopra:'È argentino, si chiamerà Francesco',                         titolo:'Il Papa povero',                              sotto:'Ha telefonato subito al predecessore',                                img:'/static/2013-03-14_libero.jpg' },
+      { paperId:'avvenire',   name:'Avvenire',               sopra:'Fumata bianca alle 19.06. Alla quinta votazione',            titolo:'Papa Francesco',                              sotto:'"Io, vescovo di Roma, preso quasi alla fine del mondo"',              img:'/static/2013-03-14_avvenire.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',          sopra:'Il primo pontefice non europeo ed è un gesuita argentino',   titolo:'Papa Francesco',                              sotto:'"Vengo dalla fine del mondo"',                                        img:'/static/2013-03-14_messaggero.jpg' },
+      { paperId:'osservatore',name:"L'Osservatore Romano",   sopra:'Annuntio vobis gaudium magnum — Habemus Papam',              titolo:'Georgium Marium Bergoglio — Franciscum',      sotto:'',                                                                    img:'/static/2013-03-14_osservatore.jpg' },
+      { paperId:'mattino',    name:'Il Mattino',             sopra:'Alla quinta votazione la fumata bianca del Conclave',        titolo:'«Vengo dalla fine del mondo»',                sotto:'Francesco. Eletto a sorpresa l\'argentino Bergoglio',                 img:'/static/2013-03-14_mattino.jpg' },
+    ],
+  },
+  {
+    id: 'berlusconi-2011', date: '2011-11-13', scheduledSaturday: '2026-06-14',
+    title: 'Dimissioni di Silvio Berlusconi',
+    context: 'Il 12 novembre 2011, Silvio Berlusconi si dimise da Presidente del Consiglio dopo aver perso la maggioranza alla Camera. La crisi era maturata nel pieno della crisi del debito sovrano europeo: lo spread BTP-Bund aveva toccato oltre 570 punti base.\n\nFuori dal Quirinale una folla festante lo accolse con fischi, insulti e monetine — immagine simbolo di quella stagione politica. L\'incarico fu poi affidato a Mario Monti, ex commissario europeo, che formò un governo tecnico.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'',                            titolo:'Addio di Berlusconi, via libera a Monti',  sotto:'Governo di tecnici solo per fare le riforme chieste dall\'Europa',img:'/static/2011-11-13_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'Il Cavaliere si è dimesso',   titolo:'Berlusconi lascia, la piazza in festa',    sotto:'Oggi Napolitano dà l\'incarico a Monti',                          img:'/static/2011-11-13_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Il premier si è dimesso',      titolo:'L\'addio di Berlusconi, ora Monti',        sotto:'Fischi e insulti dalla folla',                                     img:'/static/2011-11-13_stampa.jpg' },
+      { paperId:'sole24ore', name:'Il Sole 24 Ore',      sopra:'La svolta italiana',           titolo:'Berlusconi si dimette, sì condizionato a Monti', sotto:'Nella squadra solo ministri tecnici',                     img:'/static/2011-11-13_sole24ore.jpg' },
+      { paperId:'fatto',     name:'Il Fatto Quotidiano', sopra:'',                            titolo:'Finalmente se ne va ma ricatta Monti',     sotto:'Festa e monetine davanti al Quirinale',                           img:'/static/2011-11-13_fatto.jpg' },
+      { paperId:'giornale',  name:'Il Giornale',         sopra:'Via libera del PDL (con riserva)', titolo:'Monti, il precario',                 sotto:'Berlusconi non gli sbarra la strada',                              img:'/static/2011-11-13_giornale.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'Berlusconi se ne va',          titolo:'Mai più',                                sotto:'Il ventennio berlusconiano è finito',                               img:'/static/2011-11-13_manifesto.jpg' },
+      { paperId:'libero',    name:'Libero',              sopra:'Arriva il Signor Tasse',       titolo:'Occhio ai portafogli',                    sotto:'Berlusconi si dimette e già oggi Napolitano incaricherà Monti',    img:'/static/2011-11-13_libero.jpg' },
+      { paperId:'unita',     name:"L'Unità",             sopra:'Monti, il giorno dell\'incarico', titolo:'La liberazione',                     sotto:'Berlusconi insiste su Letta ma lui si tira indietro',               img:'/static/2011-11-13_unita.jpg' },
+      { paperId:'messaggero',name:'Il Messaggero',       sopra:'Il premier si dimette',        titolo:'Berlusconi lascia, sì a Monti',           sotto:'Festa in piazza, folla davanti al Quirinale',                      img:'/static/2011-11-13_messaggero.jpg' },
+    ],
+  },
+  {
+    id: 'ponte-morandi-2018', date: '2018-08-15', scheduledSaturday: '2026-06-21',
+    title: 'Crollo del Ponte Morandi',
+    context: 'Il 14 agosto 2018 alle 11:36, il viadotto Polcevera (Ponte Morandi) crollò improvvisamente a Genova sull\'autostrada A10: 43 vittime. Il ponte, inaugurato nel 1967 e progettato da Riccardo Morandi, era uno dei principali accessi alla città.\n\nEmersero documenti che dimostravano come il deterioramento fosse noto da anni. Il governo Conte I revocò la concessione ad Autostrade e avviò la ricostruzione, completata nel 2020 con il nuovo Ponte San Giorgio progettato da Renzo Piano.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'Il viadotto Morandi considerato a rischio da anni', titolo:'La strage sul ponte malato',                sotto:'Crollo sull\'A10 a Genova, decine di vittime. "Come una bomba"', img:'/static/2018-08-15_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'Almeno 26 morti sotto il "Morandi"',              titolo:'Genova come in guerra crolla il ponte che la univa', sotto:'Allarmi inascoltati: era da anni un gigante fragile',        img:'/static/2018-08-15_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Si spezza il viadotto dell\'A10 a Genova',        titolo:'Strage sul ponte, l\'Italia ferita',         sotto:'I Tir precipitano nel vuoto. Oltre 30 morti',                   img:'/static/2018-08-15_stampa.jpg' },
+      { paperId:'sole24ore', name:'Il Sole 24 Ore',      sopra:'Un viadotto da sempre criticato',                 titolo:'Shock a Genova: crolla il ponte Morandi dell\'A10', sotto:'Almeno trenta i morti',                                     img:'/static/2018-08-15_sole24ore.jpg' },
+      { paperId:'fatto',     name:'Il Fatto Quotidiano', sopra:'Genova: crolla il Ponte Morandi',                 titolo:'Il "monitoraggio costante" ne ammazza 26',   sotto:'Autostrade minimizza, ma si indaga per disastro colposo',       img:'/static/2018-08-15_fatto.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'Crolla il ponte della A10, decine di vittime',    titolo:'Il mostro di Genova',                        sotto:'La città sconvolta ma non sorpresa dalla tragedia del vecchio viadotto', img:'/static/2018-08-15_manifesto.jpg' },
+      { paperId:'libero',    name:'Libero',              sopra:'Crolla il ponte dell\'autostrada sulla città',    titolo:'Hanno ucciso Genova',                        sotto:'Oltre 30 morti, decine di feriti, 500 sfollati',                img:'/static/2018-08-15_libero.jpg' },
+      { paperId:'avvenire',  name:'Avvenire',            sopra:'Cede il ponte simbolo Morandi',                   titolo:'Genova a pezzi',                             sotto:'La ricerca delle colpe e di una via alternativa',               img:'/static/2018-08-15_avvenire.jpg' },
+      { paperId:'secolo_xix',name:'Il Secolo XIX',       sopra:'Collassa il cavalcavia dell\'A10 sul Polcevera',  titolo:'Crolla il ponte dei lavori infiniti strage in autostrada a Genova', sotto:'Almeno 31 morti, tra cui un bimbo di 9 anni', img:'/static/2018-08-15_secolo_xix.jpg' },
+    ],
+  },
+  {
+    id: 'covid-zone-rosse-2020', date: '2020-02-23', scheduledSaturday: '2026-06-28',
+    title: 'Prime zone rosse Covid in Italia',
+    context: 'Il 21 febbraio 2020 fu confermato a Codogno il primo caso italiano di Covid-19 non collegato alla Cina. Il 22 febbraio il governo istituì le prime "zone rosse": undici comuni del lodigiano e Vo\' Euganeo in isolamento totale. Era l\'inizio della peggiore crisi sanitaria dal dopoguerra.\n\nL\'Italia fu il primo Paese occidentale a fare i conti con una diffusione comunitaria del virus. In poche settimane il lockdown si estese a tutta la nazione, rendendo il Paese il simbolo globale della pandemia prima che essa travolgesse il resto d\'Europa e del mondo.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'Il decreto per l\'emergenza',                   titolo:'Una cintura per isolare il virus',           sotto:'Non si potrà uscire da 11 Comuni focolaio. Seconda vittima, i contagiati sono 76', img:'/static/2020-02-23_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'Due vittime, oltre 60 contagiati',              titolo:'Nord, paralisi da virus',                    sotto:'Il governo: anche l\'esercito per isolare le zone a rischio',   img:'/static/2020-02-23_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Due morti in Lombardia, 30 contagiati',         titolo:'Virus, l\'Italia si blinda',                 sotto:'Una cintura sanitaria intorno ai focolai. Mobiliterà l\'esercito',img:'/static/2020-02-23_stampa.jpg' },
+      { paperId:'sole24ore', name:'Il Sole 24 Ore',      sopra:'L\'epidemia si allarga',                        titolo:'Virus, dal Governo misure speciali',         sotto:'In Italia il numero più alto di casi in Europa',                 img:'/static/2020-02-23_sole24ore.jpg' },
+      { paperId:'fatto',     name:'Il Fatto Quotidiano', sopra:'2 morti, ancora caccia al paziente 0',          titolo:'Virus, Nord Italia in stato d\'assedio',     sotto:'Imposta la quarantena, oltre 60 casi fino a Milano',             img:'/static/2020-02-23_fatto.jpg' },
+      { paperId:'giornale',  name:'Il Giornale',         sopra:'L\'epidemia si allarga',                        titolo:'Il Nord chiude',                             sotto:'Due contagi a Milano, è panico. Atenei chiusi',                 img:'/static/2020-02-23_giornale.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'I contagi in Italia salgono a 60',              titolo:'Terapia intensiva',                          sotto:'Mattarella contro lo sciacallaggio della destra',               img:'/static/2020-02-23_manifesto.jpg' },
+      { paperId:'messaggero',name:'Il Messaggero',       sopra:'Un decreto per impedire l\'allontanamento dai focolai', titolo:'Città chiuse per isolare il virus', sotto:'Università, scuole e stadi verso la serrata',                   img:'/static/2020-02-23_messaggero.jpg' },
+      { paperId:'avvenire',  name:'Avvenire',            sopra:'Il coronavirus provoca due morti',              titolo:'Prudenza e unità contro virus e paura',      sotto:'',                                                              img:'/static/2020-02-23_avvenire.jpg' },
+      { paperId:'verita',    name:'La Verità',           sopra:'Due decessi, decine di casi',                   titolo:'«Noi sul virus primi in Europa» Sì, per morti e per contagiati', sotto:'',                                         img:'/static/2020-02-23_verita.jpg' },
+    ],
+  },
+  {
+    id: 'mondiali-2006', date: '2006-07-10', scheduledSaturday: '2026-07-05',
+    title: 'Italia Campione del Mondo — Berlino 2006',
+    context: 'Il 9 luglio 2006, allo Stadio Olimpico di Berlino, l\'Italia batté la Francia ai rigori (6-4, dopo l\'1-1 dei tempi regolamentari) conquistando il quarto titolo mondiale. La finale fu segnata dalla testata di Zidane a Materazzi che costò all\'asso francese il cartellino rosso.\n\nFu decisivo il rigore di Fabio Grosso. Il ct Marcello Lippi annunciò il ritiro dopo la vittoria. Nonostante lo scandalo di Calciopoli, circa 20 milioni di italiani scesero in piazza a festeggiare in una delle notti di festa collettiva più memorabili della storia repubblicana.',
+    papers: [
+      { paperId:'corriere',      name:'Corriere della Sera',      sopra:'Vittoria ai Mondiali',                     titolo:'L\'Italia dei Campioni',              sotto:'La Nazionale batte la Francia segnando tutti e cinque i rigori',  img:'/static/2006-07-10_corriere.jpg' },
+      { paperId:'repubblica',    name:'La Repubblica',            sopra:'Dopo 24 anni, alla nazionale il quarto titolo', titolo:'Campioni',                        sotto:'Storica vittoria: batte la Francia ai rigori e conquista il Mondiale', img:'/static/2006-07-10_repubblica.jpg' },
+      { paperId:'stampa',        name:'La Stampa',                sopra:'Azzurri mondiali dopo 24 anni',            titolo:'I campioni siamo noi',                sotto:'',                                                               img:'/static/2006-07-10_stampa.jpg' },
+      { paperId:'messaggero',    name:'Il Messaggero',            sopra:'Campioni del mondo: i rigori non ci tradiscono', titolo:'Italia cuore mondiale',          sotto:'Zidane ci gela, Materazzi pareggia. Lippi andrà via',             img:'/static/2006-07-10_messaggero.jpg' },
+      { paperId:'giornale',      name:'Il Giornale',              sopra:'Gli Azzurri conquistano la Coppa del Mondo ai rigori', titolo:'Adieu France — Campioni',  sotto:'',                                                               img:'/static/2006-07-10_giornale.jpg' },
+      { paperId:'tuttosport',    name:'Tuttosport',               sopra:'Francia battuta 6-4 dopo i calci di rigore', titolo:'Mitico',                            sotto:'Milioni di persone nelle piazze d\'Italia',                       img:'/static/2006-07-10_tuttosport.jpg' },
+      { paperId:'corriere_sport',name:'Corriere dello Sport',     sopra:'6-4 Campioni del mondo',                  titolo:'Italia!',                             sotto:'Trionfo ai rigori, tutto il Paese in delirio',                   img:'/static/2006-07-10_corriere_sport.jpg' },
+      { paperId:'gazzetta',      name:'La Gazzetta dello Sport',  sopra:'Italia-Francia 6-4 dopo i calci di rigore', titolo:'Tutto vero! Campioni del mondo',    sotto:'Il quarto titolo mondiale. Ai rigori decide Grosso',              img:'/static/2006-07-10_gazzetta.jpg' },
+    ],
+  },
+  {
+    id: 'genova-g8-2001', date: '2001-07-21', scheduledSaturday: '2026-07-12',
+    title: 'G8 di Genova — Morte di Carlo Giuliani',
+    context: 'Tra il 20 e il 22 luglio 2001, Genova ospitò il vertice del G8. La città fu teatro di scontri durissimi tra forze dell\'ordine e manifestanti no-global. Nel pomeriggio del 20 luglio, in piazza Alimonda, il carabiniere Mario Placanica sparò contro Carlo Giuliani, 23 anni, che stava sollevando un estintore contro la camionetta in cui era rinchiuso il militare. Giuliani morì sul colpo.\n\nLa sua morte divenne simbolo dello scontro tra globalizzazione e contestazione. Il blitz nella scuola Diaz e i fatti della caserma di Bolzaneto lasciarono una ferita profonda nella coscienza democratica italiana che non si è mai del tutto rimarginata.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'Saccheggi, auto in fiamme, centinaia di feriti',  titolo:'Battaglia a Genova, muore giovane di 23 anni', sotto:'Carabiniere assediato fa fuoco, ucciso un manifestante',      img:'/static/2001-07-21_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'La vittima è uno squatter italiano di 23 anni',   titolo:'G8, tragedia a Genova',               sotto:'Carabiniere spara, ucciso un ragazzo. Città sconvolta',          img:'/static/2001-07-21_repubblica2.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Carlo Giuliani colpito mentre assaltava una camionetta', titolo:'Guerra al G8: ucciso un ragazzo', sotto:'Gruppi di anarchici scatenano la violenza, la città devastata', img:'/static/2001-07-21_stampa.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'Ucciso da un colpo di pistola sparato da un carabiniere', titolo:'Grandi omicidi',               sotto:'Il primo morto del movimento antiliberista',                     img:'/static/2001-07-21_manifesto2.jpg' },
+      { paperId:'secolo_xix',name:'Il Secolo XIX',       sopra:'Lancio di molotov, scatenati gli anarchici',     titolo:'Genova, sangue sul G8',               sotto:'Un giovane antiglobal genovese ucciso, 180 feriti',              img:'/static/2001-07-21_secolo_xix.jpg' },
+      { paperId:'unita',     name:"L'Unità",             sopra:'',                                                titolo:'È accaduto il peggio, ucciso un ragazzo', sotto:'A Genova giornata di guerra scatenata dalle tute nere',       img:'/static/2001-07-21_unita.jpg' },
+    ],
+  },
+  {
+    id: 'undici-settembre-2001', date: '2001-09-12', scheduledSaturday: '2026-07-19',
+    title: 'L\'11 settembre 2001',
+    context: 'L\'11 settembre 2001 alle 8:46 ora locale, diciannove dirottatori di Al-Qaeda fecero schiantare quattro aerei di linea contro obiettivi americani. Due colpirono le Twin Towers del World Trade Center, entrambe poi crollate. Un terzo si abbatté sul Pentagono. Il quarto precipitò in Pennsylvania. I morti furono quasi 3.000, di 90 nazionalità, tra cui 8 italiani.\n\nFu l\'attacco più letale sul suolo americano dalla seconda guerra mondiale. L\'evento trasformò radicalmente la politica mondiale, avviando le "guerre al terrore" in Afghanistan e Iraq, e cambiando per sempre le norme sulla sicurezza globale.',
+    papers: [
+      { paperId:'corriere',  name:'Corriere della Sera', sopra:'Il più grave atto di guerra dal 1945',            titolo:'Attacco all\'America e alla civiltà',  sotto:'Aerei dirottati si schiantano sui grattacieli di New York e sul Pentagono', img:'/static/2001-09-12_corriere.jpg' },
+      { paperId:'repubblica',name:'La Repubblica',       sopra:'I terroristi dirottano quattro voli, rase al suolo le Torri di Manhattan', titolo:'Attacco all\'America', sotto:'Aerei come bombe su New York e Pentagono. Ventimila morti',  img:'/static/2001-09-12_repubblica.jpg' },
+      { paperId:'stampa',    name:'La Stampa',           sopra:'Dopo la distruzione del WTC, i sospetti su Osama Bin Laden', titolo:'Attacco a l\'America',         sotto:'Quattro aerei dirottati come missili. Le Torri gemelle crollano', img:'/static/2001-09-12_stampa.jpg' },
+      { paperId:'sole24ore', name:'Il Sole 24 Ore',      sopra:'Due aerei colpiscono le Torri gemelle distruggendole, un terzo il Pentagono', titolo:'20mila morti a Manhattan', sotto:'Attacco all\'America, il Paese paralizzato, Wall Street chiude 2 giorni', img:'/static/2001-09-12_sole24ore.jpg' },
+      { paperId:'giornale',  name:'Il Giornale',         sopra:'Nel cuore dell\'America il più grave attentato della storia', titolo:'Migliaia di morti',          sotto:'Quattro aerei lanciati contro i simboli Usa: rase al suolo le Torri di New York', img:'/static/2001-09-12_giornale.jpg' },
+      { paperId:'libero',    name:'Libero',              sopra:'Più di 20mila morti a New York',                 titolo:'Forza America reagisci',               sotto:'Il mondo aspetta una risposta al terrorismo islamico',           img:'/static/2001-09-12_libero.jpg' },
+      { paperId:'manifesto', name:'Il Manifesto',        sopra:'Guerra dai cieli sugli Stati Uniti d\'America',  titolo:'Apocalisse',                           sotto:'"Supremo reagire". Ma l\'intera popolazione è nel panico',       img:'/static/2001-09-12_manifesto.jpg' },
+      { paperId:'messaggero',name:'Il Messaggero',       sopra:'',                                               titolo:'Atto di guerra',                       sotto:'Apocalisse a New York, migliaia di morti',                      img:'/static/2001-09-12_messaggero.jpg' },
+      { paperId:'unita',     name:"L'Unità",             sopra:'George Bush, Presidente degli Stati Uniti',      titolo:'Stato di guerra in America',           sotto:'Quattro aerei dirottati per attacchi suicidi a New York e Washington', img:'/static/2001-09-12_unita.jpg' },
+    ],
+  },
+  {
+    id: 'ucraina-2022', date: '2022-02-24', scheduledSaturday: '2026-07-26',
+    title: 'L\'invasione russa dell\'Ucraina',
+    context: 'Alle 5:45 del mattino del 24 febbraio 2022, Vladimir Putin annunciò l\'inizio di una «operazione militare speciale» in Ucraina. Missili colpirono Kiev, Kharkiv, Mariupol e decine di altre città. Le forze russe attraversarono il confine da nord, est e sud. Il presidente Zelensky dichiarò lo stato di emergenza.\n\nLa giornata aveva però un\'altra grande notizia: il premier Draghi aveva annunciato la fine dello stato d\'emergenza Covid. Molti giornali italiani si trovarono in stampa nel momento esatto in cui scoppiava la guerra, producendo prime pagine molto diverse tra loro — specchio della disorientante complessità di quella mattina.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',  sopra:'L\'allarme di Washington, Zelensky: «Vogliamo aderire a Ue e Nato»', titolo:'«L\'Ucraina sarà invasa fra poche ore»',          sotto:'Covid, l\'emergenza è finita. Draghi: dall\'1 aprile stop anche ai colori',                      img:'/static/2022-02-24_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',         sopra:'Venti di guerra',                                                  titolo:'L\'Ucraina aspetta l\'invasione',                    sotto:'L\'intelligence Usa: «Offensiva russa in larga scala entro 48 ore»',                              img:'/static/2022-02-24_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'Kiev pronta alla guerra',                                          titolo:'Draghi: emergenza finita adesso riapriamo tutto',    sotto:'Con le restrizioni resterà il mascherine',                                                         img:'/static/2022-02-24_stampa.jpg' },
+      { paperId:'fatto',      name:'Il Fatto Quotidiano',   sopra:'Crisi Ucraina',                                                    titolo:'Mosca addio: Draghi agli ordini di Biden',           sotto:'L\'Europa si allinea',                                                                              img:'/static/2022-02-24_fatto.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'L\'Italia che riapre: il 31 marzo finisce l\'emergenza',           titolo:'Ucraina, ora Mosca accelera',                       sotto:'L\'intelligence Usa: «invasione entro 48 ore»',                                                    img:'/static/2022-02-24_messaggero.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',           sopra:'Guerra in Ucraina',                                                titolo:'Conto alla rovescia',                               sotto:'Putin pronto ad attaccare Donetsk e Lugansk',                                                      img:'/static/2022-02-24_giornale.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',          sopra:'L\'Ucraina dichiara lo stato di emergenza',                        titolo:'No war',                                            sotto:'',                                                                                                  img:'/static/2022-02-24_manifesto.jpg' },
+      { paperId:'avvenire',   name:'Avvenire',              sopra:'Allarme Usa: l\'invasione è vicina',                               titolo:'Scelta di nonviolenza',                             sotto:'',                                                                                                  img:'/static/2022-02-24_avvenire.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',        sopra:'Sanità, da aprile emergenza finita',                               titolo:'Regioni in ritardo sulle cure non Covid',            sotto:'Gli Usa: invasione entro le prossime 48 ore',                                                      img:'/static/2022-02-24_sole.jpg' },
+      { paperId:'libero',     name:'Libero',                sopra:'Perde Speranza',                                                   titolo:'Finalmente liberi',                                 sotto:'L\'annuncio del premier: dal 31 marzo addio alle zone a colori',                                   img:'/static/2022-02-24_libero.jpg' },
+    ],
+  },
+  {
+    id: 'meloni-2022', date: '2022-09-26', scheduledSaturday: '2026-08-02',
+    title: 'Vittoria di Giorgia Meloni alle elezioni politiche',
+    context: 'Il 25 settembre 2022 si tennero le elezioni politiche italiane. Il centrodestra ottenne la maggioranza assoluta con circa il 43% dei voti. Fratelli d\'Italia di Giorgia Meloni fu il primo partito con oltre il 26%, un risultato senza precedenti per la formazione post-missina.\n\nMeloni divenne la prima donna presidente del Consiglio nella storia della Repubblica italiana. Il M5S di Conte risalì sorprendentemente al 15%, mentre la Lega di Salvini crollò all\'8,9%. L\'astensionismo raggiunse il 36%, record storico.\n\nLe prime pagine del 26 settembre fotografarono una notte di svolta politica che divideva nettamente l\'Italia: da chi gridava alla «rivoluzione nelle urne» a chi vedeva nell\'astensione il vero vincitore della serata.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',  sopra:'Elezioni 2022',                                                    titolo:'Ha vinto Giorgia Meloni',                  sotto:'Fratelli d\'Italia oltre il 25%, è il primo partito. Al Pd meno del 20%, crolla la Lega, rimonta del M5S', img:'/static/2022-09-26_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',         sopra:'Fratelli d\'Italia 24,6%',                                         titolo:'Meloni si prende l\'Italia',               sotto:'FdI fa il partito. La Lega crolla all\'8,5%, FI all\'8%',                                             img:'/static/2022-09-26_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'FdI primo partito, vicino alla soglia del 26%',                    titolo:'L\'Italia va a destra',                    sotto:'Meloni prenota Palazzo Chigi. Tracollo leghista',                                                      img:'/static/2022-09-26_stampa.jpg' },
+      { paperId:'fatto',      name:'Il Fatto Quotidiano',   sopra:'FdI cannibalizza la Lega. Il PD finisce KO',                       titolo:'Meloni vince da sola / Conte tallona Letta', sotto:'Astensione record. 1 su 3 non vota',                                                                 img:'/static/2022-09-26_fatto.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'Successo del centrodestra: ha la maggioranza assoluta',            titolo:'Meloni verso palazzo Chigi',               sotto:'FdI è il primo partito. Tra i dem processo a Letta. Crollo Lega',                                     img:'/static/2022-09-26_messaggero.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',           sopra:'Rivoluzione nelle urne',                                           titolo:'L\'Italia s\'è destra',                    sotto:'Trionfa il centrodestra. Storica Meloni: primo partito al 26%',                                        img:'/static/2022-09-26_giornale.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',          sopra:'Terremoto nel voto, Meloni a Palazzo Chigi',                       titolo:'A noi',                                    sotto:'Vince la destra, stravince Meloni, nel record dell\'astensione (36%)',                                 img:'/static/2022-09-26_manifesto.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',        sopra:'Elezioni, partiti, governo: il mondo-Italia al voto',              titolo:'Tutte le mine per il nuovo Governo',       sotto:'Luce e gas, i maxi rincari che ora arrivano alle famiglie',                                            img:'/static/2022-09-26_sole.jpg' },
+      { paperId:'libero',     name:'Libero',                sopra:'Sconfitta la sinistra',                                            titolo:'LIBERI!!! Adesso tocca a lei',             sotto:'Successo del centrodestra, FdI davanti a tutti',                                                       img:'/static/2022-09-26_libero.jpg' },
+    ],
+  },
+  {
+    id: 'hamas-2023', date: '2023-10-08', scheduledSaturday: '2026-08-09',
+    title: 'Hamas attacca Israele — 7 ottobre 2023',
+    context: 'Alle prime luci dell\'alba del 7 ottobre 2023, Hamas lanciò un attacco a sorpresa senza precedenti contro Israele: circa 2.500 combattenti sfondarono il confine con Gaza, aprendo il fuoco su kibbutz, basi militari e il festival musicale Nova. Oltre 3.000 razzi furono lanciati in pochi minuti.\n\nIl bilancio fu devastante: circa 1.200 israeliani uccisi — il peggior massacro di ebrei dalla Shoah — e oltre 250 presi in ostaggio. Netanyahu dichiarò lo stato di guerra. L\'intelligence israeliana fu colta totalmente di sorpresa.\n\nLa risposta israeliana con bombardamenti massicci su Gaza diede inizio a uno dei conflitti più sanguinosi del Medio Oriente moderno. Le prime pagine dell\'8 ottobre mostrano l\'Italia di fronte a un evento che avrebbe cambiato gli equilibri geopolitici globali.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera',  sopra:'7/10/23',                                                          titolo:'Attacco a Israele, è guerra',                               sotto:'Hamas lancia migliaia di missili, incursioni via terra. Le vittime sono centinaia. Rappresaglia di Netanyahu su Gaza', img:'/static/2023-10-08_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',         sopra:'Hamas lancia un attacco terroristico a sorpresa da Gaza',          titolo:'Israele colpito al cuore',                                  sotto:'Più di 250 morti e 160 ostaggi. Netanyahu: «Siamo in guerra»',                                  img:'/static/2023-10-08_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'Hamas scatena l\'inferno: migliaia di razzi, si combatte vicino ai kibbutz', titolo:'Israele in ostaggio',                            sotto:'Oltre 200 morti',                                                                               img:'/static/2023-10-08_stampa.jpg' },
+      { paperId:'fatto',      name:'Il Fatto Quotidiano',   sopra:'500 morti — I palestinesi attaccano da Gaza',                      titolo:'La guerra mondiale a rate: ora tocca a Israele e Hamas',    sotto:'Il capo terrorista guida i suoi dai tunnel. Netanyahu invia i caccia',                          img:'/static/2023-10-08_fatto.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'Razzi e incursioni da Gaza: 250 morti e 50 in ostaggio',           titolo:'Israele sotto attacco',                                     sotto:'Pista iraniana: la strategia per sabotare gli accordi con gli arabi',                           img:'/static/2023-10-08_messaggero.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',           sopra:'Attacco di Hamas',                                                 titolo:'FORZA ISRAELE',                                             sotto:'Palestinesi come i nazisti: caccia all\'ebreo porta a porta. Netanyahu: «È guerra»',            img:'/static/2023-10-08_giornale.jpg' },
+      { paperId:'libero',     name:'Libero',                sopra:'Israele invaso',                                                   titolo:'Fermiamo le bestie di Hamas',                               sotto:'',                                                                                              img:'/static/2023-10-08_libero.jpg' },
+      { paperId:'manifesto',  name:'Il Manifesto',          sopra:'Palestinesi abbattono le recinzioni al confine di Gaza',           titolo:'La sorpresa della guerra',                                  sotto:'Medio Oriente sull\'orlo del baratro',                                                          img:'/static/2023-10-08_manifesto.jpg' },
+      { paperId:'sole24ore',  name:'Il Sole 24 Ore',        sopra:'Hamas attacca, Israele: «Guerra». Civili ostaggi e centinaia di morti', titolo:'Hamas attacca, una mossa quasi suicida',              sotto:'',                                                                                              img:'/static/2023-10-08_sole.jpg' },
+      { paperId:'avvenire',   name:'Avvenire',              sopra:'Terrorismo, risposta, obiettivi di pace',                          titolo:'Ancora guerra altra morte',                                 sotto:'Hamas attacca Israele. Netanyahu risponde con i bombardamenti',                                 img:'/static/2023-10-08_avvenire.jpg' },
+    ],
+  },
+  {
+    id: 'mundial-1982', date: '1982-07-12', scheduledSaturday: '2026-08-16',
+    title: 'Italia Campione del Mondo — Spagna 1982',
+    context: 'L\'11 luglio 1982, allo Stadio Bernabeu di Madrid, l\'Italia batté la Germania Ovest 3-1 conquistando il terzo titolo mondiale. Dopo un inizio difficile del torneo, la nazionale di Bearzot aveva eliminato Argentina e Brasile prima di trionfare in finale. Paolo Rossi, capocannoniere con 6 gol, fu il trascinatore assoluto.\n\nFu la notte più felice del calcio italiano del dopoguerra. Il presidente Pertini, in tribuna, esultò come un tifoso qualunque. La storica foto con la pipe alzata e il pugno chiuso restò nell\'immaginario collettivo. «Siamo campioni del mondo» disse il telecronista Nando Martellini per tre volte di fila.\n\nI giornali del 12 luglio uscirono in edizioni straordinarie: un\'Italia intera festeggiò nelle piazze fino all\'alba.',
+    papers: [
+      { paperId:'corriere',      name:'Corriere della Sera',     sopra:'Per la terza volta nella storia del calcio gli azzurri sono campioni iridati', titolo:'L\'Italia ha vinto il «Mundial»', sotto:'Lo scontro decisivo con la Germania (3-1). Pertini: il giorno più bello della mia presidenza', img:'/static/1982-07-12_corriere.jpg' },
+      { paperId:'messaggero',    name:'Il Messaggero',           sopra:'Battuta 3-1 la Germania. Il trionfo siglato da Paolo Rossi, Tardelli e Altobelli', titolo:'Favolosamente campioni', sotto:'', img:'/static/1982-07-12_messaggero.jpg' },
+      { paperId:'stampa_sera',   name:'Stampa Sera',             sopra:'Battuti i tedeschi (3-1) — Dopo 44 anni la Coppa è nostra', titolo:'Campioni del mondo!', sotto:'Italia, il calcio ti fa bella', img:'/static/1982-07-12_stampa_sera.jpg' },
+      { paperId:'gazzetta',      name:'La Gazzetta dello Sport', sopra:'ITALIA-GERMANIA 3-1', titolo:'Campioni del mondo!', sotto:'Gol di Rossi, Tardelli e Altobelli', img:'/static/1982-07-12_gazzetta.jpg' },
+      { paperId:'corriere_sport',name:'Corriere dello Sport',    sopra:'3-1 Germania ko. Gli invitti azzurri danno all\'Italia, dopo 44 anni, il mondiale!', titolo:'Eroici!', sotto:'Gol storico di Pablito, re dei cannonieri', img:'/static/1982-07-12_corriere_sport.jpg' },
+    ],
+  },
+  {
+    id: 'attentato-papa-1981', date: '1981-05-13', scheduledSaturday: '2026-08-23',
+    title: 'Attentato a Giovanni Paolo II',
+    context: 'Il 13 maggio 1981, alle 17:19, in piazza San Pietro gremita di fedeli, il terrorista turco Mehmet Ali Ağca sparò quattro colpi di pistola contro Giovanni Paolo II. Due pallottole colpirono il Pontefice all\'addome. Un intervento chirurgico di quasi cinque ore al Policlinico Gemelli fu necessario per salvargli la vita.\n\nAğca, 23 anni, militante di estrema destra già condannato in Turchia per l\'assassinio di un giornalista, fu bloccato immediatamente dalla folla. Il movente rimase avvolto nel mistero: le indagini esplorarono un possibile coinvolgimento dei servizi bulgari e del KGB.\n\nIl 27 dicembre 1983 Giovanni Paolo II visitò Ağca in carcere e gli accordò il perdono. Il 13 maggio — anniversario della prima apparizione della Vergine a Fatima — divenne per il Papa un giorno di speciale devozione mariana.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera', sopra:'Ore 17,21, Piazza San Pietro: inaudito attentato al capo della Cristianità', titolo:'Il Papa per quattro ore in lotta con la morte', sotto:'Un terrorista turco gli ha sparato mentre in jeep benediceva la folla', img:'/static/1981-05-13_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',        sopra:'Un giovane neonazista turco gli ha sparato due colpi a piazza San Pietro', titolo:'Ferito il Papa', sotto:'Operato, sembra fuori pericolo', img:'/static/1981-05-13_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'Sgomento nel mondo per un attentato senza precedenti', titolo:'Il Papa colpito da tre proiettili è molto grave, forse si salverà', sotto:'La sparatoria alle 17,19 in piazza San Pietro', img:'/static/1981-05-13_stampa.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'Uno dei proiettili gli ha perforato l\'intestino', titolo:'Ha sparato un terrorista turco. Trepidazione per il Pontefice', sotto:'Mehemed Ali Agca è un estremista di destra', img:'/static/1981-05-13_messaggero.jpg' },
+      { paperId:'gazzetta',   name:'La Gazzetta dello Sport', sopra:'Il Pontefice colpito in piazza San Pietro', titolo:'Hanno sparato al Papa', sotto:'Operato d\'urgenza Giovanni Paolo II è ancora grave', img:'/static/1981-05-13_gazzetta.jpg' },
+      { paperId:'osservatore',name:'L\'Osservatore Romano',  sopra:'In tutto il mondo, dopo l\'attentato di ieri', titolo:'Ore di speranza e di preghiera per la salute del Santo Padre', sotto:'', img:'/static/1981-05-13_osservatore.jpg' },
+    ],
+  },
+  {
+    id: 'strage-bologna-1980', date: '1980-08-02', scheduledSaturday: '2026-08-30',
+    title: 'La strage di Bologna',
+    context: 'Il 2 agosto 1980, alle 10:25, una potente bomba esplose nella sala d\'aspetto di seconda classe della stazione ferroviaria di Bologna. L\'esplosione distrusse completamente un\'ala dell\'edificio: 85 i morti, oltre 200 i feriti. Fu la strage più sanguinosa del dopoguerra italiano.\n\nL\'attentato fu rivendicato dai Nuclei Armati Rivoluzionari (NAR), ma le indagini si rivelarono lunghissime e ostacolate da depistaggi. Nel 2020 la Corte d\'Appello ha condannato all\'ergastolo Gilberto Cavallini (NAR), riconoscendo anche il concorso dei vertici della loggia massonica P2. La verità giudiziaria sulla strage è rimasta oggetto di dibattito per oltre quarant\'anni.',
+    papers: [
+      { paperId:'corriere',      name:'Corriere della Sera',  sopra:'Una strage che non ha precedenti in Italia', titolo:'Scoppio apocalisse a Bologna', sotto:'76 morti, 147 feriti in stazione', img:'/static/1980-08-02_corriere.jpg' },
+      { paperId:'repubblica',    name:'La Repubblica',         sopra:'', titolo:'Un massacro', sotto:'A Bologna cento morti e duecento feriti. C\'è la prova: è stata una bomba', img:'/static/1980-08-02_repubblica.jpg' },
+      { paperId:'stampa',        name:'La Stampa',             sopra:'Alle 10,25, mentre la folla si preparava a partire per le vacanze', titolo:'Salta in aria la stazione di Bologna 76 morti, 203 feriti: è un attentato?', sotto:'L\'esplosione ha completamente distrutto l\'ala dell\'edificio', img:'/static/1980-08-02_stampa.jpg' },
+      { paperId:'unita',         name:'L\'Unità',              sopra:'L\'Italia sconvolta dall\'immane tragedia', titolo:'Una strage spaventosa', sotto:'Oltre settanta morti e 200 feriti. Quasi certo: un atroce attentato fascista', img:'/static/1980-08-02_unita.jpg' },
+      { paperId:'messaggero',    name:'Il Messaggero',         sopra:'80 morti. Un\'esplosione ha raso al suolo un\'intera ala della stazione', titolo:'Mostruoso attentato o disgrazia?', sotto:'', img:'/static/1980-08-02_messaggero.jpg' },
+      { paperId:'manifesto',     name:'Il Manifesto',          sopra:'Se è un attentato', titolo:'Mai tanti morti. Bomba nera fa saltare in aria mezza stazione a Bologna', sotto:'La città è in sciopero generale', img:'/static/1980-08-02_manifesto.jpg' },
+      { paperId:'avvenire',      name:'Avvenire',              sopra:'Ottanta morti, più di cento feriti nell\'esplosione', titolo:'Strage a Bologna: attentato?', sotto:'I neofascisti dei NAR si attribuiscono la paternità della strage', img:'/static/1980-08-02_avvenire.jpg' },
+      { paperId:'resto_carlino', name:'Il Resto del Carlino',  sopra:'Bologna, orrenda esplosione alle 10,26', titolo:'Strage alla stazione', sotto:'Decine e decine di morti', img:'/static/1980-08-02_resto_carlino.jpg' },
+    ],
+  },
+  {
+    id: 'moro-assassinato-1978', date: '1978-05-09', scheduledSaturday: '2026-09-06',
+    title: 'L\'assassinio di Aldo Moro',
+    context: 'Il 9 maggio 1978, alle 9:00 del mattino, il corpo di Aldo Moro fu trovato nel bagagliaio di una Renault 4 rossa in via Caetani, a Roma, equidistante tra le sedi della DC e del PCI — un segnale simbolico delle Brigate Rosse. Era stato rapito 55 giorni prima in via Fani.\n\nMoro era stato colpito da undici proiettili. Durante la prigionia aveva scritto decine di lettere chiedendo invano la trattativa. Il governo Andreotti, sostenuto da DC, PCI e PSI, rifiutò qualsiasi negoziato in nome della fermezza dello Stato.\n\nL\'assassinio di Moro segnò la fine della stagione del terrorismo rosso come forza capace di destabilizzare la Repubblica, ma lasciò ferite profonde nella storia politica italiana.',
+    papers: [
+      { paperId:'corriere',      name:'Corriere della Sera', sopra:'Assassinato dalle Brigate Rosse e lasciato su un\'auto nel centro di Roma', titolo:'Il delitto Moro', sotto:'È morto perché questa Repubblica viva', img:'/static/1978-05-09_corriere.jpg' },
+      { paperId:'repubblica',    name:'La Repubblica',        sopra:'Il cadavere ritrovato in un\'auto a pochi metri dalle sedi della Dc e del Pci', titolo:'L\'assassinio di Moro', sotto:'Il paese reagisce compatto alla sfida delle Br', img:'/static/1978-05-09_repubblica.jpg' },
+      { paperId:'stampa',        name:'La Stampa',             sopra:'Le Br hanno concluso con barbara ferocia il crimine iniziato in via Fani', titolo:'Moro assassinato', sotto:'Milioni di italiani scendono in piazza', img:'/static/1978-05-09_stampa.jpg' },
+      { paperId:'avvenire',      name:'Avvenire',              sopra:'Le BR hanno abbandonato il cadavere in una strada del centro di Roma', titolo:'L\'uccisione di Aldo Moro suscita esecrazione e dolore senza confini', sotto:'Il martirio di un uomo', img:'/static/1978-05-09_avvenire.jpg' },
+      { paperId:'manifesto',     name:'Il Manifesto',          sopra:'Ora è accaduto', titolo:'Moro ucciso in solitudine', sotto:'La famiglia rifiuta i funerali di stato', img:'/static/1978-05-09_manifesto.jpg' },
+      { paperId:'unita',         name:'L\'Unità',              sopra:'L\'efferato crimine delle Br tocca la coscienza civile di tutti gli italiani', titolo:'L\'assassinio di Moro', sotto:'L\'Italia si è fermata di colpo come il 16 marzo', img:'/static/1978-05-09_unita.jpg' },
+      { paperId:'resto_carlino', name:'Il Resto del Carlino',  sopra:'Il cadavere in un\'auto a Roma', titolo:'MORO UCCISO', sotto:'Abbandonato dagli assassini tra sede dc e quella del pci', img:'/static/1978-05-09_resto_carlino.jpg' },
+    ],
+  },
+  {
+    id: 'moro-rapimento-1978', date: '1978-03-16', scheduledSaturday: '2026-09-13',
+    title: 'Il rapimento di Aldo Moro',
+    context: 'Il 16 marzo 1978, alle 9:15, in via Mario Fani a Roma, un commando delle Brigate Rosse tese un agguato al corteo di Aldo Moro: cinque uomini della scorta furono uccisi a raffiche di mitra. Il presidente della DC fu rapito. Lo stesso giorno, il governo Andreotti otteneva la fiducia con il voto esterno del PCI: la stagione del «compromesso storico».\n\nFu il più grave attacco terroristico al cuore dello Stato nella storia della Repubblica. Fu proclamato uno sciopero generale, centinaia di migliaia di persone scesero nelle piazze. Il presidente Leone annunciò lo stato di allarme.\n\nLa prigionia durò 55 giorni, durante i quali le BR pubblicarono comunicati, foto e lettere del prigioniero. Il 9 maggio 1978 il corpo di Moro fu trovato in via Caetani.',
+    papers: [
+      { paperId:'corriere',   name:'Corriere della Sera', sopra:'Il più grave crimine politico degli ultimi trent\'anni', titolo:'Moro rapito, cinque uomini della scorta massacrati', sotto:'Il Paese rifiuta il ricatto delle «Brigate Rosse»', img:'/static/1978-03-16_corriere.jpg' },
+      { paperId:'repubblica', name:'La Repubblica',        sopra:'L\'attacco contro lo Stato ha raggiunto il suo culmine', titolo:'Moro rapito dalle Brigate rosse', sotto:'Falciati a raffiche di mitra i cinque uomini della scorta', img:'/static/1978-03-16_repubblica.jpg' },
+      { paperId:'stampa',     name:'La Stampa',             sopra:'Ore gravi della Repubblica per la sanguinosa impresa delle Brigate rosse', titolo:'Dopo il massacro, nessuna traccia di Moro', sotto:'Il Paese si è fermato: dice no al terrorismo', img:'/static/1978-03-16_stampa.jpg' },
+      { paperId:'giornale',   name:'Il Giornale',           sopra:'Mai portato così a fondo l\'attacco al cuore dello Stato', titolo:'Moro prigioniero delle Brigate rosse', sotto:'Cinque agenti crivellati di proiettili', img:'/static/1978-03-16_giornale.jpg' },
+      { paperId:'messaggero', name:'Il Messaggero',         sopra:'A Roma alle 9,15 alla Camilluccia', titolo:'Moro rapito dalle Br', sotto:'Uccisi quattro agenti di scorta', img:'/static/1978-03-16_messaggero.jpg' },
+      { paperId:'unita',      name:'L\'Unità',              sopra:'Barbaramente assassinati i 5 uomini della scorta', titolo:'Rapito Aldo Moro', sotto:'Sciopero generale e mobilitazione unitaria', img:'/static/1978-03-16_unita.jpg' },
+    ],
+  },
+];
+
 /* ===== ARCHIVIO ===== */
 // Festività italiane in cui i quotidiani non escono (chiave 'MM-DD')
 // Giorni in cui i quotidiani NON escono (edicola chiusa)
@@ -3256,7 +3763,393 @@ function closePastDropdown() {
 }
 loadArchive();
 
-/* ===== ARCHIVE BROWSER ===== */
+/* ===== SFIDE STORICHE — LOGICA ===== */
+
+// Stato della partita storica
+const histState = {
+  challenge: null,   // HISTORICAL_CHALLENGES entry
+  questions: [],     // papers rimescolati
+  current: 0,
+  answers: [],       // { paperId, given, correct }
+  startedAt: null,
+};
+
+function loadHistoricalSection() {
+  const ch = getCurrentHistoricalChallenge();
+  const sec = $('historicalChallengeSection');
+  if (!ch) { sec.classList.add('hidden'); return; }
+  sec.classList.remove('hidden');
+  $('historicalCardTitle').textContent = ch.title;
+  $('historicalCardDate').textContent = fmtDateIT(ch.date);
+  $('historicalCardDesc').textContent = `${ch.papers.length} prime pagine storiche`;
+  const done = historicalDoneData(ch.id);
+  const statusEl = $('historicalCardStatus');
+  if (done) {
+    statusEl.innerHTML = `<span style="color:var(--success);font-weight:700;">✓ Hai già giocato: ${done.score}/${done.total}</span> <span style="color:var(--text-tertiary);font-size:11px;">(puoi rigiocare)</span>`;
+  } else {
+    statusEl.innerHTML = `<span style="color:var(--warning);font-size:12px;">Nuovo! Prima partita conta in classifica</span>`;
+  }
+}
+
+$('historicalModeCard').addEventListener('click', () => {
+  const ch = getCurrentHistoricalChallenge();
+  if (!ch) return;
+  $('himTitle').textContent = ch.title;
+  $('himDate').textContent = fmtDateIT(ch.date);
+  // Mostra il contesto con newline
+  $('himContext').innerHTML = ch.context.split('\n\n').map(p => `<p style="margin-bottom:10px;">${escapeHtml(p)}</p>`).join('');
+  $('himCount').textContent = ch.papers.length;
+  openModal('historicalIntroModal');
+});
+
+$('himStartBtn').addEventListener('click', () => {
+  closeModal('historicalIntroModal');
+  const ch = getCurrentHistoricalChallenge();
+  if (ch) startHistoricalChallenge(ch);
+});
+
+function startHistoricalChallenge(ch) {
+  histState.challenge = ch;
+  histState.questions = [...ch.papers].sort(() => Math.random() - 0.5);
+  histState.current = 0;
+  histState.answers = [];
+  histState.startedAt = Date.now();
+
+  $('modePicker').classList.add('hidden');
+  $('errorBox').classList.add('hidden');
+  $('finalScreen').classList.add('hidden');
+  $('loading').classList.add('hidden');
+  $('quizRunning').classList.add('hidden');
+
+  renderHistoricalScreen();
+}
+
+function renderHistoricalScreen() {
+  // Rimuovi schermata precedente se esiste
+  let el = document.getElementById('historicalScreen');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'historicalScreen';
+    $('page-quiz').appendChild(el);
+  }
+  el.classList.remove('hidden');
+
+  const ch = histState.challenge;
+  const q = histState.questions[histState.current];
+  const total = histState.questions.length;
+  const idx = histState.current;
+
+  // Distrattori: mix tra giornali della sfida e NEWSPAPERS standard
+  const allPapers = [...ch.papers.map(p => ({ id: p.paperId, name: p.name })),
+    ...NEWSPAPERS.map(n => ({ id: n.id, name: n.name }))];
+  const uniquePapers = [...new Map(allPapers.map(p => [p.id, p])).values()];
+  const distractors = uniquePapers.filter(p => p.id !== q.paperId);
+  const choices = sampleN(distractors, 3).concat({ id: q.paperId, name: q.name }).sort(() => Math.random() - 0.5);
+
+  // Barra avanzamento
+  const dotsHtml = histState.questions.map((_, i) => {
+    const ans = histState.answers[i];
+    let cls = 'historical-dot pending';
+    let sym = '';
+    if (ans) { cls = `historical-dot ${ans.correct ? 'correct' : 'wrong'}`; sym = ans.correct ? '✓' : '✗'; }
+    else if (i === idx) { cls = 'historical-dot pending'; sym = i+1; }
+    return `<div class="${cls}">${sym}</div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="padding: 0 4px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <button class="btn btn-outline btn-sm" onclick="confirmExitHistorical()">← Esci</button>
+        <div style="flex:1; font-size:13px; color:var(--text-tertiary);">Domanda ${idx+1} di ${total} · <em>${escapeHtml(ch.title)}</em></div>
+      </div>
+      <div class="historical-score-bar">${dotsHtml}</div>
+      <div class="question-card" style="margin-bottom: 0;">
+        <div style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--warning); margin-bottom:8px;">📅 ${fmtDateIT(ch.date)}</div>
+        <div class="extracted-headline">
+          ${q.sopra ? `<div class="headline-tag">${escapeHtml(q.sopra)}</div>` : ''}
+          <div class="headline-title">${escapeHtml(q.titolo)}</div>
+          ${q.sotto ? `<div class="headline-subtitle">${escapeHtml(q.sotto)}</div>` : ''}
+        </div>
+        <p class="small-caps" style="margin-top:16px;">Da quale giornale proviene?</p>
+        <div class="choices-container" id="histChoices"></div>
+      </div>
+    </div>`;
+
+  lucide.createIcons();
+
+  const cont = $('histChoices');
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c.name;
+    btn.addEventListener('click', () => handleHistoricalAnswer(c.id, q, choices, btn));
+    cont.appendChild(btn);
+  });
+}
+
+function handleHistoricalAnswer(givenId, q, choices, clickedBtn) {
+  // Disabilita tutti i bottoni
+  document.querySelectorAll('#histChoices .choice-btn').forEach(b => b.disabled = true);
+  const correct = givenId === q.paperId;
+  histState.answers[histState.current] = { paperId: q.paperId, given: givenId, correct };
+
+  // Colora i bottoni
+  document.querySelectorAll('#histChoices .choice-btn').forEach(b => {
+    const cid = choices.find(c => c.name === b.textContent)?.id;
+    if (cid === q.paperId) b.classList.add('correct');
+    else if (cid === givenId && !correct) b.classList.add('wrong');
+  });
+
+  // Mostra feedback inline con immagine
+  const feedbackHtml = `
+    <div class="historical-feedback ${correct ? 'correct' : 'wrong'}" id="histFeedback">
+      <div class="historical-feedback-header">
+        ${correct ? '✓ Esatto!' : `✗ Era ${escapeHtml(q.name)}`}
+      </div>
+      <img class="historical-frontpage-img" src="${escapeHtml(q.img)}" alt="${escapeHtml(q.name)}" onerror="this.style.display='none'" />
+    </div>
+    <div style="text-align:center; margin-top:14px;">
+      <button class="btn" id="histNextBtn">${histState.current < histState.questions.length - 1 ? 'Prossima domanda →' : 'Vedi il riepilogo →'}</button>
+    </div>`;
+
+  const qCard = document.querySelector('#historicalScreen .question-card');
+  if (qCard) qCard.insertAdjacentHTML('beforeend', feedbackHtml);
+
+  $('histNextBtn').addEventListener('click', () => {
+    histState.current++;
+    if (histState.current < histState.questions.length) {
+      renderHistoricalScreen();
+    } else {
+      showHistoricalFinalScreen();
+    }
+  });
+
+  // Scrolla fino al feedback
+  setTimeout(() => $('histFeedback')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+}
+
+function showHistoricalFinalScreen() {
+  const el = document.getElementById('historicalScreen');
+  if (el) el.classList.add('hidden');
+
+  const ch = histState.challenge;
+  const score = histState.answers.filter(a => a.correct).length;
+  const total = histState.questions.length;
+  const pct = Math.round(score / total * 100);
+  const isFirstPlay = !historicalDoneData(ch.id);
+
+  // Salva il risultato (solo la prima volta)
+  if (isFirstPlay) {
+    localStorage.setItem(historicalDoneKey(ch.id), JSON.stringify({
+      score, total, ts: Date.now(), challengeId: ch.id,
+      questions: histState.answers.map((a, i) => ({
+        paperId: histState.questions[i].paperId,
+        paperName: histState.questions[i].name,
+        given: a.given,
+        correct: a.correct,
+        img: histState.questions[i].img,
+      })),
+    }));
+    checkHistoricalBadges();
+  }
+
+  // Schermata finale
+  let html = `
+    <div style="padding: 0 4px;">
+      <div class="card" style="text-align:center; padding: 28px 20px; border-color: var(--warning);">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--warning);margin-bottom:8px;">📰 ${escapeHtml(ch.title)}</div>
+        <div style="font-family:'Playfair Display',serif;font-weight:900;font-size:56px;line-height:1;color:var(--text-primary);margin-bottom:4px;">${score}/${total}</div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">${pct}% di precisione</div>
+        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:18px;color:var(--accent-primary);">${historicalVerdictFor(score, total)}</div>
+        ${isFirstPlay ? '' : '<div style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">Partita non contabilizzata (non è la prima)</div>'}
+      </div>
+
+      <div class="section">
+        <h2>Riepilogo</h2>
+        <div style="display:flex;flex-direction:column;gap:12px;" id="histRecapList"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+        ${isFirstPlay && state.user?.activeGroupCode ? `<button class="btn" id="histSaveBtn">Salva in classifica</button>` : ''}
+        <button class="btn btn-outline" id="histReplayBtn">Rigioca</button>
+        <button class="btn btn-outline" onclick="resetToMenu()">Menu principale</button>
+        <button class="btn btn-outline" id="histShareBtn"><i data-lucide="share-2"></i> Condividi</button>
+      </div>
+    </div>`;
+
+  let finalEl = document.getElementById('historicalFinalScreen');
+  if (!finalEl) {
+    finalEl = document.createElement('div');
+    finalEl.id = 'historicalFinalScreen';
+    $('page-quiz').appendChild(finalEl);
+  }
+  finalEl.innerHTML = html;
+  finalEl.classList.remove('hidden');
+  lucide.createIcons();
+
+  // Riepilogo con immagini
+  const recapList = $('histRecapList');
+  histState.questions.forEach((q, i) => {
+    const ans = histState.answers[i];
+    const correct = ans?.correct;
+    const givenName = histState.questions[i] && ans
+      ? (ch.papers.find(p => p.paperId === ans.given)?.name || HISTORICAL_EXTRA_PAPERS[ans.given]?.name || NEWSPAPERS.find(n=>n.id===ans.given)?.name || ans.given)
+      : '—';
+    const item = document.createElement('div');
+    item.className = 'card card-small';
+    item.style.cssText = `border-color: ${correct ? 'var(--success)' : 'var(--error)'}; cursor:pointer;`;
+    item.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <img class="historical-recap-img" src="${escapeHtml(q.img)}" alt="" onerror="this.style.display='none'" />
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:13px;color:${correct?'var(--success)':'var(--error)'};margin-bottom:4px;">${correct?'✓':'✗'} ${escapeHtml(q.name)}</div>
+          ${!correct ? `<div style="font-size:12px;color:var(--text-tertiary);">Hai risposto: ${escapeHtml(givenName)}</div>` : ''}
+          <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-top:4px;line-height:1.2;">${escapeHtml(q.titolo)}</div>
+        </div>
+      </div>`;
+    item.addEventListener('click', () => openLightbox(q.img));
+    recapList.appendChild(item);
+  });
+
+  // Handler pulsanti
+  document.getElementById('histReplayBtn')?.addEventListener('click', () => {
+    finalEl.classList.add('hidden');
+    startHistoricalChallenge(ch);
+  });
+
+  document.getElementById('histSaveBtn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('histSaveBtn');
+    btn.disabled = true; btn.textContent = 'Salvataggio…';
+    try {
+      await saveLeaderboardEntry({
+        name: state.user.name,
+        groupCode: state.user.activeGroupCode,
+        score, total,
+        mode: 'historical',
+        challengeId: ch.id,
+        challengeTitle: ch.title,
+        dateISO: ch.date,
+        monthKey: ch.scheduledSaturday.slice(0,7),
+      });
+      btn.textContent = '✓ Salvato!';
+    } catch(e) {
+      btn.textContent = 'Errore — riprova';
+      btn.disabled = false;
+    }
+  });
+
+  document.getElementById('histShareBtn')?.addEventListener('click', () => {
+    const dots = histState.answers.map(a => a.correct ? '🟢' : '🔴').join('');
+    const text = `📰 Newsguess — Sfida storica\n«${ch.title}» (${fmtDateIT(ch.date)})\n\n${score}/${total} ${dots}\n\n👉 newsguess.it`;
+    if (navigator.share) { navigator.share({ title: 'Newsguess Storica', text }).catch(()=>{}); return; }
+    navigator.clipboard.writeText(text).then(() => showToast('Risultato copiato!')).catch(() => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank'));
+  });
+
+  // Aggiorna la card in home
+  loadHistoricalSection();
+}
+
+function historicalVerdictFor(score, total) {
+  const pct = score / total;
+  if (pct === 1) return 'Archivista leggendario! Prima pagina perfetta.';
+  if (pct >= 0.8) return 'Caporedattore storico. Memoria di ferro.';
+  if (pct >= 0.6) return 'Cronista d\'epoca. Buona conoscenza della storia.';
+  if (pct >= 0.4) return 'Lettore occasionale. Qualche lacuna nell\'archivio.';
+  return 'Archivio sigillato. La storia ti è ancora oscura.';
+}
+
+function confirmExitHistorical() {
+  if (confirm('Vuoi abbandonare la sfida storica? Il progresso non verrà salvato.')) {
+    document.getElementById('historicalScreen')?.classList.add('hidden');
+    resetToMenu();
+  }
+}
+
+/* Badge storici */
+const HISTORICAL_BADGE_KEYS = {
+  archivista:        'ng-badge-archivista',
+  cronista_epoca:    'ng-badge-cronista-epoca',
+  storico:           'ng-badge-storico',
+  direttore_archivio:'ng-badge-direttore-archivio',
+  testimone:         'ng-badge-testimone',
+};
+
+function checkHistoricalBadges() {
+  const playedIds = HISTORICAL_CHALLENGES.filter(c => historicalDoneData(c.id));
+  const count = playedIds.length;
+  const perfectCount = playedIds.filter(c => { const d = historicalDoneData(c.id); return d && d.score === d.total; }).length;
+
+  const unlock = (key, badge) => {
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, Date.now());
+      showBadgeUnlock(badge);
+    }
+  };
+
+  if (count >= 1)  unlock(HISTORICAL_BADGE_KEYS.archivista, { emoji:'🏛️', name:'Archivista', desc:'Hai giocato la tua prima sfida storica. La storia comincia a prendere forma.' });
+  if (count >= 5)  unlock(HISTORICAL_BADGE_KEYS.cronista_epoca, { emoji:'📜', name:'Cronista d\'epoca', desc:'Cinque sfide storiche completate. Sei un testimone del tempo.' });
+  if (perfectCount >= 1) unlock(HISTORICAL_BADGE_KEYS.storico, { emoji:'🔎', name:'Storico', desc:'Hai ottenuto il massimo in una sfida storica. Memoria da archivio.' });
+  if (perfectCount >= 3) unlock(HISTORICAL_BADGE_KEYS.direttore_archivio, { emoji:'🗞️', name:'Direttore d\'archivio', desc:'Tre sfide storiche con punteggio perfetto. Leggendario.' });
+  if (count >= HISTORICAL_CHALLENGES.length) unlock(HISTORICAL_BADGE_KEYS.testimone, { emoji:'⏳', name:'Testimone del tempo', desc:'Hai giocato tutte le sfide storiche disponibili. La storia non ha segreti.' });
+}
+
+// Carica la sezione storica in classifica
+function loadHistoricalLeaderboard(groupCode) {
+  if (!fbReady || !groupCode) return;
+  const picker = $('lbHistoricalPicker');
+  const tableEl = $('lbHistoricalTable');
+  const emptyEl = $('lbHistoricalEmpty');
+
+  // Popola selector sfide
+  const available = HISTORICAL_CHALLENGES.filter(c => new Date(c.scheduledSaturday) <= new Date(todayISO()));
+  if (!available.length) { $('lbHistoricalSection').style.display = 'none'; return; }
+  $('lbHistoricalSection').style.display = '';
+
+  picker.innerHTML = available.map((c, i) =>
+    `<button class="tab-btn${i===0?' active':''}" data-hist-id="${c.id}" style="font-size:12px;margin:2px;">${c.title}</button>`
+  ).join('');
+
+  let activeId = available[0].id;
+
+  function fetchAndRender(id) {
+    const ch = available.find(c => c.id === id);
+    emptyEl.style.display = 'none';
+    tableEl.querySelector('tbody').innerHTML = '<tr><td colspan="4" style="text-align:center;font-style:italic;color:var(--text-tertiary);">Caricamento…</td></tr>';
+    fbDb.collection('scores')
+      .where('groupCode', '==', groupCode)
+      .where('mode', '==', 'historical')
+      .where('challengeId', '==', id)
+      .get()
+      .then(snap => {
+        const rows = snap.docs.map(d => d.data()).sort((a,b) => (b.score/b.total)-(a.score/a.total) || b.score-a.score);
+        if (!rows.length) {
+          tableEl.querySelector('tbody').innerHTML = '';
+          emptyEl.style.display = '';
+          return;
+        }
+        let html = '';
+        rows.forEach((r, i) => {
+          const pct = Math.round(r.score/r.total*100);
+          html += `<tr${i<3?' class="highlight"':''}><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total} (${pct}%)</td><td style="font-size:11px;color:var(--text-tertiary);">${escapeHtml(ch?.title||'')}</td></tr>`;
+        });
+        tableEl.querySelector('tbody').innerHTML = html;
+      })
+      .catch(() => { tableEl.querySelector('tbody').innerHTML = ''; emptyEl.style.display = ''; });
+  }
+
+  fetchAndRender(activeId);
+  picker.querySelectorAll('[data-hist-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      picker.querySelectorAll('[data-hist-id]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeId = btn.dataset.histId;
+      fetchAndRender(activeId);
+    });
+  });
+}
+
+// Carica storica in home
+loadHistoricalSection();
 document.querySelectorAll('[data-abtab]').forEach(t => {
   t.addEventListener('click', () => {
     document.querySelectorAll('[data-abtab]').forEach(x => x.classList.remove('active'));
@@ -5449,6 +6342,8 @@ async function refreshLeaderboards() {
   $('lbDayDate').textContent = fmtDateIT(today);
 
   const code = state.user.activeGroupCode;
+
+  loadHistoricalLeaderboard(code);
 
   // Recupera tutti i mesi giocati nel gruppo (una sola volta) e popola il select
   fbDb.collection('scores')
