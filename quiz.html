@@ -342,6 +342,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    flex-shrink: 0;
   }
 
   .header-left {
@@ -2131,6 +2132,27 @@
   }
 
   /* ===== TOAST ===== */
+  /* ===== ONBOARDING ===== */
+  .ob-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border-color); transition: background 0.3s;
+  }
+  .ob-dot.active { background: var(--accent-primary); }
+
+  /* ===== REACTIONS ===== */
+  .reaction-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: var(--bg-primary); border: 1px solid var(--border-color);
+    border-radius: 10px; padding: 8px 10px; cursor: pointer;
+    font-size: 20px; transition: all 0.15s;
+  }
+  .reaction-btn span { font-size: 10px; color: var(--text-tertiary); font-family: inherit; }
+  .reaction-btn:hover, .reaction-btn.selected {
+    border-color: var(--accent-primary); background: var(--accent-primary);
+    color: var(--bg-primary);
+  }
+  .reaction-btn.selected span { color: var(--bg-primary); }
+
   .toast {
     position: fixed;
     bottom: 24px;
@@ -2288,6 +2310,10 @@
         <div class="nav-icon"><i data-lucide="award"></i></div>
         <div>Badge</div>
       </div>
+      <div class="nav-item" data-page="profile">
+        <div class="nav-icon"><i data-lucide="user"></i></div>
+        <div>Profilo</div>
+      </div>
       <div class="nav-item" data-page="settings">
         <div class="nav-icon"><i data-lucide="settings"></i></div>
         <div>Impostazioni</div>
@@ -2433,6 +2459,51 @@
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
               <button class="btn btn-outline" onclick="resetToMenu()">Menù principale</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: PROFILE -->
+      <div class="page" id="page-profile">
+        <div id="profileNotLogged" class="section" style="text-align:center;padding:40px 0;">
+          <div style="font-size:48px;margin-bottom:16px;">👤</div>
+          <h2 style="margin-bottom:8px;">Il tuo profilo</h2>
+          <p style="color:var(--text-secondary);margin-bottom:20px;">Accedi per vedere il tuo profilo completo e sincronizzare i dati tra dispositivi.</p>
+          <button class="btn" onclick="openPage('settings')">Accedi o registrati</button>
+        </div>
+        <div id="profileLogged" class="hidden">
+          <!-- Header profilo -->
+          <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:0;">
+            <div style="width:56px;height:56px;border-radius:50%;background:var(--accent-primary);color:var(--bg-primary);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;" id="profileInitial">?</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:18px;font-family:'Playfair Display',serif;" id="profileName">—</div>
+              <div style="font-size:12px;color:var(--text-tertiary);" id="profileEmail">—</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;" id="profileJoined">—</div>
+            </div>
+            <button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openPage('settings')">Modifica</button>
+          </div>
+
+          <!-- Stats rapide -->
+          <div class="section">
+            <h2>Le tue statistiche</h2>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-value" id="profTotalGames">0</div><div class="stat-label">Partite</div></div>
+              <div class="stat-card"><div class="stat-value" id="profStreak">0</div><div class="stat-label">Streak 🔥</div></div>
+              <div class="stat-card"><div class="stat-value" id="profAvg">0</div><div class="stat-label">Media</div></div>
+              <div class="stat-card"><div class="stat-value" id="profPerfect">0</div><div class="stat-label">Perfetti ⭐</div></div>
+            </div>
+          </div>
+
+          <!-- Badge ottenuti -->
+          <div class="section">
+            <h2>Badge ottenuti <span id="profBadgeCount" style="font-size:14px;font-weight:400;color:var(--text-tertiary);"></span></h2>
+            <div id="profBadgeGrid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"></div>
+          </div>
+
+          <!-- Sfide storiche giocate -->
+          <div class="section">
+            <h2>Sfide storiche</h2>
+            <div id="profHistoricalList" style="display:flex;flex-direction:column;gap:8px;margin-top:8px;"></div>
           </div>
         </div>
       </div>
@@ -2939,6 +3010,57 @@
   </div>
 </div>
 
+<!-- ONBOARDING -->
+<div id="onboardingOverlay" class="hidden" style="position:fixed;inset:0;background:var(--bg-primary);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:400px;width:100%;text-align:center;">
+    <div id="onboardStep1">
+      <div style="font-size:56px;margin-bottom:16px;">📰</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Benvenuto su Newsguess</h2>
+      <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Ogni giorno ti mostriamo le prime pagine dei principali quotidiani italiani — senza il nome del giornale. Riesci a indovinarli?</p>
+    </div>
+    <div id="onboardStep2" class="hidden">
+      <div style="font-size:56px;margin-bottom:16px;">🗓️</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Una sfida al giorno</h2>
+      <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Ogni mattina una nuova sfida con 5 giornali. Ogni sabato una <strong>sfida storica</strong>: eventi che hanno fatto la storia, dalla Prima Repubblica a oggi.</p>
+    </div>
+    <div id="onboardStep3" class="hidden">
+      <div style="font-size:56px;margin-bottom:16px;">🏆</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Sfida i tuoi amici</h2>
+      <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Crea un gruppo, condividi il codice e scala la classifica. Accumula badge, mantieni la streak e diventa il miglior lettore di giornali.</p>
+    </div>
+
+    <!-- Dots -->
+    <div style="display:flex;gap:8px;justify-content:center;margin:28px 0 24px;">
+      <div class="ob-dot active" id="obDot0"></div>
+      <div class="ob-dot" id="obDot1"></div>
+      <div class="ob-dot" id="obDot2"></div>
+    </div>
+
+    <button class="btn" id="onboardNextBtn" style="width:100%;font-size:16px;padding:14px;">Avanti</button>
+    <button class="btn btn-outline" id="onboardSkipBtn" style="width:100%;margin-top:10px;font-size:14px;">Salta</button>
+  </div>
+</div>
+
+<!-- REACTIONS PANEL (daily) -->
+<div id="reactionsPanel" class="hidden" style="position:fixed;bottom:calc(var(--bn-height) + 12px);left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:480px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:16px;padding:16px;box-shadow:var(--shadow-md);z-index:800;">
+  <p style="font-size:13px;font-weight:600;margin-bottom:10px;text-align:center;">Come ti è sembrata la sfida di oggi?</p>
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;" id="reactionEmojis">
+    <button class="reaction-btn" data-emoji="🤔">🤔<span>Difficile</span></button>
+    <button class="reaction-btn" data-emoji="😎">😎<span>Facile</span></button>
+    <button class="reaction-btn" data-emoji="😱">😱<span>Sorpreso</span></button>
+    <button class="reaction-btn" data-emoji="🎉">🎉<span>Divertente</span></button>
+    <button class="reaction-btn" data-emoji="😤">😤<span>Frustrante</span></button>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <input type="text" id="reactionComment" placeholder="Aggiungi un commento (opzionale)..." maxlength="120" style="flex:1;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;font-size:13px;background:var(--bg-primary);color:var(--text-primary);">
+    <button class="btn" id="reactionSendBtn" style="padding:8px 14px;font-size:13px;">Invia</button>
+  </div>
+  <button onclick="document.getElementById('reactionsPanel').classList.add('hidden')" style="position:absolute;top:10px;right:12px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-tertiary);">×</button>
+</div>
+
+<!-- REACTIONS VIEW (today's reactions from others) -->
+<div id="reactionsTodaySection" class="hidden" style="margin-top:0;"></div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -3186,6 +3308,7 @@ function openPage(pageName) {
   if (pageName === 'leaderboard') refreshLeaderboards();
   if (pageName === 'stats') renderStats();
   if (pageName === 'badge') renderBadges();
+  if (pageName === 'profile') renderProfile();
 }
 
 // Nav items click - usa event delegation
@@ -6635,6 +6758,244 @@ function showDailyAlreadyPlayedResult() {
   $('saveScoreBtn').style.display = '';
   $('trainAgainBtn').style.display = 'none';
 }
+
+
+/* =========================================================
+   ONBOARDING
+========================================================= */
+(function initOnboarding() {
+  if (localStorage.getItem('ng-onboarded')) return;
+  const overlay = $('onboardingOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('hidden');
+  overlay.style.display = 'flex';
+
+  let step = 0;
+  const steps = ['onboardStep1', 'onboardStep2', 'onboardStep3'];
+  const dots  = ['obDot0', 'obDot1', 'obDot2'];
+  const nextBtn = $('onboardNextBtn');
+  const skipBtn = $('onboardSkipBtn');
+
+  function goTo(n) {
+    steps.forEach((s, i) => $(s)?.classList.toggle('hidden', i !== n));
+    dots.forEach((d, i) => $(d)?.classList.toggle('active', i === n));
+    nextBtn.textContent = n === steps.length - 1 ? 'Inizia a giocare!' : 'Avanti';
+  }
+
+  function finish() {
+    localStorage.setItem('ng-onboarded', '1');
+    overlay.classList.add('hidden');
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (step < steps.length - 1) { step++; goTo(step); }
+    else finish();
+  });
+  skipBtn.addEventListener('click', finish);
+  goTo(0);
+})();
+
+/* =========================================================
+   PROFILO UTENTE
+========================================================= */
+function renderProfile() {
+  const user = state.user;
+  if (!user) {
+    $('profileNotLogged')?.classList.remove('hidden');
+    $('profileLogged')?.classList.add('hidden');
+    return;
+  }
+  $('profileNotLogged')?.classList.add('hidden');
+  $('profileLogged')?.classList.remove('hidden');
+
+  // Header
+  const name = user.name || user.email || 'Utente';
+  const initial = name.charAt(0).toUpperCase();
+  if ($('profileInitial')) $('profileInitial').textContent = initial;
+  if ($('profileName'))    $('profileName').textContent = name;
+  if ($('profileEmail'))   $('profileEmail').textContent = user.email || '';
+  if ($('profileJoined'))  $('profileJoined').textContent = 'Membro di Newsguess';
+
+  // Stats
+  const history = loadStats();
+  const dailyGames = history.filter(h => h.mode === 'daily');
+  const totalGames = dailyGames.length;
+  const avg = totalGames ? (dailyGames.reduce((s, h) => s + (h.score / (h.total || 5)), 0) / totalGames * 5).toFixed(1) : '—';
+  const perfect = dailyGames.filter(h => h.score === (h.total || 5)).length;
+  const streak = computeStreak(history);
+  if ($('profTotalGames')) $('profTotalGames').textContent = totalGames;
+  if ($('profStreak'))     $('profStreak').textContent = streak;
+  if ($('profAvg'))        $('profAvg').textContent = avg;
+  if ($('profPerfect'))    $('profPerfect').textContent = perfect;
+
+  // Badge
+  const badgeGrid = $('profBadgeGrid');
+  const badgeCount = $('profBadgeCount');
+  if (badgeGrid) {
+    const allBadgeKeys = Object.keys(localStorage).filter(k => k.startsWith('badge-'));
+    const earned = allBadgeKeys.length;
+    if (badgeCount) badgeCount.textContent = `${earned} ottenuti`;
+    if (earned === 0) {
+      badgeGrid.innerHTML = '<p style="color:var(--text-tertiary);font-size:13px;">Nessun badge ancora. Continua a giocare!</p>';
+    } else {
+      badgeGrid.innerHTML = allBadgeKeys.map(k => {
+        try {
+          const b = JSON.parse(localStorage.getItem(k));
+          return `<div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px;" title="${b.desc || ''}">
+            <span style="font-size:20px;">${b.emoji || '🏅'}</span>
+            <span style="font-weight:600;">${b.name || k}</span>
+          </div>`;
+        } catch { return ''; }
+      }).join('');
+    }
+  }
+
+  // Sfide storiche
+  const histList = $('profHistoricalList');
+  if (histList) {
+    const played = HISTORICAL_CHALLENGES.filter(c => historicalDoneData(c.id));
+    if (played.length === 0) {
+      histList.innerHTML = '<p style="color:var(--text-tertiary);font-size:13px;">Nessuna sfida storica ancora — la prima si attiva ogni sabato.</p>';
+    } else {
+      histList.innerHTML = played.map(c => {
+        const data = historicalDoneData(c.id);
+        const score = data?.score ?? 0;
+        const total = data?.total ?? c.papers.length;
+        const pct = Math.round(score / total * 100);
+        const col = pct === 100 ? 'var(--success)' : pct >= 60 ? 'var(--accent-primary)' : 'var(--error)';
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg-secondary);border-radius:10px;border:1px solid var(--border-color);">
+          <div style="font-size:22px;">📰</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:600;font-size:14px;">${escapeHtml(c.title)}</div>
+            <div style="font-size:12px;color:var(--text-tertiary);">${c.date}</div>
+          </div>
+          <div style="font-weight:700;font-size:15px;color:${col};">${score}/${total}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+/* =========================================================
+   COMMENTI / REAZIONI
+========================================================= */
+const REACTIONS_KEY = 'ng-reactions';
+
+function showReactionsPanel() {
+  const dateISO = todayISO();
+  const existing = getMyReaction(dateISO);
+  // Se ha già reagito oggi, non mostrare di nuovo
+  if (existing) return;
+  const panel = $('reactionsPanel');
+  if (!panel) return;
+  panel.classList.remove('hidden');
+
+  // Reset stato bottoni
+  document.querySelectorAll('.reaction-btn').forEach(b => b.classList.remove('selected'));
+  if ($('reactionComment')) $('reactionComment').value = '';
+
+  // Selezione emoji
+  document.querySelectorAll('.reaction-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.reaction-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  // Invio
+  const sendBtn = $('reactionSendBtn');
+  if (sendBtn) {
+    sendBtn.onclick = async () => {
+      const selectedEmoji = document.querySelector('.reaction-btn.selected')?.dataset.emoji;
+      const comment = ($('reactionComment')?.value || '').trim().slice(0, 120);
+      if (!selectedEmoji) { showToast('Scegli una reazione!'); return; }
+      saveMyReaction(dateISO, selectedEmoji, comment);
+      panel.classList.add('hidden');
+      showToast('Grazie per il feedback! 🙏');
+      if (state.user && fbDb) {
+        try {
+          await fbDb.collection('reactions').add({
+            date: dateISO, emoji: selectedEmoji, comment,
+            name: state.user.name || 'Anonimo',
+            uid: state.user.uid || null,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } catch(e) { /* silent fail */ }
+      }
+      renderTodayReactions(dateISO);
+    };
+  }
+}
+
+function getMyReaction(dateISO) {
+  try { return JSON.parse(localStorage.getItem(`${REACTIONS_KEY}-${dateISO}`) || 'null'); } catch { return null; }
+}
+
+function saveMyReaction(dateISO, emoji, comment) {
+  localStorage.setItem(`${REACTIONS_KEY}-${dateISO}`, JSON.stringify({ emoji, comment, ts: Date.now() }));
+}
+
+async function renderTodayReactions(dateISO) {
+  const section = $('reactionsTodaySection');
+  if (!section || !fbDb) return;
+  try {
+    const snap = await fbDb.collection('reactions')
+      .where('date', '==', dateISO)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get();
+    if (snap.empty) { section.classList.add('hidden'); return; }
+    const items = snap.docs.map(d => d.data());
+    // Conta le reazioni per emoji
+    const counts = {};
+    items.forEach(r => { counts[r.emoji] = (counts[r.emoji] || 0) + 1; });
+    const emojiBar = Object.entries(counts).sort((a,b) => b[1]-a[1])
+      .map(([e, n]) => `<span style="margin-right:10px;font-size:15px;">${e} <strong>${n}</strong></span>`).join('');
+    // Ultimi 5 commenti non vuoti
+    const comments = items.filter(r => r.comment).slice(0, 5);
+    section.classList.remove('hidden');
+    section.innerHTML = `
+      <div class="section" style="margin-top:0;">
+        <h2 style="font-size:15px;margin-bottom:10px;">Cosa ne pensano gli altri oggi</h2>
+        <div style="margin-bottom:12px;">${emojiBar}</div>
+        ${comments.length ? comments.map(r => `
+          <div style="padding:8px 12px;background:var(--bg-secondary);border-radius:8px;margin-bottom:6px;font-size:13px;">
+            <span style="margin-right:6px;">${r.emoji}</span>
+            <strong>${escapeHtml(r.name)}</strong>
+            <span style="color:var(--text-secondary);margin-left:6px;">${escapeHtml(r.comment)}</span>
+          </div>`).join('') : ''}
+      </div>`;
+  } catch(e) { section.classList.add('hidden'); }
+}
+
+// Hook nella schermata finale del daily
+const _origShowFinalScreen = window.showFinalScreen;
+(function patchFinalScreen() {
+  const origSaveDaily = typeof saveDaily === 'function' ? saveDaily : null;
+  // Osserva quando finalScreen diventa visibile (MutationObserver)
+  const finalScreen = $('finalScreen');
+  if (finalScreen) {
+    new MutationObserver(() => {
+      if (!finalScreen.classList.contains('hidden') && state.mode === 'daily') {
+        setTimeout(() => showReactionsPanel(), 1200);
+        renderTodayReactions(todayISO());
+      }
+    }).observe(finalScreen, { attributes: true, attributeFilter: ['class'] });
+  }
+})();
+
+// Hook openPage per profilo
+const _origOpenPage = openPage;
+// (openPage è già dichiarata, la estendiamo via event)
+document.addEventListener('ng:openpage', e => {
+  if (e.detail === 'profile') renderProfile();
+});
+// Patch openPage per emettere evento
+const __openPageOrig = openPage;
+window.openPage = function(pageName) {
+  __openPageOrig(pageName);
+  if (pageName === 'profile') renderProfile();
+};
 
 createLucideIcons();
 </script>
