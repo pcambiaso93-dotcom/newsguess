@@ -3039,6 +3039,8 @@ const createLucideIcons = () => {
 };
 
 const todayISO = () => {
+  const debug = localStorage.getItem('debug_date');
+  if (debug) return debug;
   const d = new Date();
   if (d.getHours() < 6) d.setDate(d.getDate() - 1);
   const y = d.getFullYear();
