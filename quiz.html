@@ -406,30 +406,31 @@
       padding: 10px;
     }
 
-    /* Scroll mobile: position absolute bypassa i bug flex di Safari */
+    /* Scroll mobile: fixed position, nessun flex */
     .app-root {
-      position: relative;
+      display: block;
+      overflow: hidden;
     }
     .app-main {
-      position: absolute;
-      inset: 0;
+      display: block;
+      overflow: hidden;
     }
     .app-content {
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: var(--bn-height);
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow-y: scroll;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
+      padding: 72px 16px 40px;
+      box-sizing: border-box;
       flex: unset;
       min-height: unset;
       max-width: unset;
       margin: 0;
       width: 100%;
-      padding: 60px 16px calc(40px);
     }
   }
 
