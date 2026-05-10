@@ -2956,6 +2956,7 @@
 <div class="modal-overlay historical-intro-modal" id="historicalIntroModal">
   <div class="modal">
     <div class="modal-scroll-body">
+      <div id="himSavePrevRow" class="hidden"></div>
       <div class="historical-badge">📰 Sfida storica settimanale</div>
       <h2 id="himTitle" style="margin-bottom: 6px;"></h2>
       <p id="himDate" style="font-size: 12px; color: var(--warning); font-weight: 700; letter-spacing: 1px; margin-bottom: 14px;"></p>
@@ -4066,6 +4067,38 @@ $('historicalModeCard').addEventListener('click', () => {
   });
   const himPapersEl = $('himPapersList');
   if (himPapersEl) himPapersEl.innerHTML = paperNames.map(n => `<span style="display:inline-block;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:6px;padding:3px 10px;font-size:12px;margin:3px 3px 0 0;">${escapeHtml(n)}</span>`).join('');
+  // Se già giocata e loggato con gruppo, mostra pulsante salva risultato
+  const himSaveRow = $('himSavePrevRow');
+  const doneData = historicalDoneData(ch.id);
+  if (himSaveRow) {
+    if (doneData && state.user?.activeGroupCode) {
+      himSaveRow.classList.remove('hidden');
+      himSaveRow.innerHTML = `<div style="background:var(--bg-tertiary);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <span style="font-size:13px;">Hai già giocato: <strong>${doneData.score}/${doneData.total}</strong></span>
+        <button class="btn" style="font-size:12px;padding:6px 12px;" id="himSavePrevBtn">Salva in classifica</button>
+      </div>`;
+      $('himSavePrevBtn').addEventListener('click', async () => {
+        const btn = $('himSavePrevBtn');
+        btn.disabled = true; btn.textContent = 'Salvataggio…';
+        try {
+          await saveLeaderboardEntry({
+            name: state.user.name,
+            groupCode: state.user.activeGroupCode,
+            score: doneData.score, total: doneData.total,
+            mode: 'historical',
+            challengeId: ch.id,
+            challengeTitle: ch.title,
+            dateISO: ch.date,
+            monthKey: ch.scheduledSaturday.slice(0,7),
+          });
+          btn.textContent = '✓ Salvato!';
+          showToast('Punteggio salvato!');
+        } catch(e) { btn.textContent = 'Errore'; btn.disabled = false; }
+      });
+    } else {
+      himSaveRow.classList.add('hidden');
+    }
+  }
   openModal('historicalIntroModal');
 });
 
@@ -4237,7 +4270,7 @@ function showHistoricalFinalScreen() {
       </div>
 
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-        ${isFirstPlay && state.user?.activeGroupCode ? `<button class="btn" id="histSaveBtn">Salva in classifica</button>` : ''}
+        ${state.user?.activeGroupCode ? `<button class="btn" id="histSaveBtn">${isFirstPlay ? 'Salva in classifica' : 'Salva di nuovo'}</button>` : (!state.user ? `<button class="btn btn-outline" onclick="openPage('settings')">Accedi per salvare</button>` : '')}
         <button class="btn btn-outline" id="histReplayBtn">Rigioca</button>
         <button class="btn btn-outline" onclick="resetToMenu()">Menu principale</button>
         <button class="btn btn-outline" id="histShareBtn"><i data-lucide="share-2"></i> Condividi</button>
@@ -4299,6 +4332,7 @@ function showHistoricalFinalScreen() {
         monthKey: ch.scheduledSaturday.slice(0,7),
       });
       btn.textContent = '✓ Salvato!';
+      showToast('Punteggio salvato in classifica!');
     } catch(e) {
       btn.textContent = 'Errore — riprova';
       btn.disabled = false;
@@ -6955,12 +6989,13 @@ function renderProfile() {
   if ($('profileEmail'))   $('profileEmail').textContent = user.email || '';
   if ($('profileJoined'))  $('profileJoined').textContent = 'Membro di Newsguess';
 
-  // Stats
-  const history = loadStats();
-  const dailyGames = history.filter(h => h.mode === 'daily');
-  const totalGames = dailyGames.length;
-  const avg = totalGames ? (dailyGames.reduce((s, h) => s + (h.score / (h.total || 5)), 0) / totalGames * 5).toFixed(1) : '—';
-  const perfect = dailyGames.filter(h => h.score === (h.total || 5)).length;
+  // Stats — stessa logica di renderStats()
+  const history = loadStatsHistory();
+  const totalGames = history.length;
+  const sumScore = history.reduce((s, h) => s + h.score, 0);
+  const sumTotal = history.reduce((s, h) => s + h.total, 0);
+  const avg = sumTotal ? (sumScore / sumTotal * 5).toFixed(1) : '—';
+  const perfect = history.filter(h => h.score === h.total).length;
   const streak = computeStreak(history);
   if ($('profTotalGames')) $('profTotalGames').textContent = totalGames;
   if ($('profStreak'))     $('profStreak').textContent = streak;
