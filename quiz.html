@@ -380,7 +380,18 @@
 
   @media (max-width: 768px) {
     .app-header {
+      padding: 0;
+      min-height: 0;
+      background: transparent;
+      border: none;
+    }
+    .header-title,
+    .header-brand-mark,
+    .header-actions {
       display: none;
+    }
+    .header-left {
+      gap: 0;
     }
 
     .menu-toggle {
@@ -2579,7 +2590,10 @@
               <div style="font-size:12px;color:var(--text-tertiary);" id="profileEmail">—</div>
               <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;" id="profileJoined">—</div>
             </div>
-            <button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openPage('settings')">Modifica</button>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="openPage('settings')">Modifica</button>
+              <button class="btn" style="font-size:12px;padding:6px 12px;" id="profileShareBtn">Condividi</button>
+            </div>
           </div>
 
           <!-- Stats rapide -->
@@ -2946,6 +2960,10 @@
       <h2 id="himTitle" style="margin-bottom: 6px;"></h2>
       <p id="himDate" style="font-size: 12px; color: var(--warning); font-weight: 700; letter-spacing: 1px; margin-bottom: 14px;"></p>
       <div class="historical-context-text" id="himContext"></div>
+      <div style="margin-bottom:14px;">
+        <p style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:6px;">Quotidiani in sfida</p>
+        <div id="himPapersList"></div>
+      </div>
       <div class="historical-rules">
         <p style="font-family:'Playfair Display',serif; font-weight:700; margin-bottom:8px;">Come funziona</p>
         <ul style="padding-left: 16px; margin: 0;">
@@ -3128,6 +3146,11 @@
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Ogni mattina una nuova sfida con 5 giornali. Ogni sabato una <strong>sfida storica</strong>: eventi che hanno fatto la storia, dalla Prima Repubblica a oggi.</p>
     </div>
     <div id="onboardStep3" class="hidden">
+      <div style="font-size:56px;margin-bottom:16px;">📅</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Sfide storiche</h2>
+      <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Ogni sabato una nuova sfida storica: riconosci le prime pagine di eventi che hanno segnato la storia. Dal rapimento Moro all'11 settembre, dal Mundial 1982 al Covid.</p>
+    </div>
+    <div id="onboardStep4" class="hidden">
       <div style="font-size:56px;margin-bottom:16px;">🏆</div>
       <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Sfida i tuoi amici</h2>
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Crea un gruppo, condividi il codice e scala la classifica. Accumula badge, mantieni la streak e diventa il miglior lettore di giornali.</p>
@@ -3138,6 +3161,7 @@
       <div class="ob-dot active" id="obDot0"></div>
       <div class="ob-dot" id="obDot1"></div>
       <div class="ob-dot" id="obDot2"></div>
+      <div class="ob-dot" id="obDot3"></div>
     </div>
 
     <button class="btn" id="onboardNextBtn" style="width:100%;font-size:16px;padding:14px;">Avanti</button>
@@ -4034,6 +4058,14 @@ $('historicalModeCard').addEventListener('click', () => {
   // Mostra il contesto con newline
   $('himContext').innerHTML = ch.context.split('\n\n').map(p => `<p style="margin-bottom:10px;">${escapeHtml(p)}</p>`).join('');
   $('himCount').textContent = ch.papers.length;
+  // Mostra i giornali disponibili
+  const paperNames = ch.papers.map(p => {
+    const extra = HISTORICAL_EXTRA_PAPERS[p.paperId];
+    const standard = NEWSPAPERS.find(n => n.id === p.paperId);
+    return p.name || (extra && extra.name) || (standard && standard.name) || p.paperId;
+  });
+  const himPapersEl = $('himPapersList');
+  if (himPapersEl) himPapersEl.innerHTML = paperNames.map(n => `<span style="display:inline-block;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:6px;padding:3px 10px;font-size:12px;margin:3px 3px 0 0;">${escapeHtml(n)}</span>`).join('');
   openModal('historicalIntroModal');
 });
 
@@ -6878,8 +6910,8 @@ function showDailyAlreadyPlayedResult() {
   overlay.style.display = 'flex';
 
   let step = 0;
-  const steps = ['onboardStep1', 'onboardStep2', 'onboardStep3'];
-  const dots  = ['obDot0', 'obDot1', 'obDot2'];
+  const steps = ['onboardStep1', 'onboardStep2', 'onboardStep3', 'onboardStep4'];
+  const dots  = ['obDot0', 'obDot1', 'obDot2', 'obDot3'];
   const nextBtn = $('onboardNextBtn');
   const skipBtn = $('onboardSkipBtn');
 
@@ -6934,6 +6966,24 @@ function renderProfile() {
   if ($('profStreak'))     $('profStreak').textContent = streak;
   if ($('profAvg'))        $('profAvg').textContent = avg;
   if ($('profPerfect'))    $('profPerfect').textContent = perfect;
+
+  // Share button
+  const shareBtn = $('profileShareBtn');
+  if (shareBtn) {
+    shareBtn.onclick = () => {
+      const text = `🗞️ Newsguess — Il mio profilo\n` +
+        `📰 Partite: ${totalGames}\n` +
+        `🔥 Streak: ${streak}\n` +
+        `⭐ Perfetti: ${perfect}\n` +
+        `📊 Media: ${avg}/5\n` +
+        `\nSfidami su newsguess.it`;
+      if (navigator.share) {
+        navigator.share({ title: 'Newsguess', text });
+      } else {
+        navigator.clipboard.writeText(text).then(() => showToast('Copiato negli appunti!'));
+      }
+    };
+  }
 
   // Badge
   const badgeGrid = $('profBadgeGrid');
