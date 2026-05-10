@@ -519,6 +519,22 @@
     margin-top: 0 !important;
   }
 
+  /* Quiz: pieno padding-bottom. Altre pagine: app-content si riduce alla
+     sola masthead, evitando il gap fantasma di ~150px. */
+  body[data-active-page]:not([data-active-page="quiz"]) .app-content {
+    padding-bottom: 0;
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+  body[data-active-page]:not([data-active-page="quiz"]) .page.active {
+    padding-bottom: calc(var(--bn-height) + 80px);
+  }
+  @media (max-width: 640px) {
+    body[data-active-page]:not([data-active-page="quiz"]) .page.active {
+      padding-bottom: calc(var(--bn-height) + 140px);
+    }
+  }
+
   @keyframes pageIn {
     from {
       opacity: 0;
@@ -3393,6 +3409,8 @@ function openPage(pageName) {
     if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
 
   }
+  // Segnala la pagina attiva sul body (usato dal CSS per gestire il padding)
+  document.body.dataset.activePage = pageName;
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
   if (pageName === 'stats') renderStats();
