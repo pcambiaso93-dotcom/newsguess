@@ -496,10 +496,16 @@
   .page {
     display: none;
     animation: pageIn 0.3s ease;
+    overflow: hidden;
+  }
+  .page.active {
+    overflow: visible;
   }
 
   .page.active {
     display: block;
+    padding-top: 1px;
+    margin-top: -1px;
   }
 
   /* Azzera margine superiore primo elemento di ogni pagina */
