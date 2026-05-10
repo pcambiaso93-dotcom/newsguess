@@ -431,7 +431,7 @@
       max-width: 640px;
       margin: 0 auto;
       width: 100%;
-      padding: 72px 16px calc(var(--bn-height) + 24px);
+      padding: 8px 16px calc(var(--bn-height) + 60px);
     }
   }
 
@@ -1836,6 +1836,24 @@
   /* ===== SFIDE STORICHE ===== */
   .historical-intro-modal .modal {
     max-width: 480px;
+    max-height: calc(100dvh - var(--bn-height) - 40px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+  }
+  .historical-intro-modal .modal-scroll-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 24px 24px 8px;
+    flex: 1;
+    min-height: 0;
+  }
+  .historical-intro-modal .modal-footer {
+    padding: 12px 24px 20px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    flex-shrink: 0;
   }
   .historical-context-text {
     font-size: 14px;
@@ -2246,6 +2264,35 @@
       animation-duration: 0.001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
+    }
+  }
+
+
+  /* ===== RIPRISTINO DESKTOP ===== */
+  @media (min-width: 769px) {
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    .app-root {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .app-main {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .app-content {
+      display: block;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      height: auto;
+      padding: 18px 20px calc(var(--bn-height) + 80px);
     }
   }
 
@@ -2866,22 +2913,26 @@
 <!-- HISTORICAL INTRO MODAL -->
 <div class="modal-overlay historical-intro-modal" id="historicalIntroModal">
   <div class="modal">
-    <div class="historical-badge">📰 Sfida storica settimanale</div>
-    <h2 id="himTitle" style="margin-bottom: 6px;"></h2>
-    <p id="himDate" style="font-size: 12px; color: var(--warning); font-weight: 700; letter-spacing: 1px; margin-bottom: 14px;"></p>
-    <div class="historical-context-text" id="himContext"></div>
-    <div class="historical-rules">
-      <p style="font-family:'Playfair Display',serif; font-weight:700; margin-bottom:8px;">Come funziona</p>
-      <ul style="padding-left: 16px; margin: 0;">
-        <li>Tutte le prime pagine disponibili per questa data (<span id="himCount">—</span> giornali)</li>
-        <li>Dopo ogni risposta vedi subito se hai indovinato e la prima pagina originale</li>
-        <li>Puoi rigiocare quante volte vuoi — il punteggio si salva solo alla prima partita</li>
-        <li>Classifica separata dalla sfida quotidiana</li>
-      </ul>
+    <div class="modal-scroll-body">
+      <div class="historical-badge">📰 Sfida storica settimanale</div>
+      <h2 id="himTitle" style="margin-bottom: 6px;"></h2>
+      <p id="himDate" style="font-size: 12px; color: var(--warning); font-weight: 700; letter-spacing: 1px; margin-bottom: 14px;"></p>
+      <div class="historical-context-text" id="himContext"></div>
+      <div class="historical-rules">
+        <p style="font-family:'Playfair Display',serif; font-weight:700; margin-bottom:8px;">Come funziona</p>
+        <ul style="padding-left: 16px; margin: 0;">
+          <li>Tutte le prime pagine disponibili per questa data (<span id="himCount">—</span> giornali)</li>
+          <li>Dopo ogni risposta vedi subito se hai indovinato e la prima pagina originale</li>
+          <li>Puoi rigiocare quante volte vuoi — il punteggio si salva solo alla prima partita</li>
+          <li>Classifica separata dalla sfida quotidiana</li>
+        </ul>
+      </div>
     </div>
-    <div class="modal-row" style="gap: 10px;">
-      <button class="btn btn-outline" onclick="closeModal('historicalIntroModal')">Annulla</button>
-      <button class="btn" id="himStartBtn">Inizia la sfida</button>
+    <div class="modal-footer">
+      <div class="modal-row" style="gap: 10px; margin: 0;">
+        <button class="btn btn-outline" onclick="closeModal('historicalIntroModal')">Annulla</button>
+        <button class="btn" id="himStartBtn">Inizia la sfida</button>
+      </div>
     </div>
   </div>
 </div>
