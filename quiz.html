@@ -527,8 +527,8 @@
   /* ===== MASTHEAD (HEADER EDITORIALE) ===== */
   .masthead {
     text-align: center;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--border-color);
   }
 
@@ -2239,7 +2239,7 @@
     }
 
     .masthead {
-      margin-bottom: 20px;
+      margin-bottom: 8px;
     }
 
     .header-title {
@@ -2866,6 +2866,7 @@
           </div>
         </div>
       </div>
+    <div id="bottomSpacer" style="height:120px;"></div>
     </div>
   </div>
 </div>
@@ -3380,9 +3381,7 @@ function openPage(pageName) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
     if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
-    // Nascondi masthead su mobile quando non sei sulla home
-    const masthead = document.querySelector('.masthead');
-    if (masthead) masthead.style.display = pageName === 'quiz' ? '' : 'none';
+
   }
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
