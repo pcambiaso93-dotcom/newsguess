@@ -4045,7 +4045,11 @@ function loadHistoricalSection() {
   const done = historicalDoneData(ch.id);
   const statusEl = $('historicalCardStatus');
   if (done) {
-    statusEl.innerHTML = `<span style="color:var(--success);font-weight:700;">✓ Hai già giocato: ${done.score}/${done.total}</span> <span style="color:var(--text-tertiary);font-size:11px;">(puoi rigiocare)</span>`;
+    statusEl.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <span style="color:var(--success);font-weight:700;">✓ ${done.score}/${done.total} <span style="color:var(--text-tertiary);font-size:11px;font-weight:400;">(puoi rigiocare)</span></span>
+        <button class="btn btn-outline" style="font-size:11px;padding:4px 10px;" onclick="event.stopPropagation();showHistoricalRecap('${ch.id}')">Vedi riepilogo</button>
+      </div>`;
   } else {
     statusEl.innerHTML = `<span style="color:var(--warning);font-size:12px;">Nuovo! Prima partita conta in classifica</span>`;
   }
@@ -4241,6 +4245,35 @@ function handleHistoricalAnswer(givenId, q, choices, clickedBtn) {
       showHistoricalFinalScreen();
     }
   });
+}
+
+function showHistoricalRecap(challengeId) {
+  const ch = HISTORICAL_CHALLENGES.find(c => c.id === challengeId);
+  const done = historicalDoneData(challengeId);
+  if (!ch || !done) { showToast('Dati non disponibili'); return; }
+
+  // Ricostruisce histState dai dati salvati per usare showHistoricalFinalScreen
+  histState.challenge = ch;
+  histState.questions = done.questions.map(q => ({
+    paperId: q.paperId,
+    name: q.paperName || q.paperId,
+    img: ch.papers.find(p => p.paperId === q.paperId)?.img || '',
+    titolo: ch.papers.find(p => p.paperId === q.paperId)?.titolo || '',
+    sopra: ch.papers.find(p => p.paperId === q.paperId)?.sopra || '',
+    sotto: ch.papers.find(p => p.paperId === q.paperId)?.sotto || '',
+  }));
+  histState.answers = done.questions.map(q => ({
+    paperId: q.paperId,
+    given: q.given,
+    correct: q.correct,
+  }));
+  histState.current = done.questions.length;
+
+  // Nascondi modePicker e mostra la schermata finale
+  $('modePicker').classList.add('hidden');
+  const histScreen = document.getElementById('historicalScreen');
+  if (histScreen) histScreen.classList.add('hidden');
+  showHistoricalFinalScreen();
 }
 
 function showHistoricalFinalScreen() {
