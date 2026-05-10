@@ -3512,6 +3512,11 @@ function openModal(modalId) {
 
 function closeModal(modalId) {
   $(modalId).classList.remove('open');
+  // Se si chiude il modal storico, nascondi anche il popup immagine se aperto
+  if (modalId === 'historicalIntroModal') {
+    const p = document.getElementById('histImgPopup');
+    if (p) p.style.display = 'none';
+  }
 }
 
 // Chiudi modali con ESC
@@ -4365,6 +4370,15 @@ function showHistoricalFinalScreen() {
     startHistoricalChallenge(ch);
   });
 
+  // Controlla se già salvato in questo gruppo
+  const histSavedKey = `ng-hist-saved-${ch.id}-${state.user?.activeGroupCode}`;
+  const alreadySaved = localStorage.getItem(histSavedKey);
+  const saveBtn = document.getElementById('histSaveBtn');
+  if (saveBtn && alreadySaved) {
+    saveBtn.textContent = '✓ Già salvato';
+    saveBtn.disabled = true;
+  }
+
   document.getElementById('histSaveBtn')?.addEventListener('click', async () => {
     const btn = document.getElementById('histSaveBtn');
     btn.disabled = true; btn.textContent = 'Salvataggio…';
@@ -4379,6 +4393,7 @@ function showHistoricalFinalScreen() {
         dateISO: ch.date,
         monthKey: ch.scheduledSaturday.slice(0,7),
       });
+      localStorage.setItem(histSavedKey, '1');
       btn.textContent = '✓ Salvato!';
       showToast('Punteggio salvato in classifica!');
     } catch(e) {
@@ -5369,6 +5384,8 @@ document.getElementById('shareExtendedBtn')?.addEventListener('click', async () 
 });
 
 function resetToMenu() {
+  const p = document.getElementById('histImgPopup');
+  if (p) p.style.display = 'none';
   $('loading').classList.add('hidden');
   $('errorBox').classList.add('hidden');
   $('quizRunning').classList.add('hidden');
