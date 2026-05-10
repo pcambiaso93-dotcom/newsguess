@@ -2978,7 +2978,7 @@
     </div>
     <div class="modal-footer">
       <div class="modal-row" style="gap: 10px; margin: 0;">
-        <button class="btn btn-outline" onclick="closeModal('historicalIntroModal')">Annulla</button>
+        <button class="btn btn-outline" onclick="closeModal('historicalIntroModal');resetToMenu();">Annulla</button>
         <button class="btn" id="himStartBtn">Inizia la sfida</button>
       </div>
     </div>
@@ -4083,39 +4083,56 @@ $('historicalModeCard').addEventListener('click', () => {
   if (himSaveRow) {
     if (doneData && state.user?.activeGroupCode) {
       himSaveRow.classList.remove('hidden');
+      const _prevSavedKey = `ng-hist-saved-${ch.id}-${state.user.activeGroupCode}`;
+      const _alreadySaved = localStorage.getItem(_prevSavedKey);
       himSaveRow.innerHTML = `<div style="background:var(--bg-tertiary);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <span style="font-size:13px;">Hai già giocato: <strong>${doneData.score}/${doneData.total}</strong></span>
-        <button class="btn" style="font-size:12px;padding:6px 12px;" id="himSavePrevBtn">Salva in classifica</button>
+        ${_alreadySaved
+          ? `<button class="btn" style="font-size:12px;padding:6px 12px;opacity:0.6;" disabled>✓ Già salvato</button>`
+          : `<button class="btn" style="font-size:12px;padding:6px 12px;" id="himSavePrevBtn">Salva in classifica</button>`}
       </div>`;
-      $('himSavePrevBtn').addEventListener('click', async () => {
-        const btn = $('himSavePrevBtn');
-        btn.disabled = true; btn.textContent = 'Salvataggio…';
-        try {
-          await saveLeaderboardEntry({
-            name: state.user.name,
-            groupCode: state.user.activeGroupCode,
-            score: doneData.score, total: doneData.total,
-            mode: 'historical',
-            challengeId: ch.id,
-            challengeTitle: ch.title,
-            dateISO: ch.date,
-            monthKey: ch.scheduledSaturday.slice(0,7),
-          });
-          btn.textContent = '✓ Salvato!';
-          showToast('Punteggio salvato!');
-        } catch(e) { btn.textContent = 'Errore'; btn.disabled = false; }
-      });
+      if (!_alreadySaved) {
+        $('himSavePrevBtn').addEventListener('click', async () => {
+          const btn = $('himSavePrevBtn');
+          btn.disabled = true; btn.textContent = 'Salvataggio…';
+          try {
+            await saveLeaderboardEntry({
+              name: state.user.name,
+              groupCode: state.user.activeGroupCode,
+              score: doneData.score, total: doneData.total,
+              mode: 'historical',
+              challengeId: ch.id,
+              challengeTitle: ch.title,
+              dateISO: ch.date,
+              monthKey: ch.scheduledSaturday.slice(0,7),
+            });
+            localStorage.setItem(_prevSavedKey, '1');
+            btn.textContent = '✓ Salvato!';
+            showToast('Punteggio salvato!');
+          } catch(e) { btn.textContent = 'Errore'; btn.disabled = false; }
+        });
+      }
     } else {
       himSaveRow.classList.add('hidden');
     }
   }
+  // Nascondi popup immagine se rimasto aperto da sessione precedente
+  const _prevPopup = document.getElementById('histImgPopup');
+  if (_prevPopup) _prevPopup.style.display = 'none';
   openModal('historicalIntroModal');
 });
 
 $('himStartBtn').addEventListener('click', () => {
   closeModal('historicalIntroModal');
   const ch = getCurrentHistoricalChallenge();
-  if (ch) startHistoricalChallenge(ch);
+  if (ch) {
+    // Resetta sempre lo stato prima di iniziare
+    const popup = document.getElementById('histImgPopup');
+    if (popup) popup.style.display = 'none';
+    const oldScreen = document.getElementById('historicalScreen');
+    if (oldScreen) oldScreen.remove();
+    startHistoricalChallenge(ch);
+  }
 });
 
 function startHistoricalChallenge(ch) {
@@ -4220,7 +4237,9 @@ function handleHistoricalAnswer(givenId, q, choices, clickedBtn) {
   if (!popup) {
     popup = document.createElement('div');
     popup.id = 'histImgPopup';
-    popup.style.cssText = 'position:fixed;inset:0;z-index:3000;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:rgba(0,0,0,0.85);padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+    popup.style.cssText = 'position:fixed;inset:0;z-index:800;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;background:rgba(0,0,0,0.85);padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;';
+  // Click fuori dall'immagine chiude il popup
+  popup.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
     document.body.appendChild(popup);
   }
   popup.innerHTML = `
