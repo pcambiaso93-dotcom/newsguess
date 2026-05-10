@@ -2238,8 +2238,9 @@
     bottom: 24px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: var(--text-primary);
-    color: #fff;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
     padding: 12px 20px;
     border-radius: var(--radius);
     font-size: 14px;
@@ -4234,7 +4235,7 @@ function handleHistoricalAnswer(givenId, q, choices, clickedBtn) {
         <img src="${histImgSrc(q.img)}"
              alt="${escapeHtml(q.name)}"
              style="width:100%;display:block;max-height:60vh;object-fit:contain;background:var(--bg-tertiary);"
-             onerror="this.parentElement.querySelector('.img-error').style.display='block';this.style.display='none';" />
+             onerror="histImgFallback(this, q.img); this.onerror=function(){this.parentElement.querySelector('.img-error').style.display='block';this.style.display='none';};" />
         <div class="img-error" style="display:none;padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px;">Immagine non disponibile</div>
       </div>
       <button class="btn" id="histNextBtn" style="width:100%;font-size:16px;padding:14px;">${nextLabel}</button>
@@ -4353,7 +4354,7 @@ function showHistoricalFinalScreen() {
     item.style.cssText = `border-color: ${correct ? 'var(--success)' : 'var(--error)'}; cursor:pointer;`;
     item.innerHTML = `
       <div style="display:flex;gap:10px;align-items:flex-start;">
-        <img class="historical-recap-img" src="${histImgSrc(q.img)}" alt="" onerror="this.style.display='none'" />
+        <img class="historical-recap-img" src="${histImgSrc(q.img)}" alt="" onerror="histImgFallback(this, q.img);" />
         <div style="flex:1;min-width:0;">
           <div style="font-weight:700;font-size:13px;color:${correct?'var(--success)':'var(--error)'};margin-bottom:4px;">${correct?'✓':'✗'} ${escapeHtml(q.name)}</div>
           ${!correct ? `<div style="font-size:12px;color:var(--text-tertiary);">Hai risposto: ${escapeHtml(givenName)}</div>` : ''}
@@ -4404,7 +4405,7 @@ function showHistoricalFinalScreen() {
 
   document.getElementById('histShareBtn')?.addEventListener('click', () => {
     const dots = histState.answers.map(a => a.correct ? '🟢' : '🔴').join('');
-    const text = `📰 Newsguess — Sfida storica\n«${ch.title}» (${fmtDateIT(ch.date)})\n\n${score}/${total} ${dots}\n\n👉 newsguess.it`;
+    const text = `📰 Newsguess — Sfida storica\n«${ch.title}» (${fmtDateIT(ch.date)})\n\n${score}/${total} ${dots}\n\n👉 https://newsguess-lgh5.onrender.com/api/quiz`;
     if (navigator.share) { navigator.share({ title: 'Newsguess Storica', text }).catch(()=>{}); return; }
     navigator.clipboard.writeText(text).then(() => showToast('Risultato copiato!')).catch(() => window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank'));
   });
@@ -4414,10 +4415,16 @@ function showHistoricalFinalScreen() {
 }
 
 function histImgSrc(imgPath) {
-  // Converte /static/FILENAME.jpg → /api/historical-image/FILENAME.jpg
   if (!imgPath) return '';
   const filename = imgPath.split('/').pop();
   return `/api/historical-image/${filename}`;
+}
+function histImgFallback(imgEl, imgPath) {
+  // Se l'immagine non carica via API, prova da GitHub raw
+  if (!imgPath) return;
+  const filename = imgPath.split('/').pop();
+  const ghUrl = `https://raw.githubusercontent.com/pcambiaso93-dotcom/newsguess/main/static/${filename}`;
+  if (imgEl.src !== ghUrl) imgEl.src = ghUrl;
 }
 
 function historicalVerdictFor(score, total) {
@@ -5614,7 +5621,15 @@ function getAllBadgesWithState() {
     { id: 'giornale', name: '🦁 Il Ruggente', icon: 'shield', ok: (st.perPaperCorrect.giornale || 0) >= 10, desc: 'Indovina "Il Giornale" 10 volte', quote: '“Senti il ruggito già dal sommario: istinto felino.”' },
     { id: 'repubblica', name: '📕 Il Repubblicano', icon: 'book', ok: (st.perPaperCorrect.repubblica || 0) >= 10, desc: 'Indovina "La Repubblica" 10 volte', quote: '“Riconosci Repubblica con la sicurezza di un editorialista navigato.”' }
   ];
-  return [...badges, ...paperBadges];
+  // Badge storici
+  const historicalBadges = [
+    { id: 'ng-badge-archivista',         name:'🏛️ Archivista',          ok: !!localStorage.getItem('ng-badge-archivista'),         desc:'Hai giocato la tua prima sfida storica.' },
+    { id: 'ng-badge-cronista-epoca',     name:'📜 Cronista d\'epoca',   ok: !!localStorage.getItem('ng-badge-cronista-epoca'),     desc:'Cinque sfide storiche completate.' },
+    { id: 'ng-badge-storico',            name:'🔎 Storico',              ok: !!localStorage.getItem('ng-badge-storico'),            desc:'Massimo in una sfida storica.' },
+    { id: 'ng-badge-direttore-archivio', name:'🗞️ Direttore d\'archivio', ok: !!localStorage.getItem('ng-badge-direttore-archivio'), desc:'Tre sfide storiche con punteggio perfetto.' },
+    { id: 'ng-badge-testimone',          name:'⏳ Testimone del tempo',  ok: !!localStorage.getItem('ng-badge-testimone'),         desc:'Tutte le sfide storiche disponibili.' },
+  ];
+  return [...badges, ...paperBadges, ...historicalBadges];
 }
 
 function renderBadges() {
@@ -5963,7 +5978,7 @@ $('stShareBtn').addEventListener('click', () => {
     bestPaper  ? `💪 Punto di forza: ${bestPaper}` : null,
     worstPaper ? `📉 Da migliorare: ${worstPaper}` : null,
     '',
-    '👉 newsguess.it',
+    '👉 https://newsguess-lgh5.onrender.com/api/quiz',
   ].filter(l => l !== null).join('\n');
 
   if (navigator.share) {
