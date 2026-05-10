@@ -431,7 +431,7 @@
       max-width: 640px;
       margin: 0 auto;
       width: 100%;
-      padding: 8px 16px calc(var(--bn-height) + 60px);
+      padding: 8px 16px calc(var(--bn-height) + 80px);
     }
   }
 
@@ -3379,6 +3379,9 @@ function openPage(pageName) {
     $('sidebar').classList.remove('open');
     $('sidebarBackdrop').classList.remove('open');
     if (menuToggle) menuToggle.classList.remove('sidebar-open-hidden');
+    // Nascondi masthead su mobile quando non sei sulla home
+    const masthead = document.querySelector('.masthead');
+    if (masthead) masthead.style.display = pageName === 'quiz' ? '' : 'none';
   }
   // Carica dati se necessario
   if (pageName === 'leaderboard') refreshLeaderboards();
