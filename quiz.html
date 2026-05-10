@@ -513,6 +513,17 @@
     display: block;
   }
 
+  /* Azzera margine superiore primo elemento di ogni pagina */
+  .page > *:first-child,
+  .page > .section:first-child,
+  .page > .card:first-child {
+    margin-top: 0 !important;
+  }
+  .page > *:first-child > h2:first-child,
+  .page > h2:first-child {
+    margin-top: 0 !important;
+  }
+
   @keyframes pageIn {
     from {
       opacity: 0;
@@ -527,9 +538,12 @@
   /* ===== MASTHEAD (HEADER EDITORIALE) ===== */
   .masthead {
     text-align: center;
-    margin-bottom: 4px;
-    padding-bottom: 6px;
+    margin: 0 0 4px 0;
+    padding: 0 0 6px 0;
     border-bottom: 1px solid var(--border-color);
+  }
+  .masthead * {
+    margin-top: 0 !important;
   }
 
   .masthead-tag {
