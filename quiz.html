@@ -4083,7 +4083,7 @@ $('historicalModeCard').addEventListener('click', () => {
   if (himSaveRow) {
     if (doneData && state.user?.activeGroupCode) {
       himSaveRow.classList.remove('hidden');
-      const _prevSavedKey = `ng-hist-saved-${ch.id}-${state.user.activeGroupCode}`;
+      const _prevSavedKey = `ng-hist-saved-${ch.id}`;
       const _alreadySaved = localStorage.getItem(_prevSavedKey);
       himSaveRow.innerHTML = `<div style="background:var(--bg-tertiary);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
         <span style="font-size:13px;">Hai già giocato: <strong>${doneData.score}/${doneData.total}</strong></span>
@@ -4391,7 +4391,7 @@ function showHistoricalFinalScreen() {
   });
 
   // Controlla se già salvato in questo gruppo
-  const histSavedKey = `ng-hist-saved-${ch.id}-${state.user?.activeGroupCode}`;
+  const histSavedKey = `ng-hist-saved-${ch.id}`;
   const alreadySaved = localStorage.getItem(histSavedKey);
   const saveBtn = document.getElementById('histSaveBtn');
   if (saveBtn && alreadySaved) {
