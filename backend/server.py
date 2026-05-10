@@ -490,18 +490,42 @@ def _load_vapid():
             _vapid = json.load(f)
     return _vapid
 
+# URL base del repository GitHub per le immagini storiche
+GITHUB_RAW_BASE = os.environ.get(
+    "GITHUB_RAW_BASE",
+    "https://raw.githubusercontent.com/pcambiaso93-dotcom/newsguess/main/static"
+)
+
 @api_router.get("/historical-image/{filename}")
 async def historical_image(filename: str):
-    """Serve le immagini storiche dalla cartella static/historical."""
+    """Serve le immagini storiche: prima tenta dal filesystem locale,
+    poi fa proxy da GitHub raw content come fallback."""
     import re
-    # Valida il nome file per sicurezza
     if not re.match(r'^[\w\-]+\.jpg$', filename):
         raise HTTPException(400, "Nome file non valido")
-    path = Path(__file__).parent.parent / "static" / filename
-    if not path.exists():
+
+    # Prova prima dal filesystem locale (se disponibile)
+    local_path = Path(__file__).parent.parent / "static" / filename
+    if local_path.exists():
+        from fastapi.responses import FileResponse
+        return FileResponse(str(local_path), media_type="image/jpeg",
+                           headers={"Cache-Control": "public, max-age=86400"})
+
+    # Fallback: proxy da GitHub raw content
+    try:
+        github_url = f"{GITHUB_RAW_BASE}/{filename}"
+        resp = requests.get(github_url, timeout=15,
+                           headers={"User-Agent": UA})
+        if resp.status_code == 200:
+            return Response(
+                content=resp.content,
+                media_type="image/jpeg",
+                headers={"Cache-Control": "public, max-age=86400",
+                         "X-Source": "github"}
+            )
         raise HTTPException(404, f"Immagine non trovata: {filename}")
-    from fastapi.responses import FileResponse
-    return FileResponse(str(path), media_type="image/jpeg")
+    except requests.RequestException as e:
+        raise HTTPException(502, f"Errore fetch immagine: {e}")
 @api_router.get("/push-vapid-key")
 async def push_vapid_key():
     v = _load_vapid()
