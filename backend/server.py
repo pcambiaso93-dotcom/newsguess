@@ -620,8 +620,10 @@ async def _scheduled_check():
         try:
             local = now_utc - timedelta(minutes=sub.get("tzOffsetMinutes", 0))
             target_hour = sub.get("hour", 8)
-            if local.hour == target_hour and local.minute < 5:
-                if sub.get("lastSentDate") != local.strftime("%Y-%m-%d"):
+            if local.hour == target_hour and local.minute < 15:
+                local_date = local.strftime("%Y-%m-%d")
+                if sub.get("lastSentDate") != local_date:
+                    logger.info(f"[push] Invio notifica a {sub['endpoint'][:40]}... ora locale: {local.hour}:{local.minute:02d}")
                     await _send_push(sub)
         except Exception as e:
             logger.warning(f"check err: {e}")
