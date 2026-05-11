@@ -2401,6 +2401,10 @@
     </div>
 
     <nav class="sidebar-nav">
+      <div class="nav-item" onclick="resetToMenu();document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarBackdrop').classList.remove('open');" style="border-bottom:1px solid var(--border-color);margin-bottom:4px;">
+        <div class="nav-icon"><i data-lucide="home"></i></div>
+        <div>Home</div>
+      </div>
       <div class="nav-item active" data-page="quiz">
         <div class="nav-icon"><i data-lucide="newspaper"></i></div>
         <div>Quiz</div>
@@ -5412,6 +5416,11 @@ document.getElementById('shareExtendedBtn')?.addEventListener('click', async () 
 function resetToMenu() {
   const p = document.getElementById('histImgPopup');
   if (p) p.style.display = 'none';
+  // Nascondi schermate storiche dinamiche
+  const histFinal = document.getElementById('historicalFinalScreen');
+  if (histFinal) histFinal.classList.add('hidden');
+  const histScreen = document.getElementById('historicalScreen');
+  if (histScreen) histScreen.classList.add('hidden');
   $('loading').classList.add('hidden');
   $('errorBox').classList.add('hidden');
   $('quizRunning').classList.add('hidden');
@@ -5420,6 +5429,7 @@ function resetToMenu() {
   $('saveScoreBtn').textContent = 'Salva punteggio';
   $('saveScoreBtn').disabled = false;
   $('saveScoreBtn').style.display = '';
+  openPage('quiz');
 }
 
 window.resetToMenu = resetToMenu;
