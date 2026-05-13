@@ -2039,13 +2039,13 @@
   .past-dropdown-list {
     display: none;
     position: absolute;
-    top: calc(100% + 4px);
+    bottom: calc(100% + 4px);
     left: 0; right: 0;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);
-    z-index: 200;
+    z-index: 1500;
     max-height: 320px;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -2508,7 +2508,7 @@
               </div>
             </div>
           </div>
-            <p class="small-caps">Edizioni precedenti</p>
+            <p class="small-caps" id="archiveSection">Edizioni precedenti</p>
             <div class="past-dropdown-wrapper">
               <button class="past-dropdown-trigger" id="pastDropdownTrigger">Seleziona un'edizione…</button>
               <div class="past-dropdown-list" id="pastDropdownList">
@@ -3172,6 +3172,13 @@
       <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Sfida i tuoi amici</h2>
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;">Crea un gruppo, condividi il codice e scala la classifica. Accumula badge, mantieni la streak e diventa il miglior lettore di giornali.</p>
     </div>
+    <div id="onboardStep5" class="hidden">
+      <div style="font-size:56px;margin-bottom:16px;">✍️</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;margin-bottom:12px;">Come ti chiami?</h2>
+      <p style="color:var(--text-secondary);font-size:15px;line-height:1.6;margin-bottom:20px;">Il tuo nome apparirà nella classifica globale. Puoi cambiarlo in qualsiasi momento dalle impostazioni.</p>
+      <input id="onboardNameInput" type="text" maxlength="24" placeholder="Es. Giulia" style="width:100%;padding:14px;font-size:16px;border:2px solid var(--border-color);border-radius:var(--radius);background:var(--bg-secondary);color:var(--text-primary);font-family:inherit;box-sizing:border-box;" />
+      <p id="onboardNameErr" style="color:var(--error);font-size:13px;margin-top:6px;display:none;">Inserisci almeno 2 caratteri.</p>
+    </div>
 
     <!-- Dots -->
     <div style="display:flex;gap:8px;justify-content:center;margin:28px 0 24px;">
@@ -3179,6 +3186,7 @@
       <div class="ob-dot" id="obDot1"></div>
       <div class="ob-dot" id="obDot2"></div>
       <div class="ob-dot" id="obDot3"></div>
+      <div class="ob-dot" id="obDot4"></div>
     </div>
 
     <button class="btn" id="onboardNextBtn" style="width:100%;font-size:16px;padding:14px;">Avanti</button>
@@ -7185,25 +7193,56 @@ function showDailyAlreadyPlayedResult() {
   overlay.style.display = 'flex';
 
   let step = 0;
-  const steps = ['onboardStep1', 'onboardStep2', 'onboardStep3', 'onboardStep4'];
-  const dots  = ['obDot0', 'obDot1', 'obDot2', 'obDot3'];
+  const steps = ['onboardStep1', 'onboardStep2', 'onboardStep3', 'onboardStep4', 'onboardStep5'];
+  const dots  = ['obDot0', 'obDot1', 'obDot2', 'obDot3', 'obDot4'];
   const nextBtn = $('onboardNextBtn');
   const skipBtn = $('onboardSkipBtn');
 
   function goTo(n) {
     steps.forEach((s, i) => $(s)?.classList.toggle('hidden', i !== n));
     dots.forEach((d, i) => $(d)?.classList.toggle('active', i === n));
-    nextBtn.textContent = n === steps.length - 1 ? 'Inizia a giocare!' : 'Avanti';
+    if (n === steps.length - 1) {
+      nextBtn.textContent = 'Inizia a giocare!';
+      skipBtn.style.display = 'none';
+      setTimeout(() => $('onboardNameInput')?.focus(), 100);
+    } else {
+      nextBtn.textContent = 'Avanti';
+      skipBtn.style.display = '';
+    }
   }
 
   function finish() {
+    // Salva il nome se inserito
+    const nameInput = $('onboardNameInput');
+    if (nameInput && nameInput.value.trim().length >= 2) {
+      const name = nameInput.value.trim();
+      // Salva nel profilo utente locale (come se avesse fatto login anonimo)
+      if (!state.user) {
+        state.user = { name, groups: [], activeGroupCode: null };
+        localStorage.setItem('ng-user', JSON.stringify(state.user));
+      } else {
+        state.user.name = name;
+        localStorage.setItem('ng-user', JSON.stringify(state.user));
+      }
+    }
     localStorage.setItem('ng-onboarded', '1');
     overlay.classList.add('hidden');
   }
 
   nextBtn.addEventListener('click', () => {
-    if (step < steps.length - 1) { step++; goTo(step); }
-    else finish();
+    if (step === steps.length - 1) {
+      // Ultimo step: valida nome
+      const nameInput = $('onboardNameInput');
+      const nameErr = $('onboardNameErr');
+      if (nameInput && nameInput.value.trim().length < 2) {
+        if (nameErr) nameErr.style.display = '';
+        return;
+      }
+      if (nameErr) nameErr.style.display = 'none';
+      finish();
+    } else {
+      step++; goTo(step);
+    }
   });
   skipBtn.addEventListener('click', finish);
   goTo(0);
