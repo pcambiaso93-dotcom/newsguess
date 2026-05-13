@@ -2629,6 +2629,16 @@
 
       <!-- PAGE: LEADERBOARD -->
       <div class="page" id="page-leaderboard">
+
+        <!-- CLASSIFICA GLOBALE — visibile a tutti -->
+        <div class="section">
+          <h2>🌍 Classifica globale</h2>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">I migliori di oggi tra tutti i giocatori</p>
+          <p class="small-caps" id="lbGlobalDate">—</p>
+          <table class="data-table" id="lbGlobalTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Precisione</th></tr></thead><tbody></tbody></table>
+          <p id="lbGlobalEmpty" style="color:var(--text-tertiary);font-style:italic;text-align:center;">Classifica in costruzione — gioca per apparire!</p>
+        </div>
+
         <div id="lbLogin" class="section">
           <h2>Sfida con gli amici</h2>
           <p>Crea un gruppo e condividi il codice con i tuoi amici, oppure unisciti a un gruppo esistente.</p>
@@ -2722,15 +2732,6 @@
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
-          </div>
-
-          <!-- CLASSIFICA GLOBALE -->
-          <div class="section" id="lbGlobalSection">
-            <h2>🌍 Classifica globale</h2>
-            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Tutti i giocatori registrati — sfida di oggi</p>
-            <p class="small-caps" id="lbGlobalDate">—</p>
-            <table class="data-table" id="lbGlobalTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Precisione</th></tr></thead><tbody></tbody></table>
-            <p id="lbGlobalEmpty" style="color:var(--text-tertiary);font-style:italic;text-align:center;">Classifica in costruzione — gioca e salva per apparire!</p>
           </div>
 
           <div class="section" id="lbHistoricalSection">
@@ -4026,14 +4027,6 @@ async function loadArchive() {
     });
     list.appendChild(seeAll);
 
-    // Toggle dropdown
-    $('pastDropdownTrigger').addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = list.classList.contains('open');
-      list.classList.toggle('open', !isOpen);
-      $('pastDropdownTrigger').classList.toggle('open', !isOpen);
-    });
-    document.addEventListener('click', closePastDropdown);
   } catch (e) { console.warn('archive load failed', e); }
 }
 
@@ -4042,6 +4035,21 @@ function closePastDropdown() {
   $('pastDropdownTrigger')?.classList.remove('open');
 }
 loadArchive();
+
+// Toggle dropdown — registrato subito, indipendentemente dal caricamento
+(function() {
+  const trigger = $('pastDropdownTrigger');
+  const list = $('pastDropdownList');
+  if (trigger && list) {
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = list.classList.contains('open');
+      list.classList.toggle('open', !isOpen);
+      trigger.classList.toggle('open', !isOpen);
+    });
+    document.addEventListener('click', closePastDropdown);
+  }
+})();
 
 /* ===== SFIDE STORICHE — LOGICA ===== */
 
@@ -6788,6 +6796,8 @@ else if (state.user?.name) showLBLogin();
 let _lbDayUnsub = null, _lbMonthUnsub = null;
 
 async function refreshLeaderboards() {
+  // Carica sempre la classifica globale (visibile a tutti)
+  loadGlobalLeaderboard();
   if (!state.user || !state.user.activeGroupCode) return;
   initFirebase();
   if (!fbReady) {
@@ -6805,7 +6815,6 @@ async function refreshLeaderboards() {
   const code = state.user.activeGroupCode;
 
   loadHistoricalLeaderboard(code);
-  loadGlobalLeaderboard();
 
   // Recupera tutti i mesi giocati nel gruppo (una sola volta) e popola il select
   fbDb.collection('scores')
