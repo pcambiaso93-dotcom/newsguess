@@ -3220,7 +3220,7 @@ const firebaseConfig = {
   appId:             "1:911753113078:web:098f358c69273158ba6bd7",
   // measurementId necessario per Firebase Analytics.
   // Se mostra warning in console, prendilo da: Firebase Console → Project Settings → Your apps → Web → App ID / measurementId (inizia con G-)
-  measurementId:     "G-REPLACE_ME"
+  measurementId:     "G-S5ZB8XPQN7"
 };
 
 /* ===== FIREBASE ANALYTICS (dati visibili SOLO al creatore su Firebase Console) ===== */
@@ -4171,11 +4171,29 @@ function renderHistoricalScreen() {
   const idx = histState.current;
 
   // Distrattori: mix tra giornali della sfida e NEWSPAPERS standard
-  const allPapers = [...ch.papers.map(p => ({ id: p.paperId, name: p.name })),
-    ...NEWSPAPERS.map(n => ({ id: n.id, name: n.name }))];
-  const uniquePapers = [...new Map(allPapers.map(p => [p.id, p])).values()];
-  const distractors = uniquePapers.filter(p => p.id !== q.paperId);
-  const choices = sampleN(distractors, 3).concat({ id: q.paperId, name: q.name }).sort(() => Math.random() - 0.5);
+  // Risolvi nomi mancanti usando HISTORICAL_EXTRA_PAPERS o NEWSPAPERS
+  const resolveName = (paperId, fallbackName) => {
+    if (fallbackName) return fallbackName;
+    const extra = HISTORICAL_EXTRA_PAPERS?.[paperId];
+    if (extra?.name) return extra.name;
+    const std = NEWSPAPERS.find(n => n.id === paperId);
+    return std?.name || paperId;
+  };
+  const allPapers = [
+    ...ch.papers.map(p => ({ id: p.paperId, name: resolveName(p.paperId, p.name) })),
+    ...NEWSPAPERS.map(n => ({ id: n.id, name: n.name }))
+  ];
+  // Deduplica per id E per nome (evita lo stesso giornale due volte)
+  const seenIds = new Set();
+  const seenNames = new Set();
+  const uniquePapers = allPapers.filter(p => {
+    if (seenIds.has(p.id) || seenNames.has(p.name)) return false;
+    seenIds.add(p.id); seenNames.add(p.name);
+    return true;
+  });
+  const correctName = resolveName(q.paperId, q.name);
+  const distractors = uniquePapers.filter(p => p.id !== q.paperId && p.name !== correctName);
+  const choices = sampleN(distractors, 3).concat({ id: q.paperId, name: correctName }).sort(() => Math.random() - 0.5);
 
   // Barra avanzamento
   const dotsHtml = histState.questions.map((_, i) => {
@@ -6706,7 +6724,12 @@ async function refreshLeaderboards() {
     .get()
     .then(snap => {
       const months = new Set();
-      snap.forEach(d => { const mk = d.data().monthKey; if (mk) months.add(mk); });
+      snap.forEach(d => {
+        const data = d.data();
+        // Escludi sfide storiche dalla classifica mensile
+        if (data.mode === 'historical') return;
+        const mk = data.monthKey; if (mk) months.add(mk);
+      });
       // Aggiungi sempre il mese corrente, anche se vuoto
       months.add(currentMk);
       const sorted = [...months].sort().reverse();
@@ -6717,7 +6740,9 @@ async function refreshLeaderboards() {
       _lbMonthUnsub = fbDb.collection('scores')
         .where('groupCode', '==', code)
         .where('monthKey', '==', selectedMk)
-        .onSnapshot(s => renderMonthTable(s.docs.map(d => d.data())));
+        .onSnapshot(s => renderMonthTable(
+          s.docs.map(d => d.data()).filter(d => d.mode !== 'historical')
+        ));
     })
     .catch(err => {
       console.error('Errore caricamento mesi:', err);
@@ -6755,7 +6780,9 @@ function populateMonthSelect(monthKeys, currentMk) {
       _lbMonthUnsub = fbDb.collection('scores')
         .where('groupCode', '==', code)
         .where('monthKey', '==', newMk)
-        .onSnapshot(snap => renderMonthTable(snap.docs.map(d => d.data())));
+        .onSnapshot(snap => renderMonthTable(
+          snap.docs.map(d => d.data()).filter(d => d.mode !== 'historical')
+        ));
     });
   }
 
