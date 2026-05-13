@@ -2569,6 +2569,7 @@
             <table class="data-table" id="recapTable"></table>
 
             <div class="quiz-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px; padding-bottom: 60px;">
+              <div id="globalLeaderboardInfo" style="display:none;margin-bottom:8px;"></div>
               <button class="btn" id="saveScoreBtn">Salva punteggio</button>
               <button class="btn btn-outline" id="shareResultBtn">Condividi</button>
               <button class="btn btn-outline" id="trainAgainBtn" style="display: none;">Altro allenamento</button>
@@ -2721,6 +2722,15 @@
             <p class="small-caps" id="lbMonthLabel">—</p>
             <table class="data-table" id="lbMonthTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Partite</th></tr></thead><tbody></tbody></table>
             <p id="lbMonthEmpty" style="color: var(--text-tertiary); font-style: italic; text-align: center;">Nessun punteggio.</p>
+          </div>
+
+          <!-- CLASSIFICA GLOBALE -->
+          <div class="section" id="lbGlobalSection">
+            <h2>🌍 Classifica globale</h2>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Tutti i giocatori registrati — sfida di oggi</p>
+            <p class="small-caps" id="lbGlobalDate">—</p>
+            <table class="data-table" id="lbGlobalTable"><thead><tr><th>Pos</th><th>Nome</th><th>Punti</th><th>Precisione</th></tr></thead><tbody></tbody></table>
+            <p id="lbGlobalEmpty" style="color:var(--text-tertiary);font-style:italic;text-align:center;">Classifica in costruzione — gioca e salva per apparire!</p>
           </div>
 
           <div class="section" id="lbHistoricalSection">
@@ -5218,6 +5228,42 @@ function finishQuiz() {
   // Il salvataggio in classifica è riservato esclusivamente alla sfida giornaliera
   $('saveScoreBtn').style.display = state.mode === 'daily' ? '' : 'none';
 
+  // Salvataggio automatico in classifica globale (daily, utente loggato)
+  if (state.mode === 'daily' && state.user?.name) {
+    const globalKey = `global-saved-${todayISO()}-${state.user.name}`;
+    if (!localStorage.getItem(globalKey)) {
+      localStorage.setItem(globalKey, '1');
+      initFirebase();
+      if (fbReady) {
+        fbDb.collection('global_scores').add({
+          name: state.user.name,
+          score: state.score,
+          total: state.questions.length,
+          pct: state.score / state.questions.length,
+          dateISO: todayISO(),
+          monthKey: monthKey(todayISO()),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {
+          const el = document.getElementById('globalLeaderboardInfo');
+          if (el) { el.innerHTML = '<p style="font-size:13px;color:var(--success);text-align:center;">✓ Sei nella classifica globale di oggi 🌍</p>'; el.style.display = ''; }
+        }).catch(() => {});
+      }
+    }
+  }
+  // Mostra info classifica globale
+  const globalInfoEl = document.getElementById('globalLeaderboardInfo');
+  if (globalInfoEl) {
+    if (state.mode === 'daily') {
+      const alreadyGlobal = localStorage.getItem(`global-saved-${todayISO()}-${state.user?.name}`);
+      globalInfoEl.innerHTML = alreadyGlobal
+        ? '<p style="font-size:13px;color:var(--success);text-align:center;">✓ Sei nella classifica globale di oggi 🌍</p>'
+        : '<p style="font-size:13px;color:var(--text-secondary);text-align:center;">Il tuo punteggio verrà salvato automaticamente nella classifica globale 🌍</p>';
+      globalInfoEl.style.display = '';
+    } else {
+      globalInfoEl.style.display = 'none';
+    }
+  }
+
   trackGameInStats({
     mode: state.mode,
     dateISO: state.dateISO,
@@ -6082,8 +6128,14 @@ $('nameModalConfirm').addEventListener('click', () => {
 
 /* ===== SAVE SCORE ===== */
 $('saveScoreBtn').addEventListener('click', () => {
-  if (!state.user || !state.user.groups?.length) {
-    if (confirm('Per salvare il punteggio devi prima entrare in un gruppo.\nVuoi andare alla scheda Classifica ora?')) {
+  if (!state.user) {
+    if (confirm('Accedi per salvare il punteggio nella classifica globale e nei tuoi gruppi.\nVuoi andare alle Impostazioni?')) {
+      openPage('settings');
+    }
+    return;
+  }
+  if (!state.user.groups?.length) {
+    if (confirm('Sei già nella classifica globale! 🌍\nVuoi anche partecipare a una classifica di gruppo?\nCreane una nella sezione Classifica.')) {
       openPage('leaderboard');
     }
     return;
@@ -6449,6 +6501,42 @@ async function saveLeaderboardEntry(entry) {
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     monthKey: monthKey(entry.dateISO),
   });
+
+}
+
+function loadGlobalLeaderboard() {
+  initFirebase();
+  if (!fbReady) return;
+  const today = todayISO();
+  if ($('lbGlobalDate')) $('lbGlobalDate').textContent = fmtDateIT(today);
+
+  fbDb.collection('global_scores')
+    .where('dateISO', '==', today)
+    .orderBy('pct', 'desc')
+    .limit(20)
+    .get()
+    .then(snap => {
+      const rows = snap.docs.map(d => d.data());
+      const tbody = document.querySelector('#lbGlobalTable tbody');
+      const empty = $('lbGlobalEmpty');
+      if (!rows.length || rows.length < 3) {
+        if (tbody) tbody.innerHTML = '';
+        if (empty) { empty.style.display = ''; empty.textContent = 'Classifica in costruzione — gioca e salva per apparire!'; }
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+      if (tbody) tbody.innerHTML = rows.map((r, i) => {
+        const pct = Math.round((r.pct || r.score / r.total) * 100);
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+        return `<tr>
+          <td>${medal}</td>
+          <td style="font-weight:600;">${escapeHtml(r.name || 'Anonimo')}</td>
+          <td>${r.score}/${r.total}</td>
+          <td>${pct}%</td>
+        </tr>`;
+      }).join('');
+    })
+    .catch(err => console.warn('Global lb error:', err));
 }
 
 function genGroupCode() {
@@ -6717,6 +6805,7 @@ async function refreshLeaderboards() {
   const code = state.user.activeGroupCode;
 
   loadHistoricalLeaderboard(code);
+  loadGlobalLeaderboard();
 
   // Recupera tutti i mesi giocati nel gruppo (una sola volta) e popola il select
   fbDb.collection('scores')
