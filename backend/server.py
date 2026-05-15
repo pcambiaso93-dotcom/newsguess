@@ -454,9 +454,12 @@ async def backup_zip(request: Request):
 # ============= WEB PUSH NOTIFICATIONS (promemoria 8:00) =============
 VAPID_FILE = STATIC_DIR / "vapid.json"
 _vapid = None
+# Chiavi VAPID hardcoded come fallback finale (generate il 2026-05-15)
+_VAPID_PUBLIC_HARDCODED  = "BDZPwh1gKqwzfv237mOimfW-7K9ekHPXWh-cmwzmfnVVuI6p-2BoCzPBO1cdD6NqktJLxWzMejdqYVRFU5Aupl4"
+_VAPID_PRIVATE_HARDCODED = """-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgLfiHxykCdj342q4q\nsHsktQ5pqz1K3MOFLZ1mKvhqUqihRANCAAQ2T8IdYCqsM379t+5jopn1vuyvXpBz\n11ofnJsM5n51VbiOqftgaAszwTtXHQ+japLSS8VszHo3amFURVOQLqZe\n-----END PRIVATE KEY-----\n"""
+
 def _load_vapid():
-    """Carica VAPID keys: prima da env (per deploy come Render/Fly.io), poi da file (dev locale).
-    Accetta sia VAPID_PRIVATE_PEM (formato PEM) sia VAPID_PRIVATE_KEY (base64url raw 32 byte)."""
+    """Carica VAPID keys: prima da env, poi da file, poi hardcoded."""
     global _vapid
     if _vapid is not None:
         return _vapid
@@ -486,8 +489,18 @@ def _load_vapid():
         except Exception as e:
             logger.error(f"VAPID base64->PEM failed: {e}")
     if VAPID_FILE.exists():
-        with open(VAPID_FILE) as f:
-            _vapid = json.load(f)
+        try:
+            with open(VAPID_FILE) as f:
+                _vapid = json.load(f)
+            return _vapid
+        except Exception as e:
+            logger.warning(f"vapid.json read failed: {e}")
+    # Fallback hardcoded
+    logger.info("Using hardcoded VAPID keys")
+    _vapid = {
+        "public": _VAPID_PUBLIC_HARDCODED,
+        "private_pem": _VAPID_PRIVATE_HARDCODED.replace("\\n", "\n"),
+    }
     return _vapid
 
 # URL base del repository GitHub per le immagini storiche
