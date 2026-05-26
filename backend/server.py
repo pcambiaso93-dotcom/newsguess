@@ -1,5 +1,4 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Query, Request
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -300,24 +299,34 @@ async def _do_extract_headlines(slug: str, date: str) -> dict:
         logger.warning(f"image transcode failed, sending original: {e}")
 
     b64 = base64.b64encode(img_bytes).decode("ascii")
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    if not api_key:
-        raise HTTPException(500, "EMERGENT_LLM_KEY non configurato")
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if not gemini_key:
+        raise HTTPException(500, "GEMINI_API_KEY non configurato")
 
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=f"headlines-{slug}-{date}-{uuid.uuid4().hex[:6]}",
-        system_message="Sei un assistente che estrae titoli da prime pagine di giornali italiani."
-    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-
-    from emergentintegrations.llm.chat import UserMessage, ImageContent as _IC
-    msg = UserMessage(text=PROMPT_HEADLINES, file_contents=[_IC(image_base64=b64)])
+    # Chiama Gemini Vision API
+    import httpx
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+    payload = {
+        "contents": [{
+            "parts": [
+                {"text": PROMPT_HEADLINES},
+                {"inline_data": {"mime_type": "image/jpeg", "data": b64}}
+            ]
+        }],
+        "generationConfig": {"temperature": 0, "maxOutputTokens": 512}
+    }
     try:
-        resp = await chat.send_message(msg)
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(gemini_url, json=payload)
+        if resp.status_code != 200:
+            raise HTTPException(502, f"Gemini error {resp.status_code}: {resp.text[:200]}")
+        rjson = resp.json()
+        text = rjson["candidates"][0]["content"]["parts"][0]["text"]
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(502, f"Claude error: {e}")
+        raise HTTPException(502, f"Gemini request error: {e}")
 
-    text = resp if isinstance(resp, str) else str(resp)
     m = re.search(r"\{[\s\S]*\}", text)
     if not m:
         raise HTTPException(502, f"Claude reply not JSON: {text[:200]}")
@@ -454,12 +463,9 @@ async def backup_zip(request: Request):
 # ============= WEB PUSH NOTIFICATIONS (promemoria 8:00) =============
 VAPID_FILE = STATIC_DIR / "vapid.json"
 _vapid = None
-# Chiavi VAPID hardcoded come fallback finale (generate il 2026-05-15)
-_VAPID_PUBLIC_HARDCODED  = "BDZPwh1gKqwzfv237mOimfW-7K9ekHPXWh-cmwzmfnVVuI6p-2BoCzPBO1cdD6NqktJLxWzMejdqYVRFU5Aupl4"
-_VAPID_PRIVATE_HARDCODED = """-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgLfiHxykCdj342q4q\nsHsktQ5pqz1K3MOFLZ1mKvhqUqihRANCAAQ2T8IdYCqsM379t+5jopn1vuyvXpBz\n11ofnJsM5n51VbiOqftgaAszwTtXHQ+japLSS8VszHo3amFURVOQLqZe\n-----END PRIVATE KEY-----\n"""
-
 def _load_vapid():
-    """Carica VAPID keys: prima da env, poi da file, poi hardcoded."""
+    """Carica VAPID keys: prima da env (per deploy come Render/Fly.io), poi da file (dev locale).
+    Accetta sia VAPID_PRIVATE_PEM (formato PEM) sia VAPID_PRIVATE_KEY (base64url raw 32 byte)."""
     global _vapid
     if _vapid is not None:
         return _vapid
@@ -489,57 +495,22 @@ def _load_vapid():
         except Exception as e:
             logger.error(f"VAPID base64->PEM failed: {e}")
     if VAPID_FILE.exists():
-        try:
-            with open(VAPID_FILE) as f:
-                _vapid = json.load(f)
-            return _vapid
-        except Exception as e:
-            logger.warning(f"vapid.json read failed: {e}")
-    # Fallback hardcoded
-    logger.info("Using hardcoded VAPID keys")
-    _vapid = {
-        "public": _VAPID_PUBLIC_HARDCODED,
-        "private_pem": _VAPID_PRIVATE_HARDCODED.replace("\\n", "\n"),
-    }
+        with open(VAPID_FILE) as f:
+            _vapid = json.load(f)
     return _vapid
-
-# URL base del repository GitHub per le immagini storiche
-GITHUB_RAW_BASE = os.environ.get(
-    "GITHUB_RAW_BASE",
-    "https://raw.githubusercontent.com/pcambiaso93-dotcom/newsguess/main/static"
-)
 
 @api_router.get("/historical-image/{filename}")
 async def historical_image(filename: str):
-    """Serve le immagini storiche: prima tenta dal filesystem locale,
-    poi fa proxy da GitHub raw content come fallback."""
+    """Serve le immagini storiche dalla cartella static/historical."""
     import re
+    # Valida il nome file per sicurezza
     if not re.match(r'^[\w\-]+\.jpg$', filename):
         raise HTTPException(400, "Nome file non valido")
-
-    # Prova prima dal filesystem locale (se disponibile)
-    local_path = Path(__file__).parent.parent / "static" / filename
-    if local_path.exists():
-        from fastapi.responses import FileResponse
-        return FileResponse(str(local_path), media_type="image/jpeg",
-                           headers={"Cache-Control": "public, max-age=86400"})
-
-    # Fallback: proxy da GitHub raw content
-    try:
-        github_url = f"{GITHUB_RAW_BASE}/{filename}"
-        resp = requests.get(github_url, timeout=15,
-                           headers={"User-Agent": UA})
-        if resp.status_code == 200:
-            return Response(
-                content=resp.content,
-                media_type="image/jpeg",
-                headers={"Cache-Control": "public, max-age=86400",
-                         "X-Source": "github"}
-            )
+    path = Path(__file__).parent.parent / "static" / "historical" / filename
+    if not path.exists():
         raise HTTPException(404, f"Immagine non trovata: {filename}")
-    except requests.RequestException as e:
-        raise HTTPException(502, f"Errore fetch immagine: {e}")
-@api_router.get("/push-vapid-key")
+    from fastapi.responses import FileResponse
+    return FileResponse(str(path), media_type="image/jpeg")
 async def push_vapid_key():
     v = _load_vapid()
     if not v:
@@ -633,10 +604,8 @@ async def _scheduled_check():
         try:
             local = now_utc - timedelta(minutes=sub.get("tzOffsetMinutes", 0))
             target_hour = sub.get("hour", 8)
-            if local.hour == target_hour and local.minute < 15:
-                local_date = local.strftime("%Y-%m-%d")
-                if sub.get("lastSentDate") != local_date:
-                    logger.info(f"[push] Invio notifica a {sub['endpoint'][:40]}... ora locale: {local.hour}:{local.minute:02d}")
+            if local.hour == target_hour and local.minute < 5:
+                if sub.get("lastSentDate") != local.strftime("%Y-%m-%d"):
                     await _send_push(sub)
         except Exception as e:
             logger.warning(f"check err: {e}")
@@ -690,7 +659,6 @@ async def get_status_checks():
 
 # Include the router in the main app
 app.include_router(api_router)
-app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 app.add_middleware(
     CORSMiddleware,
