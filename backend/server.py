@@ -322,16 +322,18 @@ async def _do_extract_headlines(slug: str, date: str) -> dict:
         raise
     except Exception as e:
         raise HTTPException(502, f"Gemini request error: {e}")
-    # Rimuovi eventuali backtick markdown che Gemini aggiunge
-    clean_text = re.sub(r'```(?:json)?\s*', '', text).strip()
+    # Pulizia risposta Gemini: rimuovi backtick markdown
+    clean_text = re.sub(r'```(?:json)?', '', text).strip()
     m = re.search(r"\{[\s\S]*\}", clean_text)
     if not m:
         raise HTTPException(502, f"Claude reply not JSON: {text[:200]}")
     try:
         data = json.loads(m.group(0))
     except Exception:
-        raise HTTPException(502, f"Claude JSON parse error: {text[:200]}")
-
+        try:
+            data = json.loads(clean_text)
+        except Exception:
+            raise HTTPException(502, f"Claude JSON parse error: {text[:200]}")
     record = {
         "slug": slug,
         "date": date,
@@ -371,7 +373,7 @@ async def prefetch_today():
             results[slug] = "ok" if r else "error"
         except Exception as e:
             results[slug] = str(e)[:80]
-        await asyncio.sleep(13)  # rispetta limite 5 RPM di Gemini
+        await asyncio.sleep(20)  # rispetta limite 5 RPM di Gemini (max 3/min per sicurezza)
     return {"date": today, "results": results}
 
 @api_router.get("/extract-headlines")
