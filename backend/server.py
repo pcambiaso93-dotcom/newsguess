@@ -359,6 +359,21 @@ async def _do_extract_headlines(slug: str, date: str) -> dict:
         "from_archive": False,
     }
 
+@api_router.get("/prefetch-today")
+async def prefetch_today():
+    """Forza il prefetch di tutti i quotidiani di oggi. Utile per debug o recupero manuale."""
+    import asyncio
+    today = _quiz_today()
+    results = {}
+    for slug in NEWSPAPER_SLUGS:
+        try:
+            r = await _do_extract_headlines(slug, today)
+            results[slug] = "ok" if r else "error"
+        except Exception as e:
+            results[slug] = str(e)[:80]
+        await asyncio.sleep(13)  # rispetta limite 5 RPM di Gemini
+    return {"date": today, "results": results}
+
 @api_router.get("/extract-headlines")
 @limiter.limit("30/minute")
 async def extract_headlines(request: Request, slug: str = Query(...), date: str | None = Query(None)):
