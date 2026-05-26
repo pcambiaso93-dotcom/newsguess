@@ -14,7 +14,6 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List
 from datetime import datetime, timezone, timedelta
-from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 from pywebpush import webpush, WebPushException
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -299,24 +298,30 @@ async def _do_extract_headlines(slug: str, date: str) -> dict:
         logger.warning(f"image transcode failed, sending original: {e}")
 
     b64 = base64.b64encode(img_bytes).decode("ascii")
-    api_key = os.environ.get("EMERGENT_LLM_KEY")
-    if not api_key:
-        raise HTTPException(500, "EMERGENT_LLM_KEY non configurato")
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if not gemini_key:
+        raise HTTPException(500, "GEMINI_API_KEY non configurato")
 
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=f"headlines-{slug}-{date}-{uuid.uuid4().hex[:6]}",
-        system_message="Sei un assistente che estrae titoli da prime pagine di giornali italiani."
-    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-
-    from emergentintegrations.llm.chat import UserMessage, ImageContent as _IC
-    msg = UserMessage(text=PROMPT_HEADLINES, file_contents=[_IC(image_base64=b64)])
+    import httpx
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+    payload = {
+        "contents": [{"parts": [
+            {"text": PROMPT_HEADLINES},
+            {"inline_data": {"mime_type": "image/jpeg", "data": b64}}
+        ]}],
+        "generationConfig": {"temperature": 0, "maxOutputTokens": 512}
+    }
     try:
-        resp = await chat.send_message(msg)
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(gemini_url, json=payload)
+        if resp.status_code != 200:
+            raise HTTPException(502, f"Gemini error {resp.status_code}: {resp.text[:200]}")
+        rjson = resp.json()
+        text = rjson["candidates"][0]["content"]["parts"][0]["text"]
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(502, f"Claude error: {e}")
-
-    text = resp if isinstance(resp, str) else str(resp)
+        raise HTTPException(502, f"Gemini request error: {e}")
     # Rimuovi eventuali backtick markdown che Gemini aggiunge
     clean_text = re.sub(r'```(?:json)?\s*', '', text).strip()
     m = re.search(r"\{[\s\S]*\}", clean_text)
