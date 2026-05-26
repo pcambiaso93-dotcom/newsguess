@@ -14,7 +14,6 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import List
 from datetime import datetime, timezone, timedelta
-from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 from pywebpush import webpush, WebPushException
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -506,11 +505,12 @@ async def historical_image(filename: str):
     # Valida il nome file per sicurezza
     if not re.match(r'^[\w\-]+\.jpg$', filename):
         raise HTTPException(400, "Nome file non valido")
-    path = Path(__file__).parent.parent / "static" / "historical" / filename
+    path = Path(__file__).parent.parent / "static" / filename
     if not path.exists():
         raise HTTPException(404, f"Immagine non trovata: {filename}")
     from fastapi.responses import FileResponse
     return FileResponse(str(path), media_type="image/jpeg")
+@api_router.get("/push-vapid-key")
 async def push_vapid_key():
     v = _load_vapid()
     if not v:
