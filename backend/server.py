@@ -304,7 +304,7 @@ async def _do_extract_headlines(slug: str, date: str) -> dict:
 
     # Chiama Gemini Vision API
     import httpx
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key={gemini_key}"
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
     payload = {
         "contents": [{
             "parts": [
